@@ -5,39 +5,20 @@ import { PianoColors } from '@/constants/Colors';
 
 interface NoteDisplayProps {
   note: string;
-  currentIndex: number;
-  totalNotes: number;
 }
 
-export function NoteDisplay({
-  note,
-  currentIndex,
-  totalNotes,
-}: NoteDisplayProps) {
+export function NoteDisplay({ note }: NoteDisplayProps) {
   // Convert sharp notation for display
   const displayNote = note.replace('#', '\u266F');
 
   return (
-    <View style={styles.container}>
-      <ThemedText style={styles.progress}>
-        {currentIndex + 1} / {totalNotes}
-      </ThemedText>
-      <View style={styles.noteContainer}>
-        <ThemedText style={styles.note}>{displayNote}</ThemedText>
-      </View>
+    <View style={styles.noteContainer}>
+      <ThemedText style={styles.note}>{displayNote}</ThemedText>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    gap: 8,
-  },
-  progress: {
-    fontSize: 16,
-    opacity: 0.7,
-  },
   noteContainer: {
     backgroundColor: PianoColors.noteDisplay,
     paddingHorizontal: 40,

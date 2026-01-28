@@ -1,12 +1,13 @@
 import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as ScreenOrientation from 'expo-screen-orientation';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GameTimer } from '@/components/piano/GameTimer';
 import { NoteDisplay } from '@/components/piano/NoteDisplay';
 import { PianoKeyboard } from '@/components/piano/PianoKeyboard';
+import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useGameSettings } from '@/hooks/useGameSettings';
 import { usePianoAudio } from '@/hooks/usePianoAudio';
@@ -22,6 +23,20 @@ export default function PianoGameScreen() {
   const { state, keyFeedback, startGame, handleKeyPress } = usePianoGame();
   const { playNote, playError } = usePianoAudio();
   const { settings } = useGameSettings();
+
+  const dynamicStyles = useMemo(
+    () => ({
+      header: {
+        paddingTop: insets.top + 16,
+        paddingLeft: insets.left + 16,
+        paddingRight: insets.right + 16,
+      },
+      keyboardArea: {
+        paddingBottom: insets.bottom + 16,
+      },
+    }),
+    [insets],
+  );
 
   // Lock to landscape on mount
   useEffect(() => {
@@ -73,21 +88,18 @@ export default function PianoGameScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
+      <View style={[styles.header, dynamicStyles.header]}>
+        <ThemedText style={styles.progress}>
+          {state.currentNoteIndex + 1}/{state.notes.length}
+        </ThemedText>
         <GameTimer elapsedMs={state.elapsedMs} />
       </View>
 
       <View style={styles.noteArea}>
-        <NoteDisplay
-          note={currentNote.displayName}
-          currentIndex={state.currentNoteIndex}
-          totalNotes={state.notes.length}
-        />
+        <NoteDisplay note={currentNote.displayName} />
       </View>
 
-      <View
-        style={[styles.keyboardArea, { paddingBottom: insets.bottom + 16 }]}
-      >
+      <View style={[styles.keyboardArea, dynamicStyles.keyboardArea]}>
         <PianoKeyboard
           onKeyPress={onKeyPress}
           keyFeedback={keyFeedback}
@@ -103,8 +115,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    paddingHorizontal: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  progress: {
+    fontSize: 18,
+    fontWeight: '600',
+    opacity: 0.7,
   },
   noteArea: {
     flex: 1,
