@@ -1,74 +1,108 @@
-import { Image, Platform, StyleSheet } from 'react-native';
+import { router } from 'expo-router';
+import * as ScreenOrientation from 'expo-screen-orientation';
+import { useEffect } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
+import { DifficultySelector } from '@/components/piano/DifficultySelector';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { useGameSettings } from '@/hooks/useGameSettings';
+import { useTheme } from '@/hooks/useTheme';
+import type { Difficulty } from '@/types/piano';
 
-export default function HomeScreen() {
+export default function PianoMenuScreen() {
+  const { lastDifficulty, saveLastDifficulty, loaded } = useGameSettings();
+  const { colors } = useTheme();
+
+  // Lock to portrait on mount
+  useEffect(() => {
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+
+    return () => {
+      ScreenOrientation.unlockAsync();
+    };
+  }, []);
+
+  const handleDifficultySelect = (difficulty: Difficulty) => {
+    saveLastDifficulty(difficulty);
+  };
+
+  const handleStartGame = () => {
+    router.push({
+      pathname: '/piano/game' as const,
+      params: { difficulty: lastDifficulty },
+    } as any);
+  };
+
+  if (!loaded) {
+    return (
+      <ThemedView style={styles.container}>
+        <ThemedText>Loading...</ThemedText>
+      </ThemedView>
+    );
+  }
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }
-    >
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome! test</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText>{' '}
-          to see changes. Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
+    <ThemedView style={styles.container}>
+      <View style={styles.content}>
+        <ThemedText style={styles.title}>Piano Practice</ThemedText>
+        <ThemedText style={styles.subtitle}>
+          Identify the notes as fast as you can
         </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this
-          starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText>{' '}
-          to get a fresh <ThemedText type="defaultSemiBold">app</ThemedText>{' '}
-          directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+
+        <View style={styles.selectorContainer}>
+          <DifficultySelector
+            selected={lastDifficulty}
+            onSelect={handleDifficultySelect}
+          />
+        </View>
+
+        <Pressable
+          style={[styles.playButton, { backgroundColor: colors.primary }]}
+          onPress={handleStartGame}
+        >
+          <ThemedText style={styles.playButtonText}>Play</ThemedText>
+        </Pressable>
+      </View>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
+  container: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    justifyContent: 'center',
+    gap: 16,
+  },
+  title: {
+    paddingBlockStart: 10,
+    fontSize: 28,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 14,
+    textAlign: 'center',
+    opacity: 0.7,
+  },
+  selectorContainer: {
+    marginVertical: 8,
+  },
+  playButton: {
+    paddingVertical: 14,
+    paddingHorizontal: 40,
+    borderRadius: 12,
     alignItems: 'center',
-    gap: 8,
+    marginTop: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  playButtonText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
   },
 });

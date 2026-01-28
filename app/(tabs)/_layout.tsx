@@ -1,5 +1,4 @@
 import { Tabs } from 'expo-router';
-
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -15,6 +14,18 @@ export default function TabLayout() {
     >
       <Tabs.Screen
         name="index"
+        options={{
+          title: 'Play',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? 'musical-notes' : 'musical-notes-outline'}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="home"
         options={{
           title: 'Home',
           tabBarIcon: ({ color, focused }) => (
@@ -37,18 +48,7 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="piano"
-        options={{
-          title: 'Piano',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? 'musical-notes' : 'musical-notes-outline'}
-              color={color}
-            />
-          ),
-        }}
-      />
+
     </Tabs>
   );
 }
