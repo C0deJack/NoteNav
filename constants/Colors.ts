@@ -35,5 +35,6 @@ export const PianoColors = {
   correctFeedback: '#4CAF50',
   incorrectFeedback: '#F44336',
   noteDisplay: '#2196F3',
+  noteDisplayText: '#FFFFFF',
   keyBorder: '#CCCCCC',
 };

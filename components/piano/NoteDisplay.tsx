@@ -19,17 +19,18 @@ export function NoteDisplay({ note }: NoteDisplayProps) {
 }
 
 const styles = StyleSheet.create({
-  noteContainer: {
-    backgroundColor: PianoColors.noteDisplay,
-    paddingHorizontal: 40,
-    paddingVertical: 20,
-    borderRadius: 12,
-    minWidth: 120,
-    alignItems: 'center',
-  },
-  note: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
+    noteContainer: {
+      backgroundColor: PianoColors.noteDisplay,
+      borderRadius: 12,
+      overflow: 'visible',
+    },
+    note: {
+      paddingInline: 25,
+      paddingBlock: 55,
+      marginBottom: -45,
+
+      fontSize: 64,
+      fontWeight: 'bold',
+      color: PianoColors.noteDisplayText,
+    },
 });
