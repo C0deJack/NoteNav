@@ -17,11 +17,11 @@ export const NOTES: Record<NoteName, Omit<Note, 'displayName'>> = {
 
 // Display names for sharps (randomly pick sharp or flat notation)
 export const SHARP_DISPLAY_NAMES: Record<string, [string, string]> = {
-  'C#': ['C#', 'Db'],
-  'D#': ['D#', 'Eb'],
-  'F#': ['F#', 'Gb'],
-  'G#': ['G#', 'Ab'],
-  'A#': ['A#', 'Bb'],
+  'C#': ['C#', 'D♭'],
+  'D#': ['D#', 'E♭'],
+  'F#': ['F#', 'G♭'],
+  'G#': ['G#', 'A♭'],
+  'A#': ['A#', 'B♭'],
 };
 
 // Order of keys on keyboard (left to right)
