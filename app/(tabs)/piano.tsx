@@ -1,4 +1,6 @@
 import { router } from 'expo-router';
+import * as ScreenOrientation from 'expo-screen-orientation';
+import { useEffect } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { DifficultySelector } from '@/components/piano/DifficultySelector';
 import { ThemedText } from '@/components/ThemedText';
@@ -10,6 +12,15 @@ import type { Difficulty } from '@/types/piano';
 export default function PianoMenuScreen() {
   const { lastDifficulty, saveLastDifficulty, loaded } = useGameSettings();
   const tintColor = useThemeColor({}, 'tint');
+
+  // Lock to portrait on mount
+  useEffect(() => {
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+
+    return () => {
+      ScreenOrientation.unlockAsync();
+    };
+  }, []);
 
   const handleDifficultySelect = (difficulty: Difficulty) => {
     saveLastDifficulty(difficulty);
