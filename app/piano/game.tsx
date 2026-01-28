@@ -14,7 +14,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { useGameSettings } from '@/hooks/useGameSettings';
 import { usePianoAudio } from '@/hooks/usePianoAudio';
 import { usePianoGame } from '@/hooks/usePianoGame';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useThemeColors } from '@/hooks/useThemeColors';
 import type { Difficulty, NoteName } from '@/types/piano';
 
 export default function PianoGameScreen() {
@@ -26,7 +26,7 @@ export default function PianoGameScreen() {
   const { state, keyFeedback, startGame, handleKeyPress } = usePianoGame();
   const { playNote, playError } = usePianoAudio();
   const { settings } = useGameSettings();
-  const textColor = useThemeColor({}, 'text');
+  const colors = useThemeColors();
   const [showQuitModal, setShowQuitModal] = useState(false);
 
   const dynamicStyles = useMemo(
@@ -109,7 +109,7 @@ export default function PianoGameScreen() {
       <View style={[styles.header, dynamicStyles.header]}>
         <View style={styles.headerLeft}>
           <Pressable onPress={handleQuitPress} hitSlop={8}>
-            <Ionicons name="close" size={28} color={textColor} />
+            <Ionicons name="close" size={28} color={colors.text} />
           </Pressable>
           <ThemedText style={styles.progress}>
             {state.currentNoteIndex + 1}/{state.notes.length}
