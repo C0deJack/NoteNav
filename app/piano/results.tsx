@@ -1,0 +1,129 @@
+import { View, StyleSheet, Pressable } from 'react-native';
+import { useLocalSearchParams, router } from 'expo-router';
+
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { Difficulty } from '@/types/piano';
+import { DIFFICULTIES } from '@/constants/PianoConfig';
+
+export default function PianoResultsScreen() {
+  const params = useLocalSearchParams<{ difficulty: string; elapsedMs: string }>();
+  const difficulty = parseInt(params.difficulty || '10', 10) as Difficulty;
+  const elapsedMs = parseInt(params.elapsedMs || '0', 10);
+  const tintColor = useThemeColor({}, 'tint');
+
+  const seconds = Math.floor(elapsedMs / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  const formattedTime = `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+
+  const difficultyLabel = DIFFICULTIES.find(d => d.value === difficulty)?.label || 'Unknown';
+
+  const handlePlayAgain = () => {
+    router.replace({
+      pathname: '/piano/game' as const,
+      params: { difficulty },
+    } as any);
+  };
+
+  const handleBackToMenu = () => {
+    router.replace('/(tabs)/piano' as any);
+  };
+
+  return (
+    <ThemedView style={styles.container}>
+      <View style={styles.content}>
+        <ThemedText style={styles.title}>Complete!</ThemedText>
+
+        <View style={styles.statsContainer}>
+          <View style={styles.stat}>
+            <ThemedText style={styles.statLabel}>Time</ThemedText>
+            <ThemedText style={styles.statValue}>{formattedTime}</ThemedText>
+          </View>
+
+          <View style={styles.stat}>
+            <ThemedText style={styles.statLabel}>Notes</ThemedText>
+            <ThemedText style={styles.statValue}>{difficulty}</ThemedText>
+          </View>
+
+          <View style={styles.stat}>
+            <ThemedText style={styles.statLabel}>Difficulty</ThemedText>
+            <ThemedText style={styles.statValue}>{difficultyLabel}</ThemedText>
+          </View>
+        </View>
+
+        <View style={styles.buttons}>
+          <Pressable
+            style={[styles.button, { backgroundColor: tintColor }]}
+            onPress={handlePlayAgain}
+          >
+            <ThemedText style={styles.buttonText}>Play Again</ThemedText>
+          </Pressable>
+
+          <Pressable
+            style={[styles.button, styles.secondaryButton]}
+            onPress={handleBackToMenu}
+          >
+            <ThemedText style={styles.secondaryButtonText}>Back to Menu</ThemedText>
+          </Pressable>
+        </View>
+      </View>
+    </ThemedView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+    padding: 24,
+    justifyContent: 'center',
+    gap: 40,
+  },
+  title: {
+    fontSize: 40,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  stat: {
+    alignItems: 'center',
+    gap: 8,
+  },
+  statLabel: {
+    fontSize: 14,
+    opacity: 0.7,
+  },
+  statValue: {
+    fontSize: 28,
+    fontWeight: '600',
+  },
+  buttons: {
+    gap: 12,
+  },
+  button: {
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  buttonText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  secondaryButton: {
+    backgroundColor: 'transparent',
+    borderWidth: 2,
+    borderColor: '#ddd',
+  },
+  secondaryButtonText: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+});

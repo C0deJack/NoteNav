@@ -24,3 +24,14 @@ export const Colors = {
     tabIconSelected: tintColorDark,
   },
 };
+
+export const PianoColors = {
+  whiteKey: '#FFFFFF',
+  whiteKeyPressed: '#E8E8E8',
+  blackKey: '#1A1A1A',
+  blackKeyPressed: '#333333',
+  correctFeedback: '#4CAF50',
+  incorrectFeedback: '#F44336',
+  noteDisplay: '#2196F3',
+  keyBorder: '#CCCCCC',
+};

@@ -30,6 +30,8 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="piano/game" options={{ headerShown: false, gestureEnabled: false }} />
+        <Stack.Screen name="piano/results" options={{ headerShown: false, gestureEnabled: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
     </ThemeProvider>
