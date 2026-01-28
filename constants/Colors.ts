@@ -22,33 +22,33 @@ export const Colors = {
     primary: '#0a7ea4',
     border: '#ddd',
     icon: '#687076',
+    whiteKey: '#FFFFFF',
+    blackKey: '#1A1A1A',
+    correctFeedback: '#4CAF50',
+    incorrectFeedback: '#F44336',
+    noteDisplay: '#2196F3',
+    noteDisplayText: '#FFFFFF',
+    blackKeyBorder: '#444444',
+    whiteKeyBorder: '#CCCCCC',
   },
   dark: {
-    text: '#ECEDEE',
+    text: '#d7d9da',
     textMuted: '#9BA1A6',
-    background: '#151718',
+    background: '#292a2b',
     surface: '#1f2123',
-    primary: '#4da6c7',
+    primary: '#317993',
     border: '#3a3a3a',
     icon: '#9BA1A6',
+    whiteKey: '#999999',
+    blackKey: '#1A1A1A',
+    correctFeedback: '#4CAF50',
+    incorrectFeedback: '#F44336',
+    noteDisplay: '#4da6c7',
+    noteDisplayText: '#FFFFFF',
+    blackKeyBorder: '#444444',
+    whiteKeyBorder: '#CCCCCC',
   },
 } as const;
 
 export type ColorName = keyof (typeof Colors)['light'];
 export type Theme = keyof typeof Colors;
-
-/**
- * Piano-specific colors (static, don't change with theme).
- * These are intentionally not theme-dependent for consistent game experience.
- */
-export const PianoColors = {
-  whiteKey: '#FFFFFF',
-  whiteKeyPressed: '#E8E8E8',
-  blackKey: '#1A1A1A',
-  blackKeyPressed: '#333333',
-  correctFeedback: '#4CAF50',
-  incorrectFeedback: '#F44336',
-  noteDisplay: '#2196F3',
-  noteDisplayText: '#FFFFFF',
-  keyBorder: '#CCCCCC',
-} as const;

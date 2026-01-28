@@ -6,10 +6,9 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-
 import { ThemedText } from '@/components/ThemedText';
-import { PianoColors } from '@/constants/Colors';
 import type { KeyFeedback, NoteName } from '@/types/piano';
+import { useTheme } from '@/hooks/useTheme';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -29,6 +28,7 @@ export function PianoKey({
   showLabel = false,
 }: PianoKeyProps) {
   const feedbackValue = useSharedValue(0);
+  const { colors } = useTheme();
 
   useEffect(() => {
     if (feedback !== 'none') {
@@ -38,12 +38,12 @@ export function PianoKey({
   }, [feedback, feedbackValue]);
 
   const animatedStyle = useAnimatedStyle(() => {
-    const baseColor = isBlack ? PianoColors.blackKey : PianoColors.whiteKey;
+    const baseColor = isBlack ? colors.blackKey : colors.whiteKey;
     const feedbackColor =
       feedback === 'correct'
-        ? PianoColors.correctFeedback
+        ? colors.correctFeedback
         : feedback === 'incorrect'
-          ? PianoColors.incorrectFeedback
+          ? colors.incorrectFeedback
           : baseColor;
 
     return {
@@ -60,7 +60,14 @@ export function PianoKey({
   return (
     <AnimatedPressable
       onPressIn={() => onPress(note)}
-      style={[isBlack ? styles.blackKey : styles.whiteKey, animatedStyle]}
+      style={[
+        isBlack ? styles.blackKey : styles.whiteKey,
+        animatedStyle,
+        { backgroundColor: isBlack ? colors.blackKey : colors.whiteKey },
+        {
+          borderColor: isBlack ? colors.blackKeyBorder : colors.whiteKeyBorder,
+        },
+      ]}
     >
       {showLabel && (
         <ThemedText style={[styles.label, isBlack && styles.blackLabel]}>
@@ -75,9 +82,7 @@ const styles = StyleSheet.create({
   whiteKey: {
     flex: 1,
     height: '100%',
-    backgroundColor: PianoColors.whiteKey,
     borderWidth: 1,
-    borderColor: PianoColors.keyBorder,
     borderRadius: 4,
     justifyContent: 'flex-end',
     alignItems: 'center',
@@ -87,7 +92,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '60%',
     height: '60%',
-    backgroundColor: PianoColors.blackKey,
     borderRadius: 4,
     zIndex: 1,
     justifyContent: 'flex-end',

@@ -18,6 +18,7 @@ export function GameTimer({ elapsedMs }: GameTimerProps) {
 
 const styles = StyleSheet.create({
   timer: {
+    paddingBlockStart: 30,
     fontSize: 32,
     fontWeight: '600',
     fontVariant: ['tabular-nums'],
