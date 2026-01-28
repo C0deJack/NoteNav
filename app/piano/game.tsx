@@ -1,17 +1,20 @@
+import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as ScreenOrientation from 'expo-screen-orientation';
-import { useEffect, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useEffect, useMemo, useState } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GameTimer } from '@/components/piano/GameTimer';
 import { NoteDisplay } from '@/components/piano/NoteDisplay';
 import { PianoKeyboard } from '@/components/piano/PianoKeyboard';
+import { QuitGameModal } from '@/components/piano/QuitGameModal';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useGameSettings } from '@/hooks/useGameSettings';
 import { usePianoAudio } from '@/hooks/usePianoAudio';
 import { usePianoGame } from '@/hooks/usePianoGame';
+import { useThemeColor } from '@/hooks/useThemeColor';
 import type { Difficulty, NoteName } from '@/types/piano';
 
 export default function PianoGameScreen() {
@@ -23,6 +26,8 @@ export default function PianoGameScreen() {
   const { state, keyFeedback, startGame, handleKeyPress } = usePianoGame();
   const { playNote, playError } = usePianoAudio();
   const { settings } = useGameSettings();
+  const textColor = useThemeColor({}, 'text');
+  const [showQuitModal, setShowQuitModal] = useState(false);
 
   const dynamicStyles = useMemo(
     () => ({
@@ -66,8 +71,21 @@ export default function PianoGameScreen() {
     }
   }, [state.status, state.difficulty, state.elapsedMs]);
 
+  const handleQuitPress = () => {
+    setShowQuitModal(true);
+  };
+
+  const handleQuitCancel = () => {
+    setShowQuitModal(false);
+  };
+
+  const handleQuitConfirm = () => {
+    setShowQuitModal(false);
+    router.replace('/(tabs)/piano' as any);
+  };
+
   const onKeyPress = async (note: NoteName) => {
-    if (state.status !== 'playing') return;
+    if (state.status !== 'playing' || showQuitModal) return;
 
     const isCorrect = handleKeyPress(note);
 
@@ -89,9 +107,14 @@ export default function PianoGameScreen() {
   return (
     <ThemedView style={styles.container}>
       <View style={[styles.header, dynamicStyles.header]}>
-        <ThemedText style={styles.progress}>
-          {state.currentNoteIndex + 1}/{state.notes.length}
-        </ThemedText>
+        <View style={styles.headerLeft}>
+          <Pressable onPress={handleQuitPress} hitSlop={8}>
+            <Ionicons name="close" size={28} color={textColor} />
+          </Pressable>
+          <ThemedText style={styles.progress}>
+            {state.currentNoteIndex + 1}/{state.notes.length}
+          </ThemedText>
+        </View>
         <GameTimer elapsedMs={state.elapsedMs} />
       </View>
 
@@ -106,6 +129,12 @@ export default function PianoGameScreen() {
           showLabels={settings.showNoteLabels}
         />
       </View>
+
+      <QuitGameModal
+        visible={showQuitModal}
+        onCancel={handleQuitCancel}
+        onConfirm={handleQuitConfirm}
+      />
     </ThemedView>
   );
 }
@@ -118,6 +147,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
   },
   progress: {
     fontSize: 18,
