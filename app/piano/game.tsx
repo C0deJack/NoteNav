@@ -1,5 +1,6 @@
 import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -21,6 +22,15 @@ export default function PianoGameScreen() {
   const { state, keyFeedback, startGame, handleKeyPress } = usePianoGame();
   const { playNote, playError } = usePianoAudio();
   const { settings } = useGameSettings();
+
+  // Lock to landscape on mount
+  useEffect(() => {
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+
+    return () => {
+      ScreenOrientation.unlockAsync();
+    };
+  }, []);
 
   // Start game on mount
   // biome-ignore lint/correctness/useExhaustiveDependencies: Only run on mount with initial difficulty
