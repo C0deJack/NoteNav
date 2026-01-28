@@ -1,5 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -15,6 +16,7 @@ export default function PianoResultsScreen() {
   const difficulty = parseInt(params.difficulty || '10', 10) as Difficulty;
   const elapsedMs = parseInt(params.elapsedMs || '0', 10);
   const tintColor = useThemeColor({}, 'tint');
+  const insets = useSafeAreaInsets();
 
   const seconds = Math.floor(elapsedMs / 1000);
   const minutes = Math.floor(seconds / 60);
@@ -37,7 +39,12 @@ export default function PianoResultsScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <View style={styles.content}>
+      <View
+        style={[
+          styles.content,
+          { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 24 },
+        ]}
+      >
         <ThemedText style={styles.title}>Complete!</ThemedText>
 
         <View style={styles.statsContainer}>
@@ -85,12 +92,12 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 24,
+    paddingHorizontal: 24,
     justifyContent: 'center',
-    gap: 40,
+    gap: 32,
   },
   title: {
-    fontSize: 40,
+    fontSize: 36,
     fontWeight: 'bold',
     textAlign: 'center',
   },
@@ -100,26 +107,26 @@ const styles = StyleSheet.create({
   },
   stat: {
     alignItems: 'center',
-    gap: 8,
+    gap: 4,
   },
   statLabel: {
-    fontSize: 14,
+    fontSize: 12,
     opacity: 0.7,
   },
   statValue: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: '600',
   },
   buttons: {
     gap: 12,
   },
   button: {
-    paddingVertical: 16,
+    paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',
   },
   buttonText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
     color: '#fff',
   },
@@ -129,7 +136,7 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
   },
   secondaryButtonText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
   },
 });

@@ -2,6 +2,7 @@ import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GameTimer } from '@/components/piano/GameTimer';
 import { NoteDisplay } from '@/components/piano/NoteDisplay';
 import { PianoKeyboard } from '@/components/piano/PianoKeyboard';
@@ -15,6 +16,7 @@ export default function PianoGameScreen() {
   const params = useLocalSearchParams<{ difficulty: string }>();
   const difficulty =
     (parseInt(params.difficulty || '10', 10) as Difficulty) || 10;
+  const insets = useSafeAreaInsets();
 
   const { state, keyFeedback, startGame, handleKeyPress } = usePianoGame();
   const { playNote, playError } = usePianoAudio();
@@ -61,7 +63,7 @@ export default function PianoGameScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
         <GameTimer elapsedMs={state.elapsedMs} />
       </View>
 
@@ -73,7 +75,9 @@ export default function PianoGameScreen() {
         />
       </View>
 
-      <View style={styles.keyboardArea}>
+      <View
+        style={[styles.keyboardArea, { paddingBottom: insets.bottom + 16 }]}
+      >
         <PianoKeyboard
           onKeyPress={onKeyPress}
           keyFeedback={keyFeedback}
@@ -89,17 +93,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    paddingTop: 60,
-    paddingHorizontal: 24,
+    paddingHorizontal: 16,
     alignItems: 'center',
   },
   noteArea: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    minHeight: 120,
   },
   keyboardArea: {
-    paddingBottom: 40,
     alignItems: 'center',
   },
 });

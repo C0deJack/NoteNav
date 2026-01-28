@@ -54,26 +54,28 @@ export function DifficultySelector({
 
 const styles = StyleSheet.create({
   container: {
-    gap: 16,
+    gap: 12,
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '600',
     textAlign: 'center',
   },
   options: {
-    gap: 12,
+    gap: 8,
   },
   option: {
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 10,
     borderWidth: 2,
     borderColor: '#ddd',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
   optionText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
   },
   noteCount: {
