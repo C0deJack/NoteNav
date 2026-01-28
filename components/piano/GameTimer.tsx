@@ -13,9 +13,7 @@ export function GameTimer({ elapsedMs }: GameTimerProps) {
 
   const formatted = `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 
-  return (
-    <ThemedText style={styles.timer}>{formatted}</ThemedText>
-  );
+  return <ThemedText style={styles.timer}>{formatted}</ThemedText>;
 }
 
 const styles = StyleSheet.create({

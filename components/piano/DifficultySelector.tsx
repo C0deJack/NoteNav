@@ -1,16 +1,19 @@
-import { View, Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
 import { DIFFICULTIES } from '@/constants/PianoConfig';
-import { Difficulty } from '@/types/piano';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import type { Difficulty } from '@/types/piano';
 
 interface DifficultySelectorProps {
   selected: Difficulty;
   onSelect: (difficulty: Difficulty) => void;
 }
 
-export function DifficultySelector({ selected, onSelect }: DifficultySelectorProps) {
+export function DifficultySelector({
+  selected,
+  onSelect,
+}: DifficultySelectorProps) {
   const tintColor = useThemeColor({}, 'tint');
 
   return (

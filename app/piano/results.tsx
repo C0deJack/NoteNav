@@ -1,14 +1,17 @@
-import { View, StyleSheet, Pressable } from 'react-native';
-import { useLocalSearchParams, router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { useThemeColor } from '@/hooks/useThemeColor';
-import { Difficulty } from '@/types/piano';
 import { DIFFICULTIES } from '@/constants/PianoConfig';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import type { Difficulty } from '@/types/piano';
 
 export default function PianoResultsScreen() {
-  const params = useLocalSearchParams<{ difficulty: string; elapsedMs: string }>();
+  const params = useLocalSearchParams<{
+    difficulty: string;
+    elapsedMs: string;
+  }>();
   const difficulty = parseInt(params.difficulty || '10', 10) as Difficulty;
   const elapsedMs = parseInt(params.elapsedMs || '0', 10);
   const tintColor = useThemeColor({}, 'tint');
@@ -18,7 +21,8 @@ export default function PianoResultsScreen() {
   const remainingSeconds = seconds % 60;
   const formattedTime = `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 
-  const difficultyLabel = DIFFICULTIES.find(d => d.value === difficulty)?.label || 'Unknown';
+  const difficultyLabel =
+    DIFFICULTIES.find((d) => d.value === difficulty)?.label || 'Unknown';
 
   const handlePlayAgain = () => {
     router.replace({
@@ -65,7 +69,9 @@ export default function PianoResultsScreen() {
             style={[styles.button, styles.secondaryButton]}
             onPress={handleBackToMenu}
           >
-            <ThemedText style={styles.secondaryButtonText}>Back to Menu</ThemedText>
+            <ThemedText style={styles.secondaryButtonText}>
+              Back to Menu
+            </ThemedText>
           </Pressable>
         </View>
       </View>

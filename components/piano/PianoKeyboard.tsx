@@ -1,8 +1,7 @@
-import { View, StyleSheet, useWindowDimensions } from 'react-native';
-
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import { BLACK_KEYS, WHITE_KEYS } from '@/constants/PianoConfig';
+import type { KeyFeedback, NoteName } from '@/types/piano';
 import { PianoKey } from './PianoKey';
-import { WHITE_KEYS, BLACK_KEYS } from '@/constants/PianoConfig';
-import { NoteName, KeyFeedback } from '@/types/piano';
 
 interface PianoKeyboardProps {
   onKeyPress: (note: NoteName) => void;
@@ -19,7 +18,11 @@ const BLACK_KEY_OFFSETS: Record<NoteName, number> = {
   'A#': 5,
 } as Record<NoteName, number>;
 
-export function PianoKeyboard({ onKeyPress, keyFeedback, showLabels = false }: PianoKeyboardProps) {
+export function PianoKeyboard({
+  onKeyPress,
+  keyFeedback,
+  showLabels = false,
+}: PianoKeyboardProps) {
   const { width } = useWindowDimensions();
   const keyboardWidth = Math.min(width - 32, 600);
   const whiteKeyWidth = keyboardWidth / 7;
@@ -27,7 +30,12 @@ export function PianoKeyboard({ onKeyPress, keyFeedback, showLabels = false }: P
   const keyboardHeight = Math.min(keyboardWidth * 0.6, 300);
 
   return (
-    <View style={[styles.container, { width: keyboardWidth, height: keyboardHeight }]}>
+    <View
+      style={[
+        styles.container,
+        { width: keyboardWidth, height: keyboardHeight },
+      ]}
+    >
       {/* White keys */}
       <View style={styles.whiteKeysContainer}>
         {WHITE_KEYS.map((note) => (

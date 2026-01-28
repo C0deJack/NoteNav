@@ -1,8 +1,7 @@
-import { useEffect, useRef, useCallback } from 'react';
 import { Audio } from 'expo-av';
-
-import { NoteName } from '@/types/piano';
-import { NOTES, ERROR_SOUND_FILE } from '@/constants/PianoConfig';
+import { useCallback, useEffect, useRef } from 'react';
+import { ERROR_SOUND_FILE, NOTES } from '@/constants/PianoConfig';
+import type { NoteName } from '@/types/piano';
 
 type SoundMap = Record<string, Audio.Sound>;
 
@@ -40,13 +39,17 @@ export function usePianoAudio() {
 
         // Load all note sounds
         for (const [noteName, noteData] of Object.entries(NOTES)) {
-          const { sound } = await Audio.Sound.createAsync(soundFiles[noteData.soundFile]);
+          const { sound } = await Audio.Sound.createAsync(
+            soundFiles[noteData.soundFile],
+          );
           soundsRef.current[noteName] = sound;
         }
 
         // Load error sound
-        const { sound: errorSound } = await Audio.Sound.createAsync(soundFiles[ERROR_SOUND_FILE]);
-        soundsRef.current['error'] = errorSound;
+        const { sound: errorSound } = await Audio.Sound.createAsync(
+          soundFiles[ERROR_SOUND_FILE],
+        );
+        soundsRef.current.error = errorSound;
 
         loadedRef.current = true;
       } catch (error) {
@@ -58,7 +61,7 @@ export function usePianoAudio() {
 
     return () => {
       // Cleanup sounds on unmount
-      Object.values(soundsRef.current).forEach(sound => {
+      Object.values(soundsRef.current).forEach((sound) => {
         sound.unloadAsync();
       });
     };
@@ -77,7 +80,7 @@ export function usePianoAudio() {
   }, []);
 
   const playError = useCallback(async () => {
-    const sound = soundsRef.current['error'];
+    const sound = soundsRef.current.error;
     if (sound) {
       try {
         await sound.setPositionAsync(0);

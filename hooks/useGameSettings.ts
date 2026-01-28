@@ -1,8 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import { GameSettings, Difficulty } from '@/types/piano';
+import { useCallback, useEffect, useState } from 'react';
 import { DEFAULT_DIFFICULTY } from '@/constants/PianoConfig';
+import type { Difficulty, GameSettings } from '@/types/piano';
 
 const SETTINGS_KEY = '@piano_game_settings';
 const DIFFICULTY_KEY = '@piano_game_difficulty';
@@ -13,7 +12,8 @@ const defaultSettings: GameSettings = {
 
 export function useGameSettings() {
   const [settings, setSettings] = useState<GameSettings>(defaultSettings);
-  const [lastDifficulty, setLastDifficulty] = useState<Difficulty>(DEFAULT_DIFFICULTY);
+  const [lastDifficulty, setLastDifficulty] =
+    useState<Difficulty>(DEFAULT_DIFFICULTY);
   const [loaded, setLoaded] = useState(false);
 
   // Load settings on mount
@@ -41,16 +41,19 @@ export function useGameSettings() {
     loadSettings();
   }, []);
 
-  const updateSettings = useCallback(async (newSettings: Partial<GameSettings>) => {
-    const updated = { ...settings, ...newSettings };
-    setSettings(updated);
+  const updateSettings = useCallback(
+    async (newSettings: Partial<GameSettings>) => {
+      const updated = { ...settings, ...newSettings };
+      setSettings(updated);
 
-    try {
-      await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(updated));
-    } catch (error) {
-      console.error('Error saving settings:', error);
-    }
-  }, [settings]);
+      try {
+        await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(updated));
+      } catch (error) {
+        console.error('Error saving settings:', error);
+      }
+    },
+    [settings],
+  );
 
   const saveLastDifficulty = useCallback(async (difficulty: Difficulty) => {
     setLastDifficulty(difficulty);

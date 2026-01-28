@@ -1,29 +1,29 @@
-import { View, StyleSheet } from 'react-native';
-import { useLocalSearchParams, router } from 'expo-router';
-import { useEffect } from 'react';
 import * as Haptics from 'expo-haptics';
-
-import { ThemedView } from '@/components/ThemedView';
-import { PianoKeyboard } from '@/components/piano/PianoKeyboard';
-import { NoteDisplay } from '@/components/piano/NoteDisplay';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useEffect } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { GameTimer } from '@/components/piano/GameTimer';
-import { usePianoGame } from '@/hooks/usePianoGame';
-import { usePianoAudio } from '@/hooks/usePianoAudio';
+import { NoteDisplay } from '@/components/piano/NoteDisplay';
+import { PianoKeyboard } from '@/components/piano/PianoKeyboard';
+import { ThemedView } from '@/components/ThemedView';
 import { useGameSettings } from '@/hooks/useGameSettings';
-import { Difficulty, NoteName } from '@/types/piano';
+import { usePianoAudio } from '@/hooks/usePianoAudio';
+import { usePianoGame } from '@/hooks/usePianoGame';
+import type { Difficulty, NoteName } from '@/types/piano';
 
 export default function PianoGameScreen() {
   const params = useLocalSearchParams<{ difficulty: string }>();
-  const difficulty = (parseInt(params.difficulty || '10', 10) as Difficulty) || 10;
+  const difficulty =
+    (parseInt(params.difficulty || '10', 10) as Difficulty) || 10;
 
   const { state, keyFeedback, startGame, handleKeyPress } = usePianoGame();
   const { playNote, playError } = usePianoAudio();
   const { settings } = useGameSettings();
 
   // Start game on mount
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Only run on mount with initial difficulty
   useEffect(() => {
     startGame(difficulty);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [difficulty]);
 
   // Navigate to results when finished

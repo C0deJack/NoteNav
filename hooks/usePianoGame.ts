@@ -1,7 +1,17 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
-
-import { GameState, Note, NoteName, Difficulty, KeyFeedback } from '@/types/piano';
-import { KEY_ORDER, NOTES, SHARP_DISPLAY_NAMES, DEFAULT_DIFFICULTY } from '@/constants/PianoConfig';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  DEFAULT_DIFFICULTY,
+  KEY_ORDER,
+  NOTES,
+  SHARP_DISPLAY_NAMES,
+} from '@/constants/PianoConfig';
+import type {
+  Difficulty,
+  GameState,
+  KeyFeedback,
+  Note,
+  NoteName,
+} from '@/types/piano';
 
 function generateRandomNotes(count: number): Note[] {
   const notes: Note[] = [];
@@ -48,7 +58,10 @@ const initialState: GameState = {
 export function usePianoGame() {
   const [state, setState] = useState<GameState>(initialState);
   const [keyFeedback, setKeyFeedback] = useState<Record<NoteName, KeyFeedback>>(
-    Object.fromEntries(KEY_ORDER.map(k => [k, 'none'])) as Record<NoteName, KeyFeedback>
+    Object.fromEntries(KEY_ORDER.map((k) => [k, 'none'])) as Record<
+      NoteName,
+      KeyFeedback
+    >,
   );
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const feedbackKeyRef = useRef(0);
@@ -57,7 +70,7 @@ export function usePianoGame() {
   useEffect(() => {
     if (state.status === 'playing' && state.startTime) {
       timerRef.current = setInterval(() => {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           elapsedMs: Date.now() - (prev.startTime || Date.now()),
         }));
@@ -73,69 +86,75 @@ export function usePianoGame() {
   }, [state.status, state.startTime]);
 
   const setDifficulty = useCallback((difficulty: Difficulty) => {
-    setState(prev => ({ ...prev, difficulty }));
+    setState((prev) => ({ ...prev, difficulty }));
   }, []);
 
-  const startGame = useCallback((difficulty?: Difficulty) => {
-    const diff = difficulty ?? state.difficulty;
-    const notes = generateRandomNotes(diff);
+  const startGame = useCallback(
+    (difficulty?: Difficulty) => {
+      const diff = difficulty ?? state.difficulty;
+      const notes = generateRandomNotes(diff);
 
-    setState({
-      status: 'playing',
-      difficulty: diff,
-      currentNoteIndex: 0,
-      notes,
-      startTime: Date.now(),
-      elapsedMs: 0,
-    });
-  }, [state.difficulty]);
+      setState({
+        status: 'playing',
+        difficulty: diff,
+        currentNoteIndex: 0,
+        notes,
+        startTime: Date.now(),
+        elapsedMs: 0,
+      });
+    },
+    [state.difficulty],
+  );
 
-  const handleKeyPress = useCallback((pressedNote: NoteName): boolean => {
-    if (state.status !== 'playing') return false;
+  const handleKeyPress = useCallback(
+    (pressedNote: NoteName): boolean => {
+      if (state.status !== 'playing') return false;
 
-    const currentNote = state.notes[state.currentNoteIndex];
-    const isCorrect = pressedNote === currentNote.name;
+      const currentNote = state.notes[state.currentNoteIndex];
+      const isCorrect = pressedNote === currentNote.name;
 
-    // Set feedback with unique key to trigger animation
-    feedbackKeyRef.current += 1;
-    setKeyFeedback(prev => ({
-      ...prev,
-      [pressedNote]: isCorrect ? 'correct' : 'incorrect',
-    }));
-
-    // Clear feedback after animation
-    setTimeout(() => {
-      setKeyFeedback(prev => ({
+      // Set feedback with unique key to trigger animation
+      feedbackKeyRef.current += 1;
+      setKeyFeedback((prev) => ({
         ...prev,
-        [pressedNote]: 'none',
+        [pressedNote]: isCorrect ? 'correct' : 'incorrect',
       }));
-    }, 300);
 
-    if (isCorrect) {
-      const nextIndex = state.currentNoteIndex + 1;
+      // Clear feedback after animation
+      setTimeout(() => {
+        setKeyFeedback((prev) => ({
+          ...prev,
+          [pressedNote]: 'none',
+        }));
+      }, 300);
 
-      if (nextIndex >= state.notes.length) {
-        // Game complete
-        if (timerRef.current) {
-          clearInterval(timerRef.current);
-          timerRef.current = null;
+      if (isCorrect) {
+        const nextIndex = state.currentNoteIndex + 1;
+
+        if (nextIndex >= state.notes.length) {
+          // Game complete
+          if (timerRef.current) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+          }
+          setState((prev) => ({
+            ...prev,
+            status: 'finished',
+            elapsedMs: Date.now() - (prev.startTime || Date.now()),
+          }));
+        } else {
+          // Move to next note
+          setState((prev) => ({
+            ...prev,
+            currentNoteIndex: nextIndex,
+          }));
         }
-        setState(prev => ({
-          ...prev,
-          status: 'finished',
-          elapsedMs: Date.now() - (prev.startTime || Date.now()),
-        }));
-      } else {
-        // Move to next note
-        setState(prev => ({
-          ...prev,
-          currentNoteIndex: nextIndex,
-        }));
       }
-    }
 
-    return isCorrect;
-  }, [state.status, state.notes, state.currentNoteIndex]);
+      return isCorrect;
+    },
+    [state.status, state.notes, state.currentNoteIndex],
+  );
 
   const resetGame = useCallback(() => {
     if (timerRef.current) {
@@ -144,7 +163,10 @@ export function usePianoGame() {
     }
     setState(initialState);
     setKeyFeedback(
-      Object.fromEntries(KEY_ORDER.map(k => [k, 'none'])) as Record<NoteName, KeyFeedback>
+      Object.fromEntries(KEY_ORDER.map((k) => [k, 'none'])) as Record<
+        NoteName,
+        KeyFeedback
+      >,
     );
   }, []);
 

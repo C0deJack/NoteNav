@@ -1,15 +1,15 @@
+import { useEffect } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
   interpolateColor,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
 } from 'react-native-reanimated';
-import { useEffect } from 'react';
 
 import { ThemedText } from '@/components/ThemedText';
 import { PianoColors } from '@/constants/Colors';
-import { NoteName, KeyFeedback } from '@/types/piano';
+import type { KeyFeedback, NoteName } from '@/types/piano';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -21,7 +21,13 @@ interface PianoKeyProps {
   showLabel?: boolean;
 }
 
-export function PianoKey({ note, isBlack, onPress, feedback, showLabel = false }: PianoKeyProps) {
+export function PianoKey({
+  note,
+  isBlack,
+  onPress,
+  feedback,
+  showLabel = false,
+}: PianoKeyProps) {
   const feedbackValue = useSharedValue(0);
 
   useEffect(() => {
@@ -33,17 +39,18 @@ export function PianoKey({ note, isBlack, onPress, feedback, showLabel = false }
 
   const animatedStyle = useAnimatedStyle(() => {
     const baseColor = isBlack ? PianoColors.blackKey : PianoColors.whiteKey;
-    const feedbackColor = feedback === 'correct'
-      ? PianoColors.correctFeedback
-      : feedback === 'incorrect'
-        ? PianoColors.incorrectFeedback
-        : baseColor;
+    const feedbackColor =
+      feedback === 'correct'
+        ? PianoColors.correctFeedback
+        : feedback === 'incorrect'
+          ? PianoColors.incorrectFeedback
+          : baseColor;
 
     return {
       backgroundColor: interpolateColor(
         feedbackValue.value,
         [0, 1],
-        [baseColor, feedbackColor]
+        [baseColor, feedbackColor],
       ),
     };
   });
@@ -53,10 +60,7 @@ export function PianoKey({ note, isBlack, onPress, feedback, showLabel = false }
   return (
     <AnimatedPressable
       onPressIn={() => onPress(note)}
-      style={[
-        isBlack ? styles.blackKey : styles.whiteKey,
-        animatedStyle,
-      ]}
+      style={[isBlack ? styles.blackKey : styles.whiteKey, animatedStyle]}
     >
       {showLabel && (
         <ThemedText style={[styles.label, isBlack && styles.blackLabel]}>

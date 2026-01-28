@@ -1,4 +1,4 @@
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
 import { PianoColors } from '@/constants/Colors';
@@ -9,7 +9,11 @@ interface NoteDisplayProps {
   totalNotes: number;
 }
 
-export function NoteDisplay({ note, currentIndex, totalNotes }: NoteDisplayProps) {
+export function NoteDisplay({
+  note,
+  currentIndex,
+  totalNotes,
+}: NoteDisplayProps) {
   // Convert sharp notation for display
   const displayNote = note.replace('#', '\u266F');
 

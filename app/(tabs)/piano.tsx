@@ -1,12 +1,11 @@
-import { View, StyleSheet, Pressable } from 'react-native';
 import { router } from 'expo-router';
-
+import { Pressable, StyleSheet, View } from 'react-native';
+import { DifficultySelector } from '@/components/piano/DifficultySelector';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { DifficultySelector } from '@/components/piano/DifficultySelector';
 import { useGameSettings } from '@/hooks/useGameSettings';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { Difficulty } from '@/types/piano';
+import type { Difficulty } from '@/types/piano';
 
 export default function PianoMenuScreen() {
   const { lastDifficulty, saveLastDifficulty, loaded } = useGameSettings();
