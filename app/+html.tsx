@@ -23,6 +23,7 @@ export default function Root({ children }: PropsWithChildren) {
         <ScrollViewStyleReset />
 
         {/* Using raw CSS styles as an escape-hatch to ensure the background color never flickers in dark-mode. */}
+        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: Static CSS injection, not user input */}
         <style dangerouslySetInnerHTML={{ __html: responsiveBackground }} />
         {/* Add any additional <head> elements that you want globally available on web... */}
       </head>

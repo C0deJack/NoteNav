@@ -5,6 +5,7 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { GameTimer } from '@/components/piano/GameTimer';
 import { NoteDisplay } from '@/components/piano/NoteDisplay';
 import { PianoKeyboard } from '@/components/piano/PianoKeyboard';
@@ -14,7 +15,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { useGameSettings } from '@/hooks/useGameSettings';
 import { usePianoAudio } from '@/hooks/usePianoAudio';
 import { usePianoGame } from '@/hooks/usePianoGame';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/hooks/useTheme';
 import type { Difficulty, NoteName } from '@/types/piano';
 
 export default function PianoGameScreen() {
@@ -26,7 +27,7 @@ export default function PianoGameScreen() {
   const { state, keyFeedback, startGame, handleKeyPress } = usePianoGame();
   const { playNote, playError } = usePianoAudio();
   const { settings } = useGameSettings();
-  const colors = useThemeColor();
+  const { colors } = useTheme();
   const [showQuitModal, setShowQuitModal] = useState(false);
 
   const dynamicStyles = useMemo(

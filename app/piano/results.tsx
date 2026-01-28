@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { DIFFICULTIES } from '@/constants/PianoConfig';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/hooks/useTheme';
 import type { Difficulty } from '@/types/piano';
 
 export default function PianoResultsScreen() {
@@ -17,7 +17,7 @@ export default function PianoResultsScreen() {
   }>();
   const difficulty = parseInt(params.difficulty || '10', 10) as Difficulty;
   const elapsedMs = parseInt(params.elapsedMs || '0', 10);
-  const colors = useThemeColor();
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
 
   const seconds = Math.floor(elapsedMs / 1000);
@@ -77,14 +77,18 @@ export default function PianoResultsScreen() {
 
         <View style={styles.buttons}>
           <Pressable
-            style={[styles.button, { backgroundColor: colors.grey_1 }]} 
+            style={[styles.button, { backgroundColor: colors.primary }]}
             onPress={handlePlayAgain}
           >
             <ThemedText style={styles.buttonText}>Play Again</ThemedText>
           </Pressable>
 
           <Pressable
-            style={[styles.button, styles.secondaryButton, { borderColor: colors.grey_2 }]} 
+            style={[
+              styles.button,
+              styles.secondaryButton,
+              { borderColor: colors.border },
+            ]}
             onPress={handleBackToMenu}
           >
             <ThemedText style={styles.secondaryButtonText}>

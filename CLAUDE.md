@@ -31,11 +31,42 @@ File-based routing in `/app`:
 - `_layout.tsx` files define navigation structure
 
 ### Theme System
-- Colors defined in `/constants/Colors.ts` (light/dark palettes with `tint`, `border`, etc.)
-- `useColorScheme()` - detects system preference
-- `useThemeColor()` - retrieves theme-aware colors (e.g., `useThemeColor({}, 'border')`)
-- `ThemedText` and `ThemedView` - base themed components
-- `PianoColors` - static colors for piano keys and feedback
+
+**Single hook pattern:** All theming goes through `useTheme()` from `/hooks/useTheme.ts`.
+
+```typescript
+import { useTheme } from '@/hooks/useTheme';
+
+function MyComponent() {
+  const { colors, isDark, colorScheme } = useTheme();
+
+  return (
+    <View style={{ backgroundColor: colors.background }}>
+      <Text style={{ color: colors.text }}>Hello</Text>
+      <Button color={colors.primary} />
+    </View>
+  );
+}
+```
+
+**Color palette** (defined in `/constants/Colors.ts`):
+- `text` - Primary text color
+- `textMuted` - Secondary/dimmed text
+- `background` - Screen/container backgrounds
+- `surface` - Cards, modals, elevated surfaces
+- `primary` - Brand/accent color for interactive elements
+- `border` - Borders, dividers, separators
+- `icon` - Default icon color
+
+**Themed base components:**
+- `ThemedView` - View with theme background
+- `ThemedText` - Text with theme color, supports `type` prop: `default`, `title`, `subtitle`, `defaultSemiBold`, `link`, `muted`
+
+**Navigation theming:**
+- `/constants/NavigationTheme.ts` - React Navigation themes connected to app colors
+- Root layout uses `ThemeProvider` with custom themes
+
+**Piano colors** (`PianoColors` in Colors.ts) - Static colors for piano keys/feedback, intentionally not theme-dependent for consistent game experience.
 
 ### Piano Game Feature
 
@@ -58,7 +89,7 @@ File-based routing in `/app`:
 Use `@/*` for project root imports:
 ```typescript
 import { ThemedText } from '@/components/ThemedText';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/hooks/useTheme';
 ```
 
 ### Key Directories
@@ -66,7 +97,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 - `/components` - Reusable UI components
 - `/components/piano` - Piano-specific components
 - `/hooks` - Custom React hooks
-- `/constants` - App-wide constants (colors, piano config)
+- `/constants` - App-wide constants (colors, navigation themes, piano config)
 - `/types` - TypeScript type definitions
 - `/assets` - Images, fonts, and sounds
 

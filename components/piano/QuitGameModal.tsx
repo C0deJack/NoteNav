@@ -1,7 +1,7 @@
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/hooks/useTheme';
 
 interface QuitGameModalProps {
   visible: boolean;
@@ -14,7 +14,7 @@ export function QuitGameModal({
   onCancel,
   onConfirm,
 }: QuitGameModalProps) {
-  const colors = useThemeColor();
+  const { colors } = useTheme();
 
   return (
     <Modal
@@ -25,7 +25,7 @@ export function QuitGameModal({
       onRequestClose={onCancel}
     >
       <View style={styles.overlay}>
-        <View style={[styles.modal, { backgroundColor: colors.background }]}> 
+        <View style={[styles.modal, { backgroundColor: colors.background }]}>
           <ThemedText style={styles.title}>Quit Game?</ThemedText>
           <ThemedText style={styles.message}>
             Your progress will be lost.
@@ -33,14 +33,18 @@ export function QuitGameModal({
 
           <View style={styles.buttons}>
             <Pressable
-              style={[styles.button, styles.cancelButton, { borderColor: colors.grey_2 }]}
+              style={[
+                styles.button,
+                styles.cancelButton,
+                { borderColor: colors.border },
+              ]}
               onPress={onCancel}
             >
               <ThemedText style={styles.cancelButtonText}>Cancel</ThemedText>
             </Pressable>
 
             <Pressable
-              style={[styles.button, { backgroundColor: colors.grey_1 }]}
+              style={[styles.button, { backgroundColor: colors.primary }]}
               onPress={onConfirm}
             >
               <ThemedText style={styles.confirmButtonText}>Quit</ThemedText>

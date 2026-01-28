@@ -2,16 +2,17 @@ import { router } from 'expo-router';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { useEffect } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
+
 import { DifficultySelector } from '@/components/piano/DifficultySelector';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useGameSettings } from '@/hooks/useGameSettings';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/hooks/useTheme';
 import type { Difficulty } from '@/types/piano';
 
 export default function PianoMenuScreen() {
   const { lastDifficulty, saveLastDifficulty, loaded } = useGameSettings();
-  const colors = useThemeColor();
+  const { colors } = useTheme();
 
   // Lock to portrait on mount
   useEffect(() => {
@@ -57,7 +58,7 @@ export default function PianoMenuScreen() {
         </View>
 
         <Pressable
-          style={[styles.playButton, { backgroundColor: colors.grey_1 }]}
+          style={[styles.playButton, { backgroundColor: colors.primary }]}
           onPress={handleStartGame}
         >
           <ThemedText style={styles.playButtonText}>Play</ThemedText>
