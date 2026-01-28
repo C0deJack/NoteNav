@@ -15,6 +15,7 @@ export function DifficultySelector({
   onSelect,
 }: DifficultySelectorProps) {
   const tintColor = useThemeColor({}, 'tint');
+  const borderColor = useThemeColor({}, 'border');
 
   return (
     <View style={styles.container}>
@@ -25,7 +26,11 @@ export function DifficultySelector({
             key={value}
             style={[
               styles.option,
-              selected === value && { backgroundColor: tintColor },
+              { borderColor },
+              selected === value && {
+                backgroundColor: tintColor,
+                borderColor: tintColor,
+              },
             ]}
             onPress={() => onSelect(value)}
           >
@@ -69,7 +74,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: '#ddd',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',

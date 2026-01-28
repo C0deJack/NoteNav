@@ -18,6 +18,7 @@ export default function PianoResultsScreen() {
   const difficulty = parseInt(params.difficulty || '10', 10) as Difficulty;
   const elapsedMs = parseInt(params.elapsedMs || '0', 10);
   const tintColor = useThemeColor({}, 'tint');
+  const borderColor = useThemeColor({}, 'border');
   const insets = useSafeAreaInsets();
 
   const seconds = Math.floor(elapsedMs / 1000);
@@ -84,7 +85,7 @@ export default function PianoResultsScreen() {
           </Pressable>
 
           <Pressable
-            style={[styles.button, styles.secondaryButton]}
+            style={[styles.button, styles.secondaryButton, { borderColor }]}
             onPress={handleBackToMenu}
           >
             <ThemedText style={styles.secondaryButtonText}>
@@ -144,7 +145,6 @@ const styles = StyleSheet.create({
   secondaryButton: {
     backgroundColor: 'transparent',
     borderWidth: 2,
-    borderColor: '#ddd',
   },
   secondaryButtonText: {
     fontSize: 16,

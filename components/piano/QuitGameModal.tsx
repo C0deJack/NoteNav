@@ -16,6 +16,7 @@ export function QuitGameModal({
 }: QuitGameModalProps) {
   const tintColor = useThemeColor({}, 'tint');
   const backgroundColor = useThemeColor({}, 'background');
+  const borderColor = useThemeColor({}, 'border');
 
   return (
     <Modal
@@ -34,7 +35,7 @@ export function QuitGameModal({
 
           <View style={styles.buttons}>
             <Pressable
-              style={[styles.button, styles.cancelButton]}
+              style={[styles.button, styles.cancelButton, { borderColor }]}
               onPress={onCancel}
             >
               <ThemedText style={styles.cancelButtonText}>Cancel</ThemedText>
@@ -91,7 +92,6 @@ const styles = StyleSheet.create({
   cancelButton: {
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: '#ccc',
   },
   cancelButtonText: {
     fontSize: 16,
