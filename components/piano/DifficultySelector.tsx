@@ -2,7 +2,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
 import { DIFFICULTIES } from '@/constants/PianoConfig';
-import { useThemeColors } from '@/hooks/useThemeColors';
+import { useThemeColor } from '@/hooks/useThemeColor';
 import type { Difficulty } from '@/types/piano';
 
 interface DifficultySelectorProps {
@@ -14,7 +14,7 @@ export function DifficultySelector({
   selected,
   onSelect,
 }: DifficultySelectorProps) {
-  const colors = useThemeColors();
+  const colors = useThemeColor();
 
   return (
     <View style={styles.container}>
@@ -25,10 +25,10 @@ export function DifficultySelector({
             key={value}
             style={[
               styles.option,
-              { borderColor: colors.border },
+              { borderColor: colors.grey_1 },
               selected === value && {
-                backgroundColor: colors.tint,
-                borderColor: colors.tint,
+                backgroundColor: colors.prime,
+                borderColor: colors.grey_1,
               },
             ]}
             onPress={() => onSelect(value)}

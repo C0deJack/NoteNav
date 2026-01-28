@@ -14,7 +14,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { useGameSettings } from '@/hooks/useGameSettings';
 import { usePianoAudio } from '@/hooks/usePianoAudio';
 import { usePianoGame } from '@/hooks/usePianoGame';
-import { useThemeColors } from '@/hooks/useThemeColors';
+import { useThemeColor } from '@/hooks/useThemeColor';
 import type { Difficulty, NoteName } from '@/types/piano';
 
 export default function PianoGameScreen() {
@@ -26,7 +26,7 @@ export default function PianoGameScreen() {
   const { state, keyFeedback, startGame, handleKeyPress } = usePianoGame();
   const { playNote, playError } = usePianoAudio();
   const { settings } = useGameSettings();
-  const colors = useThemeColors();
+  const colors = useThemeColor();
   const [showQuitModal, setShowQuitModal] = useState(false);
 
   const dynamicStyles = useMemo(

@@ -6,12 +6,12 @@ import { DifficultySelector } from '@/components/piano/DifficultySelector';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useGameSettings } from '@/hooks/useGameSettings';
-import { useThemeColors } from '@/hooks/useThemeColors';
+import { useThemeColor } from '@/hooks/useThemeColor';
 import type { Difficulty } from '@/types/piano';
 
 export default function PianoMenuScreen() {
   const { lastDifficulty, saveLastDifficulty, loaded } = useGameSettings();
-  const colors = useThemeColors();
+  const colors = useThemeColor();
 
   // Lock to portrait on mount
   useEffect(() => {
@@ -57,7 +57,7 @@ export default function PianoMenuScreen() {
         </View>
 
         <Pressable
-          style={[styles.playButton, { backgroundColor: colors.tint }]}
+          style={[styles.playButton, { backgroundColor: colors.grey_1 }]}
           onPress={handleStartGame}
         >
           <ThemedText style={styles.playButtonText}>Play</ThemedText>

@@ -1,7 +1,7 @@
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
-import { useThemeColors } from '@/hooks/useThemeColors';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 interface QuitGameModalProps {
   visible: boolean;
@@ -14,7 +14,7 @@ export function QuitGameModal({
   onCancel,
   onConfirm,
 }: QuitGameModalProps) {
-  const colors = useThemeColors();
+  const colors = useThemeColor();
 
   return (
     <Modal
