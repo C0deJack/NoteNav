@@ -25,7 +25,7 @@ export function DifficultySelector({
             key={value}
             style={[
               styles.option,
-              { borderColor: colors.border },
+              { borderColor: colors.border, backgroundColor: colors.surface },
               selected === value && {
                 backgroundColor: colors.primary,
                 borderColor: colors.primary,

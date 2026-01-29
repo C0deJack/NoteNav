@@ -19,7 +19,7 @@ export function QuitGameModal({
   return (
     <Modal
       visible={visible}
-      transparent
+      transparent={false}
       animationType="fade"
       supportedOrientations={['landscape-left', 'landscape-right']}
       onRequestClose={onCancel}

@@ -64,10 +64,12 @@ export default function PianoGameScreen() {
   }, [state.status, state.difficulty, state.elapsedMs]);
 
   const handleQuitPress = () => {
+    // Pause game and show modal
     setShowQuitModal(true);
   };
 
   const handleQuitCancel = () => {
+    // Resume game
     setShowQuitModal(false);
   };
 

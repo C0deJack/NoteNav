@@ -1,50 +1,53 @@
-/**
- * Unified color palette for light and dark themes.
- *
- * Usage: Access via useTheme() hook which provides colors and colorScheme.
- *
- * Color naming convention:
- * - text: Primary text color
- * - textMuted: Secondary/dimmed text
- * - background: Screen/container backgrounds
- * - surface: Cards, modals, elevated surfaces
- * - primary: Brand/accent color for interactive elements
- * - border: Borders, dividers, separators
- * - icon: Default icon color
- */
+const brandColors = {
+  light: {
+    highlight: '#bf4e30',
+    primary: '#397367',
+    secondary:'#f5f5f5',
+    tertiary: 'rgb(194, 194, 194)',
+    dark:'#1A1A1A',
+    light: '#ffffff'
+  },
+  dark: {
+    highlight: '#bf4e30',
+    primary: '#397367',
+    secondary:'#42858C',
+    dark:'#1A1A1A',
+    light: '#D7D9DA'
+  }
+}
 
 export const Colors = {
   light: {
     text: '#11181C',
     textMuted: '#687076',
-    background: '#fff',
-    surface: '#f5f5f5',
-    primary: '#0a7ea4',
-    border: '#ddd',
+    background: brandColors.light.secondary,
+    surface: brandColors.light.tertiary,
+    primary: brandColors.light.highlight,
+    border: '#4e4e4e',
     icon: '#687076',
     whiteKey: '#FFFFFF',
     blackKey: '#1A1A1A',
-    correctFeedback: '#4CAF50',
-    incorrectFeedback: '#F44336',
-    noteDisplay: '#2196F3',
-    noteDisplayText: '#FFFFFF',
+    correctFeedback: brandColors.light.primary,
+    incorrectFeedback: brandColors.light.highlight,
+    noteDisplay: brandColors.light.highlight,
+    noteDisplayText: brandColors.light.light,
     blackKeyBorder: '#444444',
-    whiteKeyBorder: '#CCCCCC',
+    whiteKeyBorder: '#292929',
   },
   dark: {
     text: '#d7d9da',
     textMuted: '#9BA1A6',
-    background: '#292a2b',
+    background: brandColors.dark.dark,
     surface: '#1f2123',
-    primary: '#317993',
+    primary: brandColors.dark.highlight,
     border: '#3a3a3a',
     icon: '#9BA1A6',
     whiteKey: '#999999',
     blackKey: '#1A1A1A',
-    correctFeedback: '#4CAF50',
-    incorrectFeedback: '#F44336',
-    noteDisplay: '#4da6c7',
-    noteDisplayText: '#FFFFFF',
+    correctFeedback: brandColors.dark.primary,
+    incorrectFeedback: brandColors.dark.highlight,
+    noteDisplay: brandColors.dark.highlight,
+    noteDisplayText: brandColors.dark.light,
     blackKeyBorder: '#444444',
     whiteKeyBorder: '#CCCCCC',
   },

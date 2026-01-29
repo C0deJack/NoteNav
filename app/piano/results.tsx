@@ -78,7 +78,7 @@ export default function PianoResultsScreen() {
             style={[
               styles.button,
               styles.secondaryButton,
-              { borderColor: colors.border },
+              { borderColor: colors.border, backgroundColor: colors.surface },
             ]}
             onPress={handleBackToMenu}
           >
