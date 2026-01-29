@@ -7,7 +7,8 @@ const SETTINGS_KEY = '@piano_game_settings';
 const DIFFICULTY_KEY = '@piano_game_difficulty';
 
 const defaultSettings: GameSettings = {
-  showNoteLabels: false,
+  showWhiteKeyLabels: false,
+  showBlackKeyLabels: false,
 };
 
 export function useGameSettings() {
@@ -26,7 +27,7 @@ export function useGameSettings() {
         ]);
 
         if (storedSettings) {
-          setSettings(JSON.parse(storedSettings));
+          setSettings({ ...defaultSettings, ...JSON.parse(storedSettings) });
         }
         if (storedDifficulty) {
           setLastDifficulty(JSON.parse(storedDifficulty));

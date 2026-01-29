@@ -1,12 +1,11 @@
 import { useEffect } from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { ThemedText } from '@/components/ThemedText';
 import { useTheme } from '@/hooks/useTheme';
 import type { KeyFeedback, NoteName } from '@/types/piano';
 
@@ -58,50 +57,56 @@ export function PianoKey({
   const displayNote = note.replace('#', '\u266F'); // Use sharp symbol
 
   return (
-    <AnimatedPressable
-      onPressIn={() => onPress(note)}
-      style={[
-        isBlack ? styles.blackKey : styles.whiteKey,
-        animatedStyle,
-        { backgroundColor: isBlack ? colors.blackKey : colors.whiteKey },
-        {
-          borderColor: isBlack ? colors.blackKeyBorder : colors.whiteKeyBorder,
-        },
-      ]}
-    >
+    <View style={isBlack ? styles.blackKey : styles.whiteKey}>
+      <AnimatedPressable
+        onPressIn={() => onPress(note)}
+        style={[
+          styles.keyPressable,
+          animatedStyle,
+          { backgroundColor: isBlack ? colors.blackKey : colors.whiteKey },
+          {
+            borderColor: isBlack ? colors.blackKeyBorder : colors.whiteKeyBorder,
+          },
+        ]}
+      />
       {showLabel && (
-        <ThemedText style={[styles.label, isBlack && styles.blackLabel]}>
-          {displayNote}
-        </ThemedText>
+        <View style={styles.labelContainer} pointerEvents="none">
+          <Text style={[styles.label, isBlack && styles.blackLabel]}>
+            {displayNote}
+          </Text>
+        </View>
       )}
-    </AnimatedPressable>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   whiteKey: {
     flex: 1,
-    height: '100%',
-    borderWidth: 1,
-    borderRadius: 4,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    paddingBottom: 10,
+    height: '80%',
   },
   blackKey: {
-    position: 'absolute',
-    width: '60%',
-    height: '60%',
+    width: '100%',
+    height: '80%',
+  },
+  keyPressable: {
+    flex: 1,
+    borderWidth: 1,
     borderRadius: 4,
-    zIndex: 1,
-    justifyContent: 'flex-end',
+  },
+  labelContainer: {
+    position: 'absolute',
+    bottom: 40,
+    left: 0,
+    right: 0,
     alignItems: 'center',
-    paddingBottom: 8,
   },
   label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#000',
+    paddingHorizontal: 4,
+    paddingVertical: 2,
   },
   blackLabel: {
     color: '#fff',

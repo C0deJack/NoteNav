@@ -45,7 +45,7 @@ export default function PianoGameScreen() {
         paddingRight: insets.right + 16,
       },
       keyboardArea: {
-        paddingBottom: insets.bottom + 16,
+        paddingBottom: insets.bottom + 20,
       },
     }),
     [insets],
@@ -128,7 +128,8 @@ export default function PianoGameScreen() {
         <PianoKeyboard
           onKeyPress={onKeyPress}
           keyFeedback={keyFeedback}
-          showLabels={settings.showNoteLabels}
+          showWhiteKeyLabels={settings.showWhiteKeyLabels}
+          showBlackKeyLabels={settings.showBlackKeyLabels}
         />
       </View>
 
@@ -164,9 +165,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    minHeight: 120,
+    minHeight: 80,
   },
   keyboardArea: {
+    paddingBlock: 12,
     alignItems: 'center',
   },
 });

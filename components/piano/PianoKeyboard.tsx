@@ -6,7 +6,8 @@ import { PianoKey } from './PianoKey';
 interface PianoKeyboardProps {
   onKeyPress: (note: NoteName) => void;
   keyFeedback: Record<NoteName, KeyFeedback>;
-  showLabels?: boolean;
+  showWhiteKeyLabels?: boolean;
+  showBlackKeyLabels?: boolean;
 }
 
 // Black keys positioned relative to white keys
@@ -21,7 +22,8 @@ const BLACK_KEY_OFFSETS: Record<NoteName, number> = {
 export function PianoKeyboard({
   onKeyPress,
   keyFeedback,
-  showLabels = false,
+  showWhiteKeyLabels = false,
+  showBlackKeyLabels = false,
 }: PianoKeyboardProps) {
   const { width } = useWindowDimensions();
   const keyboardWidth = Math.min(width - 32, 600);
@@ -45,7 +47,7 @@ export function PianoKeyboard({
             isBlack={false}
             onPress={onKeyPress}
             feedback={keyFeedback[note]}
-            showLabel={showLabels}
+            showLabel={showWhiteKeyLabels}
           />
         ))}
       </View>
@@ -73,7 +75,7 @@ export function PianoKeyboard({
                 isBlack={true}
                 onPress={onKeyPress}
                 feedback={keyFeedback[note]}
-                showLabel={showLabels}
+                showLabel={showBlackKeyLabels}
               />
             </View>
           );
