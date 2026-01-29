@@ -176,6 +176,31 @@ export function usePianoGame() {
     [state.status, state.notes, state.currentNoteIndex],
   );
 
+  const pauseGame = useCallback(() => {
+    if (state.status !== 'playing') return;
+
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+
+    setState((prev) => ({
+      ...prev,
+      status: 'paused',
+      elapsedMs: Date.now() - (prev.startTime || Date.now()),
+    }));
+  }, [state.status]);
+
+  const resumeGame = useCallback(() => {
+    if (state.status !== 'paused') return;
+
+    setState((prev) => ({
+      ...prev,
+      status: 'playing',
+      startTime: Date.now() - prev.elapsedMs,
+    }));
+  }, [state.status]);
+
   const resetGame = useCallback(() => {
     if (timerRef.current) {
       clearInterval(timerRef.current);
@@ -196,6 +221,8 @@ export function usePianoGame() {
     setDifficulty,
     startGame,
     handleKeyPress,
+    pauseGame,
+    resumeGame,
     resetGame,
   };
 }

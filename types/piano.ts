@@ -22,7 +22,7 @@ export interface Note {
 }
 
 export interface GameState {
-  status: 'idle' | 'playing' | 'finished';
+  status: 'idle' | 'playing' | 'paused' | 'finished';
   difficulty: Difficulty;
   currentNoteIndex: number;
   notes: Note[];
@@ -31,7 +31,7 @@ export interface GameState {
   accuracy: number;
   correctCount: number;
   incorrectCount: number;
-};
+}
 
 export interface GameSettings {
   showNoteLabels: boolean;

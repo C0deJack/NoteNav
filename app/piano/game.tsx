@@ -24,7 +24,14 @@ export default function PianoGameScreen() {
     (parseInt(params.difficulty || '10', 10) as Difficulty) || 10;
   const insets = useSafeAreaInsets();
 
-  const { state, keyFeedback, startGame, handleKeyPress } = usePianoGame();
+  const {
+    state,
+    keyFeedback,
+    startGame,
+    handleKeyPress,
+    pauseGame,
+    resumeGame,
+  } = usePianoGame();
   const { playNote, playError } = usePianoAudio();
   const { settings } = useGameSettings();
   const { colors } = useTheme();
@@ -64,13 +71,13 @@ export default function PianoGameScreen() {
     }
   }, [state.status, state.difficulty, state.elapsedMs, state.accuracy]);
   const handleQuitPress = () => {
-    // Pause game and show modal
+    pauseGame();
     setShowQuitModal(true);
   };
 
   const handleQuitCancel = () => {
-    // Resume game
     setShowQuitModal(false);
+    resumeGame();
   };
 
   const handleQuitConfirm = () => {
