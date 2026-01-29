@@ -1,6 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import * as ScreenOrientation from 'expo-screen-orientation';
-import { useEffect } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -28,23 +27,15 @@ export default function PianoResultsScreen() {
   const difficultyLabel =
     DIFFICULTIES.find((d) => d.value === difficulty)?.label || 'Unknown';
 
-  // Keep landscape orientation, unlock when leaving
-  useEffect(() => {
-    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
-
-    return () => {
-      ScreenOrientation.unlockAsync();
-    };
-  }, []);
-
   const handlePlayAgain = () => {
     router.replace({
-      pathname: '/index/game' as const,
+      pathname: '/piano/game' as const,
       params: { difficulty },
     } as any);
   };
 
   const handleBackToMenu = () => {
+    ScreenOrientation.unlockAsync();
     router.replace('/' as any);
   };
 

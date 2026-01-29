@@ -44,15 +44,6 @@ export default function PianoGameScreen() {
     [insets],
   );
 
-  // Lock to landscape on mount
-  useEffect(() => {
-    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
-
-    return () => {
-      ScreenOrientation.unlockAsync();
-    };
-  }, []);
-
   // Start game on mount
   // biome-ignore lint/correctness/useExhaustiveDependencies: Only run on mount with initial difficulty
   useEffect(() => {
@@ -82,7 +73,8 @@ export default function PianoGameScreen() {
 
   const handleQuitConfirm = () => {
     setShowQuitModal(false);
-    router.replace('/(tabs)/index' as any);
+    ScreenOrientation.unlockAsync();
+    router.replace('/' as any);
   };
 
   const onKeyPress = async (note: NoteName) => {
