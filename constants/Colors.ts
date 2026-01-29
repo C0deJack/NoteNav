@@ -33,9 +33,10 @@ export const Colors = {
     noteDisplayText: brandColors.light.light,
     blackKeyBorder: '#444444',
     whiteKeyBorder: '#292929',
+    staffBackground: '#FFFFFF',
     staffLine: '#11181C',
-    staffNote: '#11181C',
-    staffAccidental: '#11181C',
+    staffNote: brandColors.light.highlight,
+    staffAccidental: brandColors.light.highlight,
   },
   dark: {
     text: '#d7d9da',
@@ -53,9 +54,10 @@ export const Colors = {
     noteDisplayText: brandColors.dark.light,
     blackKeyBorder: '#444444',
     whiteKeyBorder: '#CCCCCC',
+    staffBackground: '#1A1A1A',
     staffLine: '#d7d9da',
-    staffNote: '#d7d9da',
-    staffAccidental: '#d7d9da',
+    staffNote: brandColors.dark.highlight,
+    staffAccidental: brandColors.dark.highlight,
   },
 } as const;
 
