@@ -7,8 +7,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { ThemedText } from '@/components/ThemedText';
-import type { KeyFeedback, NoteName } from '@/types/piano';
 import { useTheme } from '@/hooks/useTheme';
+import type { KeyFeedback, NoteName } from '@/types/piano';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 

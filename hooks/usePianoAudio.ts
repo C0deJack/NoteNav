@@ -1,95 +1,78 @@
-import { Audio } from 'expo-av';
-import { useCallback, useEffect, useRef } from 'react';
+import { type AudioPlayer, createAudioPlayer } from 'expo-audio';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
 import { ERROR_SOUND_FILE, NOTES } from '@/constants/PianoConfig';
 import type { NoteName } from '@/types/piano';
 
-type SoundMap = Record<string, Audio.Sound>;
+type PlayerMap = Record<string, AudioPlayer>;
+
+// Sound file mapping (static, defined once)
+const SOUND_FILES: Record<string, number> = {
+  'c1.wav': require('@/assets/sounds/c1.wav'),
+  'c1s.wav': require('@/assets/sounds/c1s.wav'),
+  'd1.wav': require('@/assets/sounds/d1.wav'),
+  'd1s.wav': require('@/assets/sounds/d1s.wav'),
+  'e1.wav': require('@/assets/sounds/e1.wav'),
+  'f1.wav': require('@/assets/sounds/f1.wav'),
+  'f1s.wav': require('@/assets/sounds/f1s.wav'),
+  'g1.wav': require('@/assets/sounds/g1.wav'),
+  'g1s.wav': require('@/assets/sounds/g1s.wav'),
+  'a1.wav': require('@/assets/sounds/a1.wav'),
+  'a1s.wav': require('@/assets/sounds/a1s.wav'),
+  'b1.wav': require('@/assets/sounds/b1.wav'),
+  'kick.wav': require('@/assets/sounds/kick.wav'),
+};
 
 export function usePianoAudio() {
-  const soundsRef = useRef<SoundMap>({});
-  const loadedRef = useRef(false);
+  const playersRef = useRef<PlayerMap>({});
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    async function loadSounds() {
-      if (loadedRef.current) return;
-
-      try {
-        // Set audio mode
-        await Audio.setAudioModeAsync({
-          playsInSilentModeIOS: true,
-          staysActiveInBackground: false,
-        });
-
-        // Sound file mapping
-        const soundFiles: Record<string, any> = {
-          'c1.wav': require('@/assets/sounds/c1.wav'),
-          'c1s.wav': require('@/assets/sounds/c1s.wav'),
-          'd1.wav': require('@/assets/sounds/d1.wav'),
-          'd1s.wav': require('@/assets/sounds/d1s.wav'),
-          'e1.wav': require('@/assets/sounds/e1.wav'),
-          'f1.wav': require('@/assets/sounds/f1.wav'),
-          'f1s.wav': require('@/assets/sounds/f1s.wav'),
-          'g1.wav': require('@/assets/sounds/g1.wav'),
-          'g1s.wav': require('@/assets/sounds/g1s.wav'),
-          'a1.wav': require('@/assets/sounds/a1.wav'),
-          'a1s.wav': require('@/assets/sounds/a1s.wav'),
-          'b1.wav': require('@/assets/sounds/b1.wav'),
-          'kick.wav': require('@/assets/sounds/kick.wav'),
-        };
-
-        // Load all note sounds
-        for (const [noteName, noteData] of Object.entries(NOTES)) {
-          const { sound } = await Audio.Sound.createAsync(
-            soundFiles[noteData.soundFile],
-          );
-          soundsRef.current[noteName] = sound;
-        }
-
-        // Load error sound
-        const { sound: errorSound } = await Audio.Sound.createAsync(
-          soundFiles[ERROR_SOUND_FILE],
-        );
-        soundsRef.current.error = errorSound;
-
-        loadedRef.current = true;
-      } catch (error) {
-        console.error('Error loading sounds:', error);
+    // Create players for all notes
+    for (const [noteName, noteData] of Object.entries(NOTES)) {
+      const source = SOUND_FILES[noteData.soundFile];
+      if (source) {
+        playersRef.current[noteName] = createAudioPlayer(source);
       }
     }
 
-    loadSounds();
+    // Create error sound player
+    const errorSource = SOUND_FILES[ERROR_SOUND_FILE];
+    if (errorSource) {
+      playersRef.current.error = createAudioPlayer(errorSource);
+    }
 
+    setLoaded(true);
+
+    // Cleanup on unmount
     return () => {
-      // Cleanup sounds on unmount
-      Object.values(soundsRef.current).forEach((sound) => {
-        sound.unloadAsync();
-      });
+      for (const player of Object.values(playersRef.current)) {
+        player.remove();
+      }
+      playersRef.current = {};
     };
   }, []);
 
-  const playNote = useCallback(async (note: NoteName) => {
-    const sound = soundsRef.current[note];
-    if (sound) {
-      try {
-        await sound.setPositionAsync(0);
-        await sound.playAsync();
-      } catch (error) {
-        console.error('Error playing note:', error);
+  const playNote = useCallback(
+    (note: NoteName) => {
+      if (!loaded) return;
+      const player = playersRef.current[note];
+      if (player) {
+        player.seekTo(0);
+        player.play();
       }
-    }
-  }, []);
+    },
+    [loaded],
+  );
 
-  const playError = useCallback(async () => {
-    const sound = soundsRef.current.error;
-    if (sound) {
-      try {
-        await sound.setPositionAsync(0);
-        await sound.playAsync();
-      } catch (error) {
-        console.error('Error playing error sound:', error);
-      }
+  const playError = useCallback(() => {
+    if (!loaded) return;
+    const player = playersRef.current.error;
+    if (player) {
+      player.seekTo(0);
+      player.play();
     }
-  }, []);
+  }, [loaded]);
 
-  return { playNote, playError };
+  return { playNote, playError, loaded };
 }

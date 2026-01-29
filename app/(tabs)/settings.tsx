@@ -1,8 +1,8 @@
 import { Image, Platform, StyleSheet } from 'react-native';
+import { Collapsible } from '@/components/Collapsible';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { Collapsible } from '@/components/Collapsible';
 
 export default function Settings() {
   return (
@@ -22,7 +22,9 @@ export default function Settings() {
         <ThemedText type="subtitle">Step 1: Try it</ThemedText>
         <ThemedText>
           Edit{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/settings.tsx</ThemedText>{' '}
+          <ThemedText type="defaultSemiBold">
+            app/(tabs)/settings.tsx
+          </ThemedText>{' '}
           to see changes. Press{' '}
           <ThemedText type="defaultSemiBold">
             {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
@@ -42,7 +44,9 @@ export default function Settings() {
           <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
           <ThemedText>
             When you're ready, run{' '}
-            <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText>{' '}
+            <ThemedText type="defaultSemiBold">
+              npm run reset-project
+            </ThemedText>{' '}
             to get a fresh <ThemedText type="defaultSemiBold">app</ThemedText>{' '}
             directory. This will move the current{' '}
             <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}

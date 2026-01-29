@@ -75,7 +75,7 @@ function MyComponent() {
 **Key files:**
 - `/components/piano/` - Piano UI components (PianoKeyboard, PianoKey, NoteDisplay, GameTimer, DifficultySelector, QuitGameModal)
 - `/hooks/usePianoGame.ts` - Game state management
-- `/hooks/usePianoAudio.ts` - Audio playback with expo-av
+- `/hooks/usePianoAudio.ts` - Audio playback with expo-audio
 - `/hooks/useGameSettings.ts` - Persisted settings (AsyncStorage)
 - `/constants/PianoConfig.ts` - Note mappings, difficulties
 - `/types/piano.ts` - TypeScript interfaces
@@ -83,7 +83,7 @@ function MyComponent() {
 
 **Screen orientation:** Game and results screens lock to landscape using `expo-screen-orientation`. Must add `supportedOrientations` prop to any Modal components used in landscape screens.
 
-**Audio:** Pre-loaded on mount via expo-av. 12 note sounds + error sound (kick.wav).
+**Audio:** Pre-loaded on mount via expo-audio using `createAudioPlayer`. 12 note sounds + error sound (kick.wav).
 
 ### Import Aliases
 Use `@/*` for project root imports:

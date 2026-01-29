@@ -82,7 +82,7 @@ export default function PianoGameScreen() {
 
   const handleQuitConfirm = () => {
     setShowQuitModal(false);
-    router.replace('/(tabs)/piano' as any);
+    router.replace('/(tabs)/index' as any);
   };
 
   const onKeyPress = async (note: NoteName) => {

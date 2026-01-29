@@ -12,8 +12,12 @@ export function NoteDisplay({ note }: NoteDisplayProps) {
   const displayNote = note.replace('#', '\u266F');
 
   return (
-    <View style={[styles.noteContainer, { backgroundColor: colors.noteDisplay }]}>
-      <ThemedText style={[styles.note, { color: colors.noteDisplayText }]}>{displayNote}</ThemedText>
+    <View
+      style={[styles.noteContainer, { backgroundColor: colors.noteDisplay }]}
+    >
+      <ThemedText style={[styles.note, { color: colors.noteDisplayText }]}>
+        {displayNote}
+      </ThemedText>
     </View>
   );
 }

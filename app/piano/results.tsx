@@ -39,13 +39,13 @@ export default function PianoResultsScreen() {
 
   const handlePlayAgain = () => {
     router.replace({
-      pathname: '/piano/game' as const,
+      pathname: '/index/game' as const,
       params: { difficulty },
     } as any);
   };
 
   const handleBackToMenu = () => {
-    router.replace('/(tabs)/piano' as any);
+    router.replace('/' as any);
   };
 
   return (
@@ -112,6 +112,7 @@ const styles = StyleSheet.create({
     gap: 32,
   },
   title: {
+    paddingBlockStart: 10,
     fontSize: 36,
     fontWeight: 'bold',
     textAlign: 'center',
