@@ -53,6 +53,9 @@ const initialState: GameState = {
   notes: [],
   startTime: null,
   elapsedMs: 0,
+  accuracy: 0,
+  correctCount: 0,
+  incorrectCount: 0,
 };
 
 export function usePianoGame() {
@@ -101,6 +104,9 @@ export function usePianoGame() {
         notes,
         startTime: Date.now(),
         elapsedMs: 0,
+        accuracy: 0,
+        correctCount: 0,
+        incorrectCount: 0,
       });
     },
     [state.difficulty],
@@ -137,18 +143,32 @@ export function usePianoGame() {
             clearInterval(timerRef.current);
             timerRef.current = null;
           }
-          setState((prev) => ({
-            ...prev,
-            status: 'finished',
-            elapsedMs: Date.now() - (prev.startTime || Date.now()),
-          }));
+          setState((prev) => {
+            const total = prev.correctCount + prev.incorrectCount + 1; // +1 for this last correct
+            const correct = prev.correctCount + 1;
+            const accuracy = total > 0 ? correct / total : 0;
+            return {
+              ...prev,
+              status: 'finished',
+              elapsedMs: Date.now() - (prev.startTime || Date.now()),
+              correctCount: correct,
+              accuracy,
+            };
+          });
         } else {
-          // Move to next note
+          // Move to next note and increment correctCount
           setState((prev) => ({
             ...prev,
             currentNoteIndex: nextIndex,
+            correctCount: prev.correctCount + 1,
           }));
         }
+      } else {
+        // Increment incorrectCount
+        setState((prev) => ({
+          ...prev,
+          incorrectCount: prev.incorrectCount + 1,
+        }));
       }
 
       return isCorrect;

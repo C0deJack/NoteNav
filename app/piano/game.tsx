@@ -58,11 +58,11 @@ export default function PianoGameScreen() {
         params: {
           difficulty: state.difficulty,
           elapsedMs: state.elapsedMs,
+          accuracy: 100 * state.accuracy,
         },
       } as any);
     }
-  }, [state.status, state.difficulty, state.elapsedMs]);
-
+  }, [state.status, state.difficulty, state.elapsedMs, state.accuracy]);
   const handleQuitPress = () => {
     // Pause game and show modal
     setShowQuitModal(true);

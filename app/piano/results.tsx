@@ -13,9 +13,11 @@ export default function PianoResultsScreen() {
   const params = useLocalSearchParams<{
     difficulty: string;
     elapsedMs: string;
+    accuracy: string;
   }>();
   const difficulty = parseInt(params.difficulty || '10', 10) as Difficulty;
   const elapsedMs = parseInt(params.elapsedMs || '0', 10);
+  const accuracy = parseInt(params.accuracy || '0', 10);
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
 
@@ -51,18 +53,18 @@ export default function PianoResultsScreen() {
 
         <View style={styles.statsContainer}>
           <View style={styles.stat}>
+            <ThemedText style={styles.statLabel}>Accuracy</ThemedText>
+            <ThemedText style={styles.statValue}>{accuracy}%</ThemedText>
+          </View>
+
+          <View style={styles.stat}>
             <ThemedText style={styles.statLabel}>Time</ThemedText>
             <ThemedText style={styles.statValue}>{formattedTime}</ThemedText>
           </View>
 
           <View style={styles.stat}>
-            <ThemedText style={styles.statLabel}>Notes</ThemedText>
-            <ThemedText style={styles.statValue}>{difficulty}</ThemedText>
-          </View>
-
-          <View style={styles.stat}>
             <ThemedText style={styles.statLabel}>Difficulty</ThemedText>
-            <ThemedText style={styles.statValue}>{difficultyLabel}</ThemedText>
+            <ThemedText style={[styles.statValue, styles.difficulty]}>{`${difficultyLabel} (${difficulty} notes)`}</ThemedText>
           </View>
         </View>
 
@@ -100,6 +102,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 24,
     justifyContent: 'center',
+    alignItems: 'center',
     gap: 32,
   },
   title: {
@@ -111,6 +114,7 @@ const styles = StyleSheet.create({
   statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
+    width: '60%',
   },
   stat: {
     alignItems: 'center',
@@ -121,7 +125,8 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   statValue: {
-    fontSize: 24,
+    paddingBlockStart: 18,
+    fontSize: 40,
     fontWeight: '600',
   },
   buttons: {
@@ -129,6 +134,7 @@ const styles = StyleSheet.create({
   },
   button: {
     paddingVertical: 14,
+    paddingHorizontal: 32,
     borderRadius: 12,
     alignItems: 'center',
   },
@@ -144,5 +150,9 @@ const styles = StyleSheet.create({
   secondaryButtonText: {
     fontSize: 16,
     fontWeight: '600',
+  },
+  difficulty: {
+    paddingBlockStart: 7,
+    fontSize: 20,
   },
 });

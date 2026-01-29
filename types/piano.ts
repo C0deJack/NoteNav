@@ -28,7 +28,10 @@ export interface GameState {
   notes: Note[];
   startTime: number | null;
   elapsedMs: number;
-}
+  accuracy: number;
+  correctCount: number;
+  incorrectCount: number;
+};
 
 export interface GameSettings {
   showNoteLabels: boolean;
