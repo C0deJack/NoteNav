@@ -65,7 +65,9 @@ export function PianoKey({
           animatedStyle,
           { backgroundColor: isBlack ? colors.blackKey : colors.whiteKey },
           {
-            borderColor: isBlack ? colors.blackKeyBorder : colors.whiteKeyBorder,
+            borderColor: isBlack
+              ? colors.blackKeyBorder
+              : colors.whiteKeyBorder,
           },
         ]}
       />

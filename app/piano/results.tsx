@@ -64,7 +64,9 @@ export default function PianoResultsScreen() {
 
           <View style={styles.stat}>
             <ThemedText style={styles.statLabel}>Difficulty</ThemedText>
-            <ThemedText style={[styles.statValue, styles.difficulty]}>{`${difficultyLabel} (${difficulty} notes)`}</ThemedText>
+            <ThemedText
+              style={[styles.statValue, styles.difficulty]}
+            >{`${difficultyLabel} (${difficulty} notes)`}</ThemedText>
           </View>
         </View>
 

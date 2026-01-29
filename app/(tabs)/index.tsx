@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, View } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { DifficultySelector } from '@/components/piano/DifficultySelector';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -12,13 +12,12 @@ export default function PianoMenuScreen() {
   const { lastDifficulty, saveLastDifficulty, loaded } = useGameSettings();
   const { colors } = useTheme();
 
-
   const handleDifficultySelect = (difficulty: Difficulty) => {
     saveLastDifficulty(difficulty);
   };
 
   const handleStartGame = () => {
-     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
     router.push({
       pathname: '/piano/game' as const,
       params: { difficulty: lastDifficulty },

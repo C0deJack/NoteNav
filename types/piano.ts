@@ -33,9 +33,12 @@ export interface GameState {
   incorrectCount: number;
 }
 
+export type NoteDisplayMode = 'text' | 'staff';
+
 export interface GameSettings {
   showWhiteKeyLabels: boolean;
   showBlackKeyLabels: boolean;
+  noteDisplayMode: NoteDisplayMode;
 }
 
 export type KeyFeedback = 'none' | 'correct' | 'incorrect';

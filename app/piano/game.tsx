@@ -121,7 +121,10 @@ export default function PianoGameScreen() {
       </View>
 
       <View style={styles.noteArea}>
-        <NoteDisplay note={currentNote.displayName} />
+        <NoteDisplay
+          note={currentNote.displayName}
+          displayMode={settings.noteDisplayMode}
+        />
       </View>
 
       <View style={[styles.keyboardArea, dynamicStyles.keyboardArea]}>

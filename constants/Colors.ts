@@ -2,19 +2,19 @@ const brandColors = {
   light: {
     highlight: '#bf4e30',
     primary: '#397367',
-    secondary:'#f5f5f5',
+    secondary: '#f5f5f5',
     tertiary: 'rgb(194, 194, 194)',
-    dark:'#1A1A1A',
-    light: '#ffffff'
+    dark: '#1A1A1A',
+    light: '#ffffff',
   },
   dark: {
     highlight: '#bf4e30',
     primary: '#397367',
-    secondary:'#42858C',
-    dark:'#1A1A1A',
-    light: '#D7D9DA'
-  }
-}
+    secondary: '#42858C',
+    dark: '#1A1A1A',
+    light: '#D7D9DA',
+  },
+};
 
 export const Colors = {
   light: {
@@ -33,6 +33,9 @@ export const Colors = {
     noteDisplayText: brandColors.light.light,
     blackKeyBorder: '#444444',
     whiteKeyBorder: '#292929',
+    staffLine: '#11181C',
+    staffNote: '#11181C',
+    staffAccidental: '#11181C',
   },
   dark: {
     text: '#d7d9da',
@@ -50,6 +53,9 @@ export const Colors = {
     noteDisplayText: brandColors.dark.light,
     blackKeyBorder: '#444444',
     whiteKeyBorder: '#CCCCCC',
+    staffLine: '#d7d9da',
+    staffNote: '#d7d9da',
+    staffAccidental: '#d7d9da',
   },
 } as const;
 

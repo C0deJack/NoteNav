@@ -18,6 +18,12 @@ export default function Settings() {
     updateSettings({ showBlackKeyLabels: !settings.showBlackKeyLabels });
   };
 
+  const handleToggleNoteDisplayMode = () => {
+    updateSettings({
+      noteDisplayMode: settings.noteDisplayMode === 'text' ? 'staff' : 'text',
+    });
+  };
+
   return (
     <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
       <ThemedText type="title" style={styles.title}>
@@ -64,6 +70,32 @@ export default function Settings() {
           <Switch
             value={settings.showBlackKeyLabels}
             onValueChange={handleToggleBlackKeyLabels}
+            trackColor={{ false: colors.border, true: colors.primary }}
+            thumbColor={colors.surface}
+          />
+        </Pressable>
+      </View>
+
+      <View style={styles.section}>
+        <ThemedText type="subtitle" style={styles.sectionTitle}>
+          Note Display
+        </ThemedText>
+
+        <Pressable
+          style={[styles.settingRow, { borderColor: colors.border }]}
+          onPress={handleToggleNoteDisplayMode}
+        >
+          <View style={styles.settingInfo}>
+            <ThemedText style={styles.settingLabel}>
+              Show as Sheet Music
+            </ThemedText>
+            <ThemedText type="muted" style={styles.settingDescription}>
+              Display notes on a treble clef staff instead of text
+            </ThemedText>
+          </View>
+          <Switch
+            value={settings.noteDisplayMode === 'staff'}
+            onValueChange={handleToggleNoteDisplayMode}
             trackColor={{ false: colors.border, true: colors.primary }}
             thumbColor={colors.surface}
           />

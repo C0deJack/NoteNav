@@ -9,6 +9,7 @@ const DIFFICULTY_KEY = '@piano_game_difficulty';
 const defaultSettings: GameSettings = {
   showWhiteKeyLabels: false,
   showBlackKeyLabels: false,
+  noteDisplayMode: 'text',
 };
 
 export function useGameSettings() {
