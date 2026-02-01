@@ -30,8 +30,8 @@ export function PianoKeyboard({
   const keyboardWidth = Math.min(width - 32, 600);
   const whiteKeyWidth = keyboardWidth / 7;
   const blackKeyWidth = whiteKeyWidth * 0.6;
-  const maxKeyboardHeight = isLandscape ? 230 : 300;
-  const keyboardHeight = Math.min(keyboardWidth * 0.4, maxKeyboardHeight);
+  const maxKeyboardHeight = isLandscape ? 180 : 300;
+  const keyboardHeight = Math.min(keyboardWidth * 0.35, maxKeyboardHeight);
 
   return (
     <View
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   whiteKeysContainer: {
     flexDirection: 'row',
     height: '100%',
-    gap: 2,
+    gap: 5,
   },
   blackKeysContainer: {
     position: 'absolute',

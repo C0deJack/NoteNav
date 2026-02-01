@@ -66,12 +66,12 @@ export default function PianoGameScreen() {
   const dynamicStyles = useMemo(
     () => ({
       header: {
-        paddingTop: insets.top + 16,
+        paddingTop: insets.top + 8,
         paddingLeft: insets.left + 16,
         paddingRight: insets.right + 16,
       },
       keyboardArea: {
-        paddingBottom: insets.bottom - 20,
+        paddingBottom: 4,
       },
     }),
     [insets],
