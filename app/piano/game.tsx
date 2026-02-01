@@ -150,31 +150,35 @@ export default function PianoGameScreen() {
   return (
     <ThemedView style={styles.container}>
       <View style={[styles.header, dynamicStyles.header]}>
-        <View style={styles.headerSide}>
-          <Pressable onPress={handleQuitPress} hitSlop={8}>
-            <Ionicons name="close" size={28} color={colors.text} />
-          </Pressable>
-          <Pressable
-            onPressIn={() => setShowStaffLabels(true)}
-            onPressOut={() => setShowStaffLabels(false)}
-            hitSlop={8}
-          >
-            <Ionicons
-              name="information-circle-outline"
-              size={28}
-              color={colors.text}
-            />
-          </Pressable>
-          <Pressable onPress={toggleMute} hitSlop={8}>
-            <Ionicons
-              name={soundEnabled ? 'volume-high' : 'volume-mute'}
-              size={31}
-              color={colors.text}
-            />
-          </Pressable>
-          <ThemedText style={styles.progress}>
-            {state.currentNoteIndex + 1}/{state.notes.length}
-          </ThemedText>
+        <View style={styles.controlsGrid}>
+          <View style={styles.controlsRow}>
+            <Pressable onPress={handleQuitPress} hitSlop={8}>
+              <Ionicons name="close" size={36} color={colors.text} />
+            </Pressable>
+            <ThemedText style={styles.progress}>
+              {state.currentNoteIndex + 1}/{state.notes.length}
+            </ThemedText>
+          </View>
+          <View style={styles.controlsRow}>
+            <Pressable
+              onPressIn={() => setShowStaffLabels(true)}
+              onPressOut={() => setShowStaffLabels(false)}
+              hitSlop={8}
+            >
+              <Ionicons
+                name="information-circle-outline"
+                size={36}
+                color={colors.text}
+              />
+            </Pressable>
+            <Pressable onPress={toggleMute} hitSlop={8}>
+              <Ionicons
+                name={soundEnabled ? 'volume-high' : 'volume-mute'}
+                size={38}
+                color={colors.text}
+              />
+            </Pressable>
+          </View>
         </View>
 
         <View style={styles.noteArea}>
@@ -227,11 +231,24 @@ const styles = StyleSheet.create({
     gap: 12,
     minWidth: 100,
   },
+  controlsGrid: {
+    flexDirection: 'column',
+    gap: 14,
+    alignSelf: 'flex-start',
+    marginBlockStart: 40,
+  },
+  controlsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 24,
+  },
   headerRight: {
     justifyContent: 'flex-end',
+    alignSelf: 'flex-start',
+    marginBlockStart: 40,
   },
   progress: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: '600',
     opacity: 0.7,
   },
