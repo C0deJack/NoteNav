@@ -34,8 +34,10 @@ export default function PianoGameScreen() {
     pauseGame,
     resumeGame,
   } = usePianoGame();
-  const { playNote, playError } = usePianoAudio();
   const { settings } = useGameSettings();
+  const { playNote, playError } = usePianoAudio({
+    playSoundInSilentMode: settings.playSoundInSilentMode,
+  });
   const { colors } = useTheme();
   const [showQuitModal, setShowQuitModal] = useState(false);
 

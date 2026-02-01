@@ -27,35 +27,39 @@ const SOUND_FILES: Record<string, number> = {
   'kick.wav': require('@/assets/sounds/kick.wav'),
 };
 
-export function usePianoAudio() {
+interface UsePianoAudioOptions {
+  playSoundInSilentMode?: boolean;
+}
+
+export function usePianoAudio({
+  playSoundInSilentMode = true,
+}: UsePianoAudioOptions = {}) {
   const playersRef = useRef<PlayerMap>({});
   const [loaded, setLoaded] = useState(false);
 
+  // Update audio mode when setting changes
   useEffect(() => {
-    async function initAudio() {
-      // Configure audio mode for playback on real devices (especially iOS silent mode)
-      await setAudioModeAsync({
-        playsInSilentMode: true,
-      });
+    setAudioModeAsync({
+      playsInSilentMode: playSoundInSilentMode,
+    });
+  }, [playSoundInSilentMode]);
 
-      // Create players for all notes
-      for (const [noteName, noteData] of Object.entries(NOTES)) {
-        const source = SOUND_FILES[noteData.soundFile];
-        if (source) {
-          playersRef.current[noteName] = createAudioPlayer(source);
-        }
+  useEffect(() => {
+    // Create players for all notes
+    for (const [noteName, noteData] of Object.entries(NOTES)) {
+      const source = SOUND_FILES[noteData.soundFile];
+      if (source) {
+        playersRef.current[noteName] = createAudioPlayer(source);
       }
-
-      // Create error sound player
-      const errorSource = SOUND_FILES[ERROR_SOUND_FILE];
-      if (errorSource) {
-        playersRef.current.error = createAudioPlayer(errorSource);
-      }
-
-      setLoaded(true);
     }
 
-    initAudio();
+    // Create error sound player
+    const errorSource = SOUND_FILES[ERROR_SOUND_FILE];
+    if (errorSource) {
+      playersRef.current.error = createAudioPlayer(errorSource);
+    }
+
+    setLoaded(true);
 
     // Cleanup on unmount
     return () => {

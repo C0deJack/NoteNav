@@ -7,7 +7,7 @@ export const defaultBrandColors = {
     secondary: '#f5f5f5',
     dark: '#1A1A1A',
     light: '#ffffff',
-    text: '#11181C'
+    text: '#11181C',
   },
   dark: {
     highlight: '#bf4e30',

@@ -41,6 +41,7 @@ export interface GameSettings {
   noteDisplayMode: NoteDisplayMode;
   showIncorrectFeedback: boolean;
   enableHapticFeedback: boolean;
+  playSoundInSilentMode: boolean;
 }
 
 export type KeyFeedback = 'none' | 'correct' | 'incorrect';

@@ -66,13 +66,12 @@ export default function Settings() {
   const [appearanceExpanded, setAppearanceExpanded] = useState(true);
 
   const onPreferenceChange = (newPreference: ColorSchemePreference) => {
-    console.log('customColorsExpanded', customColorsExpanded);
     if (newPreference === 'custom') {
-      setAppearanceExpanded(true); // Ensure appearance section is expanded
+      setAppearanceExpanded(true);
       setCustomColorsExpanded(true);
     }
     setPreference(newPreference);
-  }
+  };
 
   const getColorValue = (key: CustomColorKey) => {
     return customColors[key] ?? defaultBrandColors[resolvedScheme][key];
@@ -109,6 +108,10 @@ export default function Settings() {
 
   const handleToggleHapticFeedback = () => {
     updateSettings({ enableHapticFeedback: !settings.enableHapticFeedback });
+  };
+
+  const handleToggleSilentMode = () => {
+    updateSettings({ playSoundInSilentMode: !settings.playSoundInSilentMode });
   };
 
   return (
@@ -226,6 +229,26 @@ export default function Settings() {
             <View style={styles.expandableContent}>
               <Pressable
                 style={[styles.settingRow, { borderColor: colors.border }]}
+                onPress={handleToggleSilentMode}
+              >
+                <View style={styles.settingInfo}>
+                  <ThemedText style={styles.settingLabel}>
+                    Play Sound in Silent Mode
+                  </ThemedText>
+                  <ThemedText type="muted" style={styles.settingDescription}>
+                    Play sounds even when device is on silent
+                  </ThemedText>
+                </View>
+                <Switch
+                  value={settings.playSoundInSilentMode}
+                  onValueChange={handleToggleSilentMode}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                  thumbColor={colors.surface}
+                />
+              </Pressable>
+
+              <Pressable
+                style={[styles.settingRow, { borderColor: colors.border }]}
                 onPress={handleToggleIncorrectFeedback}
               >
                 <View style={styles.settingInfo}>
@@ -338,11 +361,7 @@ export default function Settings() {
                   Custom Colours
                 </ThemedText>
                 <Ionicons
-                  name={
-                    customColorsExpanded
-                      ? 'chevron-up'
-                      : 'chevron-down'
-                  }
+                  name={customColorsExpanded ? 'chevron-up' : 'chevron-down'}
                   size={chevronIconSize}
                   color={colors.settingsChevron}
                 />
@@ -353,7 +372,10 @@ export default function Settings() {
                   {customColorOptions.map((option) => (
                     <Pressable
                       key={option.key}
-                      style={[styles.settingRow, { borderColor: colors.border }]}
+                      style={[
+                        styles.settingRow,
+                        { borderColor: colors.border },
+                      ]}
                       onPress={() => handleOpenColorPicker(option.key)}
                     >
                       <View style={styles.settingInfo}>
