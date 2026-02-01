@@ -45,7 +45,7 @@ export default function PianoGameScreen() {
         paddingRight: insets.right + 16,
       },
       keyboardArea: {
-        paddingBottom: insets.bottom + 20,
+        paddingBottom: insets.bottom - 20,
       },
     }),
     [insets],
@@ -109,7 +109,7 @@ export default function PianoGameScreen() {
   return (
     <ThemedView style={styles.container}>
       <View style={[styles.header, dynamicStyles.header]}>
-        <View style={styles.headerLeft}>
+        <View style={styles.headerSide}>
           <Pressable onPress={handleQuitPress} hitSlop={8}>
             <Ionicons name="close" size={28} color={colors.text} />
           </Pressable>
@@ -117,14 +117,17 @@ export default function PianoGameScreen() {
             {state.currentNoteIndex + 1}/{state.notes.length}
           </ThemedText>
         </View>
-        <GameTimer elapsedMs={state.elapsedMs} />
-      </View>
 
-      <View style={styles.noteArea}>
-        <NoteDisplay
-          note={currentNote.displayName}
-          displayMode={settings.noteDisplayMode}
-        />
+        <View style={styles.noteArea}>
+          <NoteDisplay
+            note={currentNote.displayName}
+            displayMode={settings.noteDisplayMode}
+          />
+        </View>
+
+        <View style={[styles.headerSide, styles.headerRight]}>
+          <GameTimer elapsedMs={state.elapsedMs} />
+        </View>
       </View>
 
       <View style={[styles.keyboardArea, dynamicStyles.keyboardArea]}>
@@ -150,28 +153,30 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  headerLeft: {
+  headerSide: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
+    gap: 12,
+    minWidth: 100,
+  },
+  headerRight: {
+    justifyContent: 'flex-end',
   },
   progress: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
     opacity: 0.7,
   },
   noteArea: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    minHeight: 80,
   },
   keyboardArea: {
-    paddingBlock: 12,
     alignItems: 'center',
   },
 });

@@ -2,13 +2,13 @@ import type { NoteName } from '@/types/piano';
 
 // Staff dimensions
 export const STAFF_CONFIG = {
-  width: 180,
-  height: 120,
-  lineSpacing: 12,
-  noteRadius: 9,
-  clefWidth: 40,
-  leftPadding: 50,
-  accidentalOffset: 20,
+  width: 344,
+  height: 235,
+  lineSpacing: 24,
+  noteRadius: 18,
+  clefWidth: 78,
+  leftPadding: 94,
+  accidentalOffset: 38,
 } as const;
 
 // Note positions on the treble clef staff

@@ -36,10 +36,9 @@ const styles = StyleSheet.create({
     overflow: 'visible',
   },
   note: {
-    paddingInline: 25,
-    paddingBlock: 55,
-    marginBottom: -45,
-    fontSize: 64,
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    fontSize: 48,
     fontWeight: 'bold',
   },
 });

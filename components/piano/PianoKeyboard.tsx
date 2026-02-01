@@ -25,11 +25,13 @@ export function PianoKeyboard({
   showWhiteKeyLabels = false,
   showBlackKeyLabels = false,
 }: PianoKeyboardProps) {
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
   const keyboardWidth = Math.min(width - 32, 600);
   const whiteKeyWidth = keyboardWidth / 7;
   const blackKeyWidth = whiteKeyWidth * 0.6;
-  const keyboardHeight = Math.min(keyboardWidth * 0.6, 300);
+  const maxKeyboardHeight = isLandscape ? 230 : 300;
+  const keyboardHeight = Math.min(keyboardWidth * 0.4, maxKeyboardHeight);
 
   return (
     <View
