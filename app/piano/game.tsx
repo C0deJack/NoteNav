@@ -35,11 +35,23 @@ export default function PianoGameScreen() {
     resumeGame,
   } = usePianoGame();
   const { settings } = useGameSettings();
+  const [soundEnabled, setSoundEnabled] = useState(
+    settings.playSoundInSilentMode,
+  );
   const { playNote, playError } = usePianoAudio({
-    playSoundInSilentMode: settings.playSoundInSilentMode,
+    playSoundInSilentMode: soundEnabled,
   });
   const { colors } = useTheme();
   const [showQuitModal, setShowQuitModal] = useState(false);
+
+  // Reset sound state when settings change (e.g., when returning to game)
+  useEffect(() => {
+    setSoundEnabled(settings.playSoundInSilentMode);
+  }, [settings.playSoundInSilentMode]);
+
+  const toggleMute = useCallback(() => {
+    setSoundEnabled((prev) => !prev);
+  }, []);
 
   const handleInactivityTimeout = useCallback(() => {
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
@@ -109,12 +121,16 @@ export default function PianoGameScreen() {
     const isCorrect = handleKeyPress(note);
 
     if (isCorrect) {
-      await playNote(note);
+      if (soundEnabled) {
+        await playNote(note);
+      }
       if (settings.enableHapticFeedback) {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
     } else {
-      await playError();
+      if (soundEnabled) {
+        await playError();
+      }
       if (settings.enableHapticFeedback) {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       }
@@ -133,6 +149,13 @@ export default function PianoGameScreen() {
         <View style={styles.headerSide}>
           <Pressable onPress={handleQuitPress} hitSlop={8}>
             <Ionicons name="close" size={28} color={colors.text} />
+          </Pressable>
+          <Pressable onPress={toggleMute} hitSlop={8}>
+            <Ionicons
+              name={soundEnabled ? 'volume-high' : 'volume-mute'}
+              size={31}
+              color={colors.text}
+            />
           </Pressable>
           <ThemedText style={styles.progress}>
             {state.currentNoteIndex + 1}/{state.notes.length}
