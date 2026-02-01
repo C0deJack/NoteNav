@@ -36,7 +36,7 @@ export function StaffDisplay({
 
   // Parse the note to get base note and accidental
   const isSharp = note.includes('#');
-  const isFlat = note.includes('b');
+  const isFlat = note.includes('♭');
   const baseLetter = note.charAt(0).toUpperCase();
 
   // Check if user pressed the natural note when they should have pressed the sharp/flat
@@ -60,19 +60,13 @@ export function StaffDisplay({
       ? (NOTE_STAFF_POSITIONS[incorrectNote] ?? null)
       : null;
 
-  // Map display note to NoteName for position lookup
-  // For flats, map to the equivalent sharp (Db -> C#, etc.)
-  const flatToSharpMap: Record<string, NoteName> = {
-    Db: 'C#',
-    Eb: 'D#',
-    Gb: 'F#',
-    Ab: 'G#',
-    Bb: 'A#',
-  };
-
+  // Determine the position on the staff
+  // For flats, use the base letter position (A♭ goes on the A line/space)
+  // For sharps, use the sharp's position (G# goes on the G line/space)
   let noteName: NoteName;
   if (isFlat) {
-    noteName = flatToSharpMap[note] || (baseLetter as NoteName);
+    // Use the base letter for position (e.g., A♭ uses A's position)
+    noteName = baseLetter as NoteName;
   } else if (isSharp) {
     noteName = note as NoteName;
   } else {

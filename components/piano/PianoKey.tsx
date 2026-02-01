@@ -11,6 +11,15 @@ import type { KeyFeedback, NoteName } from '@/types/piano';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
+// Mapping from sharp notes to their flat equivalents
+const SHARP_TO_FLAT: Record<string, string> = {
+  'C#': 'D♭',
+  'D#': 'E♭',
+  'F#': 'G♭',
+  'G#': 'A♭',
+  'A#': 'B♭',
+};
+
 interface PianoKeyProps {
   note: NoteName;
   isBlack: boolean;
@@ -55,6 +64,7 @@ export function PianoKey({
   });
 
   const displayNote = note.replace('#', '\u266F'); // Use sharp symbol
+  const flatNote = SHARP_TO_FLAT[note]; // Get flat equivalent for black keys
 
   return (
     <View style={isBlack ? styles.blackKey : styles.whiteKey}>
@@ -72,10 +82,21 @@ export function PianoKey({
         ]}
       />
       {showLabel && (
-        <View style={styles.labelContainer} pointerEvents="none">
+        <View
+          style={[
+            styles.labelContainer,
+            isBlack && styles.blackLabelContainer,
+          ]}
+          pointerEvents="none"
+        >
           <Text style={[styles.label, isBlack && styles.blackLabel]}>
             {displayNote}
           </Text>
+          {isBlack && flatNote && (
+            <Text style={[styles.label, styles.blackLabel, styles.flatLabel]}>
+              {flatNote}
+            </Text>
+          )}
         </View>
       )}
     </View>
@@ -103,6 +124,9 @@ const styles = StyleSheet.create({
     right: 0,
     alignItems: 'center',
   },
+  blackLabelContainer: {
+    bottom: 8,
+  },
   label: {
     fontSize: 18,
     fontWeight: '700',
@@ -112,5 +136,9 @@ const styles = StyleSheet.create({
   },
   blackLabel: {
     color: '#fff',
+  },
+  flatLabel: {
+    marginTop: 2,
+    fontSize: 16,
   },
 });
