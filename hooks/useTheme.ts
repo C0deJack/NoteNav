@@ -12,20 +12,20 @@
  *     <Text style={{ color: colors.text }}>Hello</Text>
  *   </View>
  */
-import { type ColorName, Colors, type Theme } from '@/constants/Colors';
+import { type ColorName, getColors, type Theme } from '@/constants/Colors';
 import { useThemeContext } from '@/contexts/ThemeContext';
 
 export interface ThemeContextValue {
-  colors: (typeof Colors)['light'];
+  colors: ReturnType<typeof getColors>;
   colorScheme: Theme;
   isDark: boolean;
 }
 
 export function useTheme(): ThemeContextValue {
-  const { resolvedScheme } = useThemeContext();
+  const { resolvedScheme, customColors, isCustomMode } = useThemeContext();
 
   return {
-    colors: Colors[resolvedScheme],
+    colors: getColors(resolvedScheme, isCustomMode ? customColors : {}),
     colorScheme: resolvedScheme,
     isDark: resolvedScheme === 'dark',
   };
