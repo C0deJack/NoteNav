@@ -32,16 +32,19 @@ export function useProgress() {
         id: Date.now().toString(),
         timestamp: Date.now(),
       };
-      const updated = [newScore, ...scores];
-      setScores(updated);
       try {
+        // Read current scores from storage to avoid stale state issues
+        const stored = await AsyncStorage.getItem(PROGRESS_KEY);
+        const currentScores: GameScore[] = stored ? JSON.parse(stored) : [];
+        const updated = [newScore, ...currentScores];
         await AsyncStorage.setItem(PROGRESS_KEY, JSON.stringify(updated));
+        setScores(updated);
       } catch (error) {
         console.error('Error saving score:', error);
       }
       return newScore;
     },
-    [scores],
+    [],
   );
 
   const resetProgress = useCallback(async () => {
