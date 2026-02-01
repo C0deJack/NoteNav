@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Switch, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ColorPickerModal } from '@/components/ColorPickerModal';
@@ -57,6 +58,20 @@ export default function Settings() {
   const insets = useSafeAreaInsets();
   const [colorPickerVisible, setColorPickerVisible] = useState(false);
   const [editingColor, setEditingColor] = useState<CustomColorKey | null>(null);
+  const [customColorsExpanded, setCustomColorsExpanded] = useState(
+    preference === 'custom',
+  );
+  const [feedbackExpanded, setFeedbackExpanded] = useState(false);
+  const [noteLabelsExpanded, setNoteLabelsExpanded] = useState(false);
+  const [appearanceExpanded, setAppearanceExpanded] = useState(false);
+
+  // Auto-expand appearance and custom colors when 'custom' preference is selected
+  useEffect(() => {
+    if (preference === 'custom') {
+      setAppearanceExpanded(true);
+      setCustomColorsExpanded(true);
+    }
+  }, [preference]);
 
   const getColorValue = (key: CustomColorKey) => {
     return customColors[key] ?? defaultBrandColors[resolvedScheme][key];
@@ -106,57 +121,8 @@ export default function Settings() {
           Settings
         </ThemedText>
 
+        {/* Show as Sheet Music - at the top */}
         <View style={styles.section}>
-          <ThemedText type="subtitle" style={styles.sectionTitle}>
-            Note Labels
-          </ThemedText>
-
-          <Pressable
-            style={[styles.settingRow, { borderColor: colors.border }]}
-            onPress={handleToggleWhiteKeyLabels}
-          >
-            <View style={styles.settingInfo}>
-              <ThemedText style={styles.settingLabel}>
-                White Key Labels
-              </ThemedText>
-              <ThemedText type="muted" style={styles.settingDescription}>
-                Show note letters on white piano keys
-              </ThemedText>
-            </View>
-            <Switch
-              value={settings.showWhiteKeyLabels}
-              onValueChange={handleToggleWhiteKeyLabels}
-              trackColor={{ false: colors.border, true: colors.primary }}
-              thumbColor={colors.surface}
-            />
-          </Pressable>
-
-          <Pressable
-            style={[styles.settingRow, { borderColor: colors.border }]}
-            onPress={handleToggleBlackKeyLabels}
-          >
-            <View style={styles.settingInfo}>
-              <ThemedText style={styles.settingLabel}>
-                Black Key Labels
-              </ThemedText>
-              <ThemedText type="muted" style={styles.settingDescription}>
-                Show note letters on black piano keys
-              </ThemedText>
-            </View>
-            <Switch
-              value={settings.showBlackKeyLabels}
-              onValueChange={handleToggleBlackKeyLabels}
-              trackColor={{ false: colors.border, true: colors.primary }}
-              thumbColor={colors.surface}
-            />
-          </Pressable>
-        </View>
-
-        <View style={styles.section}>
-          <ThemedText type="subtitle" style={styles.sectionTitle}>
-            Note Display
-          </ThemedText>
-
           <Pressable
             style={[styles.settingRow, { borderColor: colors.border }]}
             onPress={handleToggleNoteDisplayMode}
@@ -176,133 +142,252 @@ export default function Settings() {
               thumbColor={colors.surface}
             />
           </Pressable>
-
-          <Pressable
-            style={[styles.settingRow, { borderColor: colors.border }]}
-            onPress={handleToggleIncorrectFeedback}
-          >
-            <View style={styles.settingInfo}>
-              <ThemedText style={styles.settingLabel}>
-                Show Incorrect Position
-              </ThemedText>
-              <ThemedText type="muted" style={styles.settingDescription}>
-                Highlight the staff line where an incorrect note was played
-              </ThemedText>
-            </View>
-            <Switch
-              value={settings.showIncorrectFeedback}
-              onValueChange={handleToggleIncorrectFeedback}
-              trackColor={{ false: colors.border, true: colors.primary }}
-              thumbColor={colors.surface}
-            />
-          </Pressable>
-
-          <Pressable
-            style={[styles.settingRow, { borderColor: colors.border }]}
-            onPress={handleToggleHapticFeedback}
-          >
-            <View style={styles.settingInfo}>
-              <ThemedText style={styles.settingLabel}>
-                Haptic Feedback
-              </ThemedText>
-              <ThemedText type="muted" style={styles.settingDescription}>
-                Vibrate on correct and incorrect key presses
-              </ThemedText>
-            </View>
-            <Switch
-              value={settings.enableHapticFeedback}
-              onValueChange={handleToggleHapticFeedback}
-              trackColor={{ false: colors.border, true: colors.primary }}
-              thumbColor={colors.surface}
-            />
-          </Pressable>
         </View>
 
+        {/* Note Labels - expandable section */}
         <View style={styles.section}>
-          <ThemedText type="subtitle" style={styles.sectionTitle}>
-            Appearance
-          </ThemedText>
-
-          <View style={[styles.settingRow, { borderColor: colors.border }]}>
-            <View style={styles.settingInfo}>
-              <ThemedText style={styles.settingLabel}>Color Scheme</ThemedText>
-              <ThemedText type="muted" style={styles.settingDescription}>
-                Choose light, dark, or follow system settings
-              </ThemedText>
-            </View>
-          </View>
-
-          <View style={styles.segmentedControl}>
-            {colorSchemeOptions.map((option) => (
-              <Pressable
-                key={option.value}
-                style={[
-                  styles.segmentButton,
-                  {
-                    backgroundColor:
-                      preference === option.value
-                        ? colors.primary
-                        : colors.surface,
-                    borderColor: colors.border,
-                  },
-                ]}
-                onPress={() => setPreference(option.value)}
-              >
-                <ThemedText
-                  style={[
-                    styles.segmentLabel,
-                    {
-                      color:
-                        preference === option.value ? '#FFFFFF' : colors.text,
-                    },
-                  ]}
-                >
-                  {option.label}
-                </ThemedText>
-              </Pressable>
-            ))}
-          </View>
-        </View>
-
-        {preference === 'custom' && (
-          <View style={styles.section}>
+          <Pressable
+            style={styles.expandableHeader}
+            onPress={() => setNoteLabelsExpanded(!noteLabelsExpanded)}
+          >
             <ThemedText type="subtitle" style={styles.sectionTitle}>
-              Custom Colors
+              Note Labels
             </ThemedText>
+            <Ionicons
+              name={noteLabelsExpanded ? 'chevron-up' : 'chevron-down'}
+              size={20}
+              color={colors.text}
+            />
+          </Pressable>
 
-            {customColorOptions.map((option) => (
+          {noteLabelsExpanded && (
+            <View style={styles.expandableContent}>
               <Pressable
-                key={option.key}
                 style={[styles.settingRow, { borderColor: colors.border }]}
-                onPress={() => handleOpenColorPicker(option.key)}
+                onPress={handleToggleWhiteKeyLabels}
               >
                 <View style={styles.settingInfo}>
                   <ThemedText style={styles.settingLabel}>
-                    {option.label}
+                    White Key Labels
                   </ThemedText>
                   <ThemedText type="muted" style={styles.settingDescription}>
-                    {option.description}
+                    Show note letters on white piano keys
                   </ThemedText>
                 </View>
-                <View
-                  style={[
-                    styles.colorSwatch,
-                    { backgroundColor: getColorValue(option.key) },
-                  ]}
+                <Switch
+                  value={settings.showWhiteKeyLabels}
+                  onValueChange={handleToggleWhiteKeyLabels}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                  thumbColor={colors.surface}
                 />
               </Pressable>
-            ))}
 
-            <Pressable
-              style={[styles.resetButton, { borderColor: colors.border }]}
-              onPress={resetCustomColors}
-            >
-              <ThemedText style={styles.resetButtonText}>
-                Reset to Defaults
-              </ThemedText>
-            </Pressable>
-          </View>
-        )}
+              <Pressable
+                style={[styles.settingRow, { borderColor: colors.border }]}
+                onPress={handleToggleBlackKeyLabels}
+              >
+                <View style={styles.settingInfo}>
+                  <ThemedText style={styles.settingLabel}>
+                    Black Key Labels
+                  </ThemedText>
+                  <ThemedText type="muted" style={styles.settingDescription}>
+                    Show note letters on black piano keys
+                  </ThemedText>
+                </View>
+                <Switch
+                  value={settings.showBlackKeyLabels}
+                  onValueChange={handleToggleBlackKeyLabels}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                  thumbColor={colors.surface}
+                />
+              </Pressable>
+            </View>
+          )}
+        </View>
+
+        {/* Feedback - expandable section */}
+        <View style={styles.section}>
+          <Pressable
+            style={styles.expandableHeader}
+            onPress={() => setFeedbackExpanded(!feedbackExpanded)}
+          >
+            <ThemedText type="subtitle" style={styles.sectionTitle}>
+              Feedback
+            </ThemedText>
+            <Ionicons
+              name={feedbackExpanded ? 'chevron-up' : 'chevron-down'}
+              size={20}
+              color={colors.text}
+            />
+          </Pressable>
+
+          {feedbackExpanded && (
+            <View style={styles.expandableContent}>
+              <Pressable
+                style={[styles.settingRow, { borderColor: colors.border }]}
+                onPress={handleToggleIncorrectFeedback}
+              >
+                <View style={styles.settingInfo}>
+                  <ThemedText style={styles.settingLabel}>
+                    Show Incorrect Position
+                  </ThemedText>
+                  <ThemedText type="muted" style={styles.settingDescription}>
+                    Highlight the staff line where an incorrect note was played
+                  </ThemedText>
+                </View>
+                <Switch
+                  value={settings.showIncorrectFeedback}
+                  onValueChange={handleToggleIncorrectFeedback}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                  thumbColor={colors.surface}
+                />
+              </Pressable>
+
+              <Pressable
+                style={[styles.settingRow, { borderColor: colors.border }]}
+                onPress={handleToggleHapticFeedback}
+              >
+                <View style={styles.settingInfo}>
+                  <ThemedText style={styles.settingLabel}>
+                    Haptic Feedback
+                  </ThemedText>
+                  <ThemedText type="muted" style={styles.settingDescription}>
+                    Vibrate on correct and incorrect key presses
+                  </ThemedText>
+                </View>
+                <Switch
+                  value={settings.enableHapticFeedback}
+                  onValueChange={handleToggleHapticFeedback}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                  thumbColor={colors.surface}
+                />
+              </Pressable>
+            </View>
+          )}
+        </View>
+
+        {/* Appearance - expandable section */}
+        <View style={styles.section}>
+          <Pressable
+            style={styles.expandableHeader}
+            onPress={() => setAppearanceExpanded(!appearanceExpanded)}
+          >
+            <ThemedText type="subtitle" style={styles.sectionTitle}>
+              Appearance
+            </ThemedText>
+            <Ionicons
+              name={appearanceExpanded ? 'chevron-up' : 'chevron-down'}
+              size={20}
+              color={colors.text}
+            />
+          </Pressable>
+
+          {appearanceExpanded && (
+            <View style={styles.expandableContent}>
+              <View style={[styles.settingRow, { borderColor: colors.border }]}>
+                <View style={styles.settingInfo}>
+                  <ThemedText style={styles.settingLabel}>
+                    Color Scheme
+                  </ThemedText>
+                  <ThemedText type="muted" style={styles.settingDescription}>
+                    Choose light, dark, or follow system settings
+                  </ThemedText>
+                </View>
+              </View>
+
+              <View style={styles.segmentedControl}>
+                {colorSchemeOptions.map((option) => (
+                  <Pressable
+                    key={option.value}
+                    style={[
+                      styles.segmentButton,
+                      {
+                        backgroundColor:
+                          preference === option.value
+                            ? colors.primary
+                            : colors.surface,
+                        borderColor: colors.border,
+                      },
+                    ]}
+                    onPress={() => setPreference(option.value)}
+                  >
+                    <ThemedText
+                      style={[
+                        styles.segmentLabel,
+                        {
+                          color:
+                            preference === option.value
+                              ? '#FFFFFF'
+                              : colors.text,
+                        },
+                      ]}
+                    >
+                      {option.label}
+                    </ThemedText>
+                  </Pressable>
+                ))}
+              </View>
+
+              {/* Custom Colors - nested expandable */}
+              <Pressable
+                style={styles.expandableHeader}
+                onPress={() => setCustomColorsExpanded(!customColorsExpanded)}
+              >
+                <ThemedText style={styles.settingLabel}>
+                  Custom Colors
+                </ThemedText>
+                <Ionicons
+                  name={
+                    preference === 'custom' && customColorsExpanded
+                      ? 'chevron-up'
+                      : 'chevron-down'
+                  }
+                  size={20}
+                  color={colors.text}
+                />
+              </Pressable>
+
+              {preference === 'custom' && customColorsExpanded && (
+                <View style={styles.nestedExpandableContent}>
+                  {customColorOptions.map((option) => (
+                    <Pressable
+                      key={option.key}
+                      style={[styles.settingRow, { borderColor: colors.border }]}
+                      onPress={() => handleOpenColorPicker(option.key)}
+                    >
+                      <View style={styles.settingInfo}>
+                        <ThemedText style={styles.settingLabel}>
+                          {option.label}
+                        </ThemedText>
+                        <ThemedText
+                          type="muted"
+                          style={styles.settingDescription}
+                        >
+                          {option.description}
+                        </ThemedText>
+                      </View>
+                      <View
+                        style={[
+                          styles.colorSwatch,
+                          { backgroundColor: getColorValue(option.key) },
+                        ]}
+                      />
+                    </Pressable>
+                  ))}
+
+                  <Pressable
+                    style={[styles.resetButton, { borderColor: colors.border }]}
+                    onPress={resetCustomColors}
+                  >
+                    <ThemedText style={styles.resetButtonText}>
+                      Reset to Defaults
+                    </ThemedText>
+                  </Pressable>
+                </View>
+              )}
+            </View>
+          )}
+        </View>
       </ScrollView>
 
       <ColorPickerModal
@@ -336,7 +421,17 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   sectionTitle: {
-    marginBottom: 4,
+    marginBottom: 0,
+  },
+  expandableHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 4,
+  },
+  expandableContent: {
+    gap: 12,
+    marginTop: 12,
   },
   settingRow: {
     flexDirection: 'row',
