@@ -1,4 +1,4 @@
-import { ThemeProvider } from '@react-navigation/native';
+import { ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as ScreenOrientation from 'expo-screen-orientation';
@@ -10,13 +10,13 @@ import {
   DarkNavigationTheme,
   LightNavigationTheme,
 } from '@/constants/NavigationTheme';
-import { useTheme } from '@/hooks/useTheme';
+import { ThemeProvider, useThemeContext } from '@/contexts/ThemeContext';
 
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
-  const { isDark } = useTheme();
-  const [loaded] = useFonts({
+function RootLayoutNav() {
+  const { resolvedScheme, loaded: themeLoaded } = useThemeContext();
+  const [fontsLoaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
@@ -25,17 +25,21 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
-    if (loaded) {
+    if (fontsLoaded && themeLoaded) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [fontsLoaded, themeLoaded]);
 
-  if (!loaded) {
+  if (!fontsLoaded || !themeLoaded) {
     return null;
   }
 
   return (
-    <ThemeProvider value={isDark ? DarkNavigationTheme : LightNavigationTheme}>
+    <NavigationThemeProvider
+      value={
+        resolvedScheme === 'dark' ? DarkNavigationTheme : LightNavigationTheme
+      }
+    >
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
@@ -48,6 +52,14 @@ export default function RootLayout() {
         />
         <Stack.Screen name="+not-found" />
       </Stack>
+    </NavigationThemeProvider>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <ThemeProvider>
+      <RootLayoutNav />
     </ThemeProvider>
   );
 }

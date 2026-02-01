@@ -2,11 +2,25 @@ import { Pressable, StyleSheet, Switch, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import {
+  type ColorSchemePreference,
+  useThemeContext,
+} from '@/contexts/ThemeContext';
 import { useGameSettings } from '@/hooks/useGameSettings';
 import { useTheme } from '@/hooks/useTheme';
 
+const colorSchemeOptions: {
+  value: ColorSchemePreference;
+  label: string;
+}[] = [
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+  { value: 'auto', label: 'Auto' },
+];
+
 export default function Settings() {
   const { colors } = useTheme();
+  const { preference, setPreference } = useThemeContext();
   const { settings, updateSettings } = useGameSettings();
   const insets = useSafeAreaInsets();
 
@@ -101,6 +115,52 @@ export default function Settings() {
           />
         </Pressable>
       </View>
+
+      <View style={styles.section}>
+        <ThemedText type="subtitle" style={styles.sectionTitle}>
+          Appearance
+        </ThemedText>
+
+        <View style={[styles.settingRow, { borderColor: colors.border }]}>
+          <View style={styles.settingInfo}>
+            <ThemedText style={styles.settingLabel}>Color Scheme</ThemedText>
+            <ThemedText type="muted" style={styles.settingDescription}>
+              Choose light, dark, or follow system settings
+            </ThemedText>
+          </View>
+        </View>
+
+        <View style={styles.segmentedControl}>
+          {colorSchemeOptions.map((option) => (
+            <Pressable
+              key={option.value}
+              style={[
+                styles.segmentButton,
+                {
+                  backgroundColor:
+                    preference === option.value
+                      ? colors.primary
+                      : colors.surface,
+                  borderColor: colors.border,
+                },
+              ]}
+              onPress={() => setPreference(option.value)}
+            >
+              <ThemedText
+                style={[
+                  styles.segmentLabel,
+                  {
+                    color:
+                      preference === option.value ? '#FFFFFF' : colors.text,
+                  },
+                ]}
+              >
+                {option.label}
+              </ThemedText>
+            </Pressable>
+          ))}
+        </View>
+      </View>
     </ThemedView>
   );
 }
@@ -140,5 +200,20 @@ const styles = StyleSheet.create({
   settingDescription: {
     fontSize: 13,
     marginTop: 2,
+  },
+  segmentedControl: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  segmentButton: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    alignItems: 'center',
+  },
+  segmentLabel: {
+    fontSize: 15,
+    fontWeight: '500',
   },
 });

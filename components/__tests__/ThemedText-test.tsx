@@ -1,11 +1,15 @@
-import renderer from 'react-test-renderer';
+import { render, screen } from '@testing-library/react-native';
 
+import { ThemeProvider } from '@/contexts/ThemeContext';
 import { ThemedText } from '../ThemedText';
 
-it(`renders correctly`, () => {
-  const tree = renderer
-    .create(<ThemedText>Snapshot test!</ThemedText>)
-    .toJSON();
+it('renders correctly', async () => {
+  render(
+    <ThemeProvider>
+      <ThemedText>Test text</ThemedText>
+    </ThemeProvider>,
+  );
 
-  expect(tree).toMatchSnapshot();
+  const text = await screen.findByText('Test text');
+  expect(text).toBeOnTheScreen();
 });

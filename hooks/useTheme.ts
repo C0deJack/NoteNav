@@ -12,24 +12,22 @@
  *     <Text style={{ color: colors.text }}>Hello</Text>
  *   </View>
  */
-import { useColorScheme } from 'react-native';
-
 import { type ColorName, Colors, type Theme } from '@/constants/Colors';
+import { useThemeContext } from '@/contexts/ThemeContext';
 
-export interface ThemeContext {
+export interface ThemeContextValue {
   colors: (typeof Colors)['light'];
   colorScheme: Theme;
   isDark: boolean;
 }
 
-export function useTheme(): ThemeContext {
-  const systemScheme = useColorScheme();
-  const colorScheme: Theme = systemScheme === 'dark' ? 'dark' : 'light';
+export function useTheme(): ThemeContextValue {
+  const { resolvedScheme } = useThemeContext();
 
   return {
-    colors: Colors[colorScheme],
-    colorScheme,
-    isDark: colorScheme === 'dark',
+    colors: Colors[resolvedScheme],
+    colorScheme: resolvedScheme,
+    isDark: resolvedScheme === 'dark',
   };
 }
 
