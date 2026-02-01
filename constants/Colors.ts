@@ -7,6 +7,7 @@ export const defaultBrandColors = {
     secondary: '#f5f5f5',
     dark: '#1A1A1A',
     light: '#ffffff',
+    text: '#11181C'
   },
   dark: {
     highlight: '#bf4e30',
@@ -14,6 +15,7 @@ export const defaultBrandColors = {
     secondary: '#42858C',
     dark: '#1A1A1A',
     light: '#D7D9DA',
+    text: '#D7D9DA',
   },
 };
 
@@ -28,7 +30,7 @@ function createColors(
 
   if (scheme === 'light') {
     return {
-      text: '#11181C',
+      text: brand.text,
       textMuted: '#687076',
       background: brand.secondary,
       surface: 'rgb(194, 194, 194)',
@@ -44,14 +46,15 @@ function createColors(
       blackKeyBorder: '#444444',
       whiteKeyBorder: '#292929',
       staffBackground: '#FFFFFF',
-      staffLine: '#11181C',
+      staffLine: brand.text,
       staffNote: brand.highlight,
       staffAccidental: brand.highlight,
+      settingsChevron: brand.text,
     };
   }
 
   return {
-    text: '#d7d9da',
+    text: brand.text,
     textMuted: '#9BA1A6',
     background: brand.dark,
     surface: '#1f2123',
@@ -67,9 +70,10 @@ function createColors(
     blackKeyBorder: '#444444',
     whiteKeyBorder: '#CCCCCC',
     staffBackground: '#1A1A1A',
-    staffLine: '#d7d9da',
+    staffLine: brand.text,
     staffNote: brand.highlight,
     staffAccidental: brand.highlight,
+    settingsChevron: brand.text,
   };
 }
 

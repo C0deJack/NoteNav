@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Switch, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ColorPickerModal } from '@/components/ColorPickerModal';
@@ -23,6 +23,8 @@ const colorSchemeOptions: {
   { value: 'auto', label: 'Auto' },
   { value: 'custom', label: 'Custom' },
 ];
+
+const chevronIconSize = 35;
 
 const customColorOptions: {
   key: CustomColorKey;
@@ -58,20 +60,19 @@ export default function Settings() {
   const insets = useSafeAreaInsets();
   const [colorPickerVisible, setColorPickerVisible] = useState(false);
   const [editingColor, setEditingColor] = useState<CustomColorKey | null>(null);
-  const [customColorsExpanded, setCustomColorsExpanded] = useState(
-    preference === 'custom',
-  );
-  const [feedbackExpanded, setFeedbackExpanded] = useState(false);
-  const [noteLabelsExpanded, setNoteLabelsExpanded] = useState(false);
-  const [appearanceExpanded, setAppearanceExpanded] = useState(false);
+  const [customColorsExpanded, setCustomColorsExpanded] = useState(false);
+  const [feedbackExpanded, setFeedbackExpanded] = useState(true);
+  const [noteLabelsExpanded, setNoteLabelsExpanded] = useState(true);
+  const [appearanceExpanded, setAppearanceExpanded] = useState(true);
 
-  // Auto-expand appearance and custom colors when 'custom' preference is selected
-  useEffect(() => {
-    if (preference === 'custom') {
-      setAppearanceExpanded(true);
+  const onPreferenceChange = (newPreference: ColorSchemePreference) => {
+    console.log('customColorsExpanded', customColorsExpanded);
+    if (newPreference === 'custom') {
+      setAppearanceExpanded(true); // Ensure appearance section is expanded
       setCustomColorsExpanded(true);
     }
-  }, [preference]);
+    setPreference(newPreference);
+  }
 
   const getColorValue = (key: CustomColorKey) => {
     return customColors[key] ?? defaultBrandColors[resolvedScheme][key];
@@ -155,8 +156,8 @@ export default function Settings() {
             </ThemedText>
             <Ionicons
               name={noteLabelsExpanded ? 'chevron-up' : 'chevron-down'}
-              size={20}
-              color={colors.text}
+              size={chevronIconSize}
+              color={colors.settingsChevron}
             />
           </Pressable>
 
@@ -216,8 +217,8 @@ export default function Settings() {
             </ThemedText>
             <Ionicons
               name={feedbackExpanded ? 'chevron-up' : 'chevron-down'}
-              size={20}
-              color={colors.text}
+              size={chevronIconSize}
+              color={colors.settingsChevron}
             />
           </Pressable>
 
@@ -277,8 +278,8 @@ export default function Settings() {
             </ThemedText>
             <Ionicons
               name={appearanceExpanded ? 'chevron-up' : 'chevron-down'}
-              size={20}
-              color={colors.text}
+              size={chevronIconSize}
+              color={colors.settingsChevron}
             />
           </Pressable>
 
@@ -309,7 +310,7 @@ export default function Settings() {
                         borderColor: colors.border,
                       },
                     ]}
-                    onPress={() => setPreference(option.value)}
+                    onPress={() => onPreferenceChange(option.value)}
                   >
                     <ThemedText
                       style={[
@@ -334,20 +335,20 @@ export default function Settings() {
                 onPress={() => setCustomColorsExpanded(!customColorsExpanded)}
               >
                 <ThemedText style={styles.settingLabel}>
-                  Custom Colors
+                  Custom Colours
                 </ThemedText>
                 <Ionicons
                   name={
-                    preference === 'custom' && customColorsExpanded
+                    customColorsExpanded
                       ? 'chevron-up'
                       : 'chevron-down'
                   }
-                  size={20}
-                  color={colors.text}
+                  size={chevronIconSize}
+                  color={colors.settingsChevron}
                 />
               </Pressable>
 
-              {preference === 'custom' && customColorsExpanded && (
+              {customColorsExpanded && (
                 <View style={styles.expandableContent}>
                   {customColorOptions.map((option) => (
                     <Pressable
