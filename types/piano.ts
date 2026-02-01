@@ -42,6 +42,7 @@ export interface GameSettings {
   showIncorrectFeedback: boolean;
   enableHapticFeedback: boolean;
   playSoundInSilentMode: boolean;
+  showTimer: boolean;
 }
 
 export type KeyFeedback = 'none' | 'correct' | 'incorrect';

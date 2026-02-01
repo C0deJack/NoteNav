@@ -62,7 +62,7 @@ export default function Settings() {
   const [editingColor, setEditingColor] = useState<CustomColorKey | null>(null);
   const [customColorsExpanded, setCustomColorsExpanded] = useState(false);
   const [feedbackExpanded, setFeedbackExpanded] = useState(true);
-  const [noteLabelsExpanded, setNoteLabelsExpanded] = useState(true);
+  const [displayExpanded, setDisplayExpanded] = useState(true);
   const [appearanceExpanded, setAppearanceExpanded] = useState(true);
 
   const onPreferenceChange = (newPreference: ColorSchemePreference) => {
@@ -114,6 +114,10 @@ export default function Settings() {
     updateSettings({ playSoundInSilentMode: !settings.playSoundInSilentMode });
   };
 
+  const handleToggleTimer = () => {
+    updateSettings({ showTimer: !settings.showTimer });
+  };
+
   return (
     <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
       <ScrollView
@@ -125,47 +129,44 @@ export default function Settings() {
           Settings
         </ThemedText>
 
-        {/* Show as Sheet Music - at the top */}
-        <View style={styles.section}>
-          <Pressable
-            style={[styles.settingRow, { borderColor: colors.border }]}
-            onPress={handleToggleNoteDisplayMode}
-          >
-            <View style={styles.settingInfo}>
-              <ThemedText style={styles.settingLabel}>
-                Show as Sheet Music
-              </ThemedText>
-              <ThemedText type="muted" style={styles.settingDescription}>
-                Display notes on a treble clef staff instead of text
-              </ThemedText>
-            </View>
-            <Switch
-              value={settings.noteDisplayMode === 'staff'}
-              onValueChange={handleToggleNoteDisplayMode}
-              trackColor={{ false: colors.border, true: colors.primary }}
-              thumbColor={colors.surface}
-            />
-          </Pressable>
-        </View>
-
-        {/* Note Labels - expandable section */}
+        {/* Display - expandable section */}
         <View style={styles.section}>
           <Pressable
             style={styles.expandableHeader}
-            onPress={() => setNoteLabelsExpanded(!noteLabelsExpanded)}
+            onPress={() => setDisplayExpanded(!displayExpanded)}
           >
             <ThemedText type="subtitle" style={styles.sectionTitle}>
-              Note Labels
+              Display
             </ThemedText>
             <Ionicons
-              name={noteLabelsExpanded ? 'chevron-up' : 'chevron-down'}
+              name={displayExpanded ? 'chevron-up' : 'chevron-down'}
               size={chevronIconSize}
               color={colors.settingsChevron}
             />
           </Pressable>
 
-          {noteLabelsExpanded && (
+          {displayExpanded && (
             <View style={styles.expandableContent}>
+              <Pressable
+                style={[styles.settingRow, { borderColor: colors.border }]}
+                onPress={handleToggleNoteDisplayMode}
+              >
+                <View style={styles.settingInfo}>
+                  <ThemedText style={styles.settingLabel}>
+                    Show as Sheet Music
+                  </ThemedText>
+                  <ThemedText type="muted" style={styles.settingDescription}>
+                    Display notes on a treble clef staff instead of text
+                  </ThemedText>
+                </View>
+                <Switch
+                  value={settings.noteDisplayMode === 'staff'}
+                  onValueChange={handleToggleNoteDisplayMode}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                  thumbColor={colors.surface}
+                />
+              </Pressable>
+
               <Pressable
                 style={[styles.settingRow, { borderColor: colors.border }]}
                 onPress={handleToggleWhiteKeyLabels}
@@ -201,6 +202,26 @@ export default function Settings() {
                 <Switch
                   value={settings.showBlackKeyLabels}
                   onValueChange={handleToggleBlackKeyLabels}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                  thumbColor={colors.surface}
+                />
+              </Pressable>
+
+              <Pressable
+                style={[styles.settingRow, { borderColor: colors.border }]}
+                onPress={handleToggleTimer}
+              >
+                <View style={styles.settingInfo}>
+                  <ThemedText style={styles.settingLabel}>
+                    Show Timer
+                  </ThemedText>
+                  <ThemedText type="muted" style={styles.settingDescription}>
+                    Display the elapsed time during gameplay
+                  </ThemedText>
+                </View>
+                <Switch
+                  value={settings.showTimer}
+                  onValueChange={handleToggleTimer}
                   trackColor={{ false: colors.border, true: colors.primary }}
                   thumbColor={colors.surface}
                 />

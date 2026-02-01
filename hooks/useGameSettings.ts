@@ -13,6 +13,7 @@ const defaultSettings: GameSettings = {
   showIncorrectFeedback: true,
   enableHapticFeedback: true,
   playSoundInSilentMode: true,
+  showTimer: true,
 };
 
 export function useGameSettings() {

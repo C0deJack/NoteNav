@@ -173,7 +173,7 @@ export default function PianoGameScreen() {
         </View>
 
         <View style={[styles.headerSide, styles.headerRight]}>
-          <GameTimer elapsedMs={state.elapsedMs} />
+          {settings.showTimer && <GameTimer elapsedMs={state.elapsedMs} />}
         </View>
       </View>
 
