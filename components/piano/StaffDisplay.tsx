@@ -1,19 +1,36 @@
 import { StyleSheet, View } from 'react-native';
-import Svg, { Ellipse, G, Line, Path } from 'react-native-svg';
+import Svg, { Ellipse, G, Line, Path, Text as SvgText } from 'react-native-svg';
 import { NOTE_STAFF_POSITIONS, STAFF_CONFIG } from '@/constants/StaffConfig';
 import { useTheme } from '@/hooks/useTheme';
 import type { KeyFeedback, NoteName } from '@/types/piano';
+
+// Position to note letter mapping (covers staff lines and spaces)
+const POSITION_TO_LETTER: Record<number, string> = {
+  '-6': 'C',
+  '-5': 'D',
+  '-4': 'E',
+  '-3': 'F',
+  '-2': 'G',
+  '-1': 'A',
+  '0': 'B',
+  '1': 'C',
+  '2': 'D',
+  '3': 'E',
+  '4': 'F',
+};
 
 interface StaffDisplayProps {
   note: string; // Display name like "C#" or "Db"
   feedback?: KeyFeedback;
   incorrectNote?: NoteName | null;
+  showLabels?: boolean;
 }
 
 export function StaffDisplay({
   note,
   feedback = 'none',
   incorrectNote = null,
+  showLabels = false,
 }: StaffDisplayProps) {
   const { colors } = useTheme();
 
@@ -81,11 +98,19 @@ export function StaffDisplay({
     centerY + 2 * lineSpacing, // Bottom line (E)
   ];
 
+  // Extra width for labels when shown
+  const labelAreaWidth = showLabels ? 45 : 0;
+  const totalWidth = width + labelAreaWidth;
+
   return (
     <View
       style={[styles.container, { backgroundColor: colors.staffBackground }]}
     >
-      <Svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
+      <Svg
+        width={totalWidth}
+        height={height}
+        viewBox={`0 0 ${totalWidth} ${height}`}
+      >
         {/* Staff lines - turn red if incorrect note is on this line */}
         {staffLineYs.map((y) => {
           const incorrectY =
@@ -194,6 +219,31 @@ export function StaffDisplay({
           fill={noteColor}
           transform={`rotate(-20, ${noteX}, ${noteY})`}
         />
+
+        {/* Staff line/space labels (shown when info button is held) */}
+        {showLabels &&
+          Object.entries(POSITION_TO_LETTER).map(([pos, letter]) => {
+            const posNum = parseInt(pos, 10);
+            const labelY = centerY - posNum * (lineSpacing / 2);
+            // Only show labels that are within the visible staff area
+            if (labelY < 10 || labelY > height - 10) return null;
+            // Lines are even positions, spaces are odd - stagger them
+            const isLine = posNum % 2 === 0;
+            const labelX = isLine ? width + 5 : width + 25;
+            return (
+              <SvgText
+                key={pos}
+                x={labelX}
+                y={labelY + 5}
+                fontSize={14}
+                fontWeight="bold"
+                fill={colors.staffLine}
+                textAnchor="start"
+              >
+                {letter}
+              </SvgText>
+            );
+          })}
       </Svg>
     </View>
   );

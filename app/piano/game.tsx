@@ -43,6 +43,7 @@ export default function PianoGameScreen() {
   });
   const { colors } = useTheme();
   const [showQuitModal, setShowQuitModal] = useState(false);
+  const [showStaffLabels, setShowStaffLabels] = useState(false);
 
   // Reset sound state when settings change (e.g., when returning to game)
   useEffect(() => {
@@ -115,6 +116,9 @@ export default function PianoGameScreen() {
   const onKeyPress = async (note: NoteName) => {
     if (state.status !== 'playing' || showQuitModal) return;
 
+    // Hide staff labels when a note is played
+    setShowStaffLabels(false);
+
     // Reset inactivity timer on any key press
     resetInactivityTimer();
 
@@ -150,6 +154,17 @@ export default function PianoGameScreen() {
           <Pressable onPress={handleQuitPress} hitSlop={8}>
             <Ionicons name="close" size={28} color={colors.text} />
           </Pressable>
+          <Pressable
+            onPressIn={() => setShowStaffLabels(true)}
+            onPressOut={() => setShowStaffLabels(false)}
+            hitSlop={8}
+          >
+            <Ionicons
+              name="information-circle-outline"
+              size={28}
+              color={colors.text}
+            />
+          </Pressable>
           <Pressable onPress={toggleMute} hitSlop={8}>
             <Ionicons
               name={soundEnabled ? 'volume-high' : 'volume-mute'}
@@ -169,6 +184,7 @@ export default function PianoGameScreen() {
             feedback={keyFeedback[currentNote.name]}
             incorrectNote={incorrectNote}
             showIncorrectFeedback={settings.showIncorrectFeedback}
+            showStaffLabels={showStaffLabels}
           />
         </View>
 

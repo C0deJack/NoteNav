@@ -10,6 +10,7 @@ interface NoteDisplayProps {
   feedback?: KeyFeedback;
   incorrectNote?: NoteName | null;
   showIncorrectFeedback?: boolean;
+  showStaffLabels?: boolean;
 }
 
 export function NoteDisplay({
@@ -18,6 +19,7 @@ export function NoteDisplay({
   feedback = 'none',
   incorrectNote = null,
   showIncorrectFeedback = true,
+  showStaffLabels = false,
 }: NoteDisplayProps) {
   const { colors } = useTheme();
 
@@ -27,6 +29,7 @@ export function NoteDisplay({
         note={note}
         feedback={feedback}
         incorrectNote={showIncorrectFeedback ? incorrectNote : null}
+        showLabels={showStaffLabels}
       />
     );
   }
