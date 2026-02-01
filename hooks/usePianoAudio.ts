@@ -1,4 +1,8 @@
-import { type AudioPlayer, createAudioPlayer } from 'expo-audio';
+import {
+  type AudioPlayer,
+  createAudioPlayer,
+  setAudioModeAsync,
+} from 'expo-audio';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { ERROR_SOUND_FILE, NOTES } from '@/constants/PianoConfig';
@@ -28,21 +32,30 @@ export function usePianoAudio() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    // Create players for all notes
-    for (const [noteName, noteData] of Object.entries(NOTES)) {
-      const source = SOUND_FILES[noteData.soundFile];
-      if (source) {
-        playersRef.current[noteName] = createAudioPlayer(source);
+    async function initAudio() {
+      // Configure audio mode for playback on real devices (especially iOS silent mode)
+      await setAudioModeAsync({
+        playsInSilentMode: true,
+      });
+
+      // Create players for all notes
+      for (const [noteName, noteData] of Object.entries(NOTES)) {
+        const source = SOUND_FILES[noteData.soundFile];
+        if (source) {
+          playersRef.current[noteName] = createAudioPlayer(source);
+        }
       }
+
+      // Create error sound player
+      const errorSource = SOUND_FILES[ERROR_SOUND_FILE];
+      if (errorSource) {
+        playersRef.current.error = createAudioPlayer(errorSource);
+      }
+
+      setLoaded(true);
     }
 
-    // Create error sound player
-    const errorSource = SOUND_FILES[ERROR_SOUND_FILE];
-    if (errorSource) {
-      playersRef.current.error = createAudioPlayer(errorSource);
-    }
-
-    setLoaded(true);
+    initAudio();
 
     // Cleanup on unmount
     return () => {
@@ -54,22 +67,24 @@ export function usePianoAudio() {
   }, []);
 
   const playNote = useCallback(
-    (note: NoteName) => {
+    async (note: NoteName) => {
       if (!loaded) return;
       const player = playersRef.current[note];
       if (player) {
-        player.seekTo(0);
+        player.volume = 1.0;
+        await player.seekTo(0);
         player.play();
       }
     },
     [loaded],
   );
 
-  const playError = useCallback(() => {
+  const playError = useCallback(async () => {
     if (!loaded) return;
     const player = playersRef.current.error;
     if (player) {
-      player.seekTo(0);
+      player.volume = 1.0;
+      await player.seekTo(0);
       player.play();
     }
   }, [loaded]);
