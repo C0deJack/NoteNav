@@ -1,11 +1,13 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import * as ScreenOrientation from 'expo-screen-orientation';
+import { useEffect, useRef } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { DIFFICULTIES } from '@/constants/PianoConfig';
+import { useProgress } from '@/hooks/useProgress';
 import { useTheme } from '@/hooks/useTheme';
 import type { Difficulty } from '@/types/piano';
 
@@ -20,6 +22,15 @@ export default function PianoResultsScreen() {
   const accuracy = parseInt(params.accuracy || '0', 10);
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const { addScore } = useProgress();
+  const scoreSaved = useRef(false);
+
+  useEffect(() => {
+    if (!scoreSaved.current) {
+      scoreSaved.current = true;
+      addScore({ difficulty, elapsedMs, accuracy });
+    }
+  }, [addScore, difficulty, elapsedMs, accuracy]);
 
   const seconds = Math.floor(elapsedMs / 1000);
   const minutes = Math.floor(seconds / 60);

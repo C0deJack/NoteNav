@@ -1,124 +1,303 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { Image, Platform, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import { FlatList, Modal, Pressable, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { DIFFICULTIES } from '@/constants/PianoConfig';
+import { useProgress } from '@/hooks/useProgress';
+import { useTheme } from '@/hooks/useTheme';
+import type { GameScore } from '@/types/piano';
 
-export default function TabTwoScreen() {
+function formatTime(ms: number): string {
+  const seconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+}
+
+function formatDate(timestamp: number): string {
+  const date = new Date(timestamp);
+  return date.toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+function ScoreItem({ score, colors }: { score: GameScore; colors: any }) {
+  const difficultyLabel =
+    DIFFICULTIES.find((d) => d.value === score.difficulty)?.label || 'Unknown';
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <Ionicons size={310} name="code-slash" style={styles.headerImage} />
-      }
-    >
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
+    <View style={[styles.scoreItem, { borderColor: colors.border }]}>
+      <View style={styles.scoreHeader}>
+        <ThemedText style={styles.scoreAccuracy}>{score.accuracy}%</ThemedText>
+        <ThemedText type="muted" style={styles.scoreDate}>
+          {formatDate(score.timestamp)}
+        </ThemedText>
+      </View>
+      <View style={styles.scoreDetails}>
+        <ThemedText type="muted">
+          {difficultyLabel} ({score.difficulty} notes)
+        </ThemedText>
+        <ThemedText type="muted">{formatTime(score.elapsedMs)}</ThemedText>
+      </View>
+    </View>
+  );
+}
+
+export default function ProgressScreen() {
+  const { colors } = useTheme();
+  const { scores, loaded, resetProgress, getStats } = useProgress();
+  const insets = useSafeAreaInsets();
+  const [showResetModal, setShowResetModal] = useState(false);
+
+  const stats = getStats();
+
+  const handleResetConfirm = () => {
+    resetProgress();
+    setShowResetModal(false);
+  };
+
+  if (!loaded) {
+    return (
+      <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
+        <ThemedText>Loading...</ThemedText>
       </ThemedView>
-      <ThemedText>
-        This app includes example code to help you get started.
+    );
+  }
+
+  return (
+    <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
+      <ThemedText type="title" style={styles.title}>
+        Progress
       </ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText>{' '}
-          and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the
-          web version, press <ThemedText type="defaultSemiBold">w</ThemedText>{' '}
-          in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the{' '}
-          <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to
-          provide files for different screen densities
-        </ThemedText>
-        <Image
-          source={require('@/assets/images/react-logo.png')}
-          style={{ alignSelf: 'center' }}
-        />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText>{' '}
-          to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-            custom fonts such as this one.
+
+      {scores.length === 0 ? (
+        <View style={styles.emptyState}>
+          <ThemedText type="muted" style={styles.emptyText}>
+            No games played yet.
           </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook
-          lets you inspect what the user's current color scheme is, and so you
-          can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">
-            components/HelloWave.tsx
-          </ThemedText>{' '}
-          component uses the powerful{' '}
-          <ThemedText type="defaultSemiBold">
-            react-native-reanimated
-          </ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The{' '}
-              <ThemedText type="defaultSemiBold">
-                components/ParallaxScrollView.tsx
-              </ThemedText>{' '}
-              component provides a parallax effect for the header image.
+          <ThemedText type="muted" style={styles.emptyText}>
+            Complete a game to see your progress here!
+          </ThemedText>
+        </View>
+      ) : (
+        <>
+          <View style={styles.statsContainer}>
+            <View
+              style={[styles.statCard, { backgroundColor: colors.surface }]}
+            >
+              <ThemedText style={styles.statValue}>
+                {stats.totalGames}
+              </ThemedText>
+              <ThemedText type="muted" style={styles.statLabel}>
+                Games Played
+              </ThemedText>
+            </View>
+            <View
+              style={[styles.statCard, { backgroundColor: colors.surface }]}
+            >
+              <ThemedText style={styles.statValue}>
+                {stats.averageAccuracy}%
+              </ThemedText>
+              <ThemedText type="muted" style={styles.statLabel}>
+                Avg Accuracy
+              </ThemedText>
+            </View>
+            <View
+              style={[styles.statCard, { backgroundColor: colors.surface }]}
+            >
+              <ThemedText style={styles.statValue}>
+                {stats.bestAccuracy}%
+              </ThemedText>
+              <ThemedText type="muted" style={styles.statLabel}>
+                Best Accuracy
+              </ThemedText>
+            </View>
+          </View>
+
+          <ThemedText type="subtitle" style={styles.sectionTitle}>
+            Recent Games
+          </ThemedText>
+
+          <FlatList
+            data={scores}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <ScoreItem score={item} colors={colors} />
+            )}
+            contentContainerStyle={styles.listContent}
+            showsVerticalScrollIndicator={false}
+          />
+
+          <Pressable
+            style={[styles.resetButton, { borderColor: colors.border }]}
+            onPress={() => setShowResetModal(true)}
+          >
+            <ThemedText style={styles.resetButtonText}>
+              Reset Progress
             </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+          </Pressable>
+        </>
+      )}
+
+      <Modal
+        visible={showResetModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowResetModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View
+            style={[styles.modalContent, { backgroundColor: colors.surface }]}
+          >
+            <ThemedText type="subtitle" style={styles.modalTitle}>
+              Reset Progress?
+            </ThemedText>
+            <ThemedText type="muted" style={styles.modalText}>
+              This will delete all your game history and statistics. This action
+              cannot be undone.
+            </ThemedText>
+            <View style={styles.modalButtons}>
+              <Pressable
+                style={[styles.modalButton, { borderColor: colors.border }]}
+                onPress={() => setShowResetModal(false)}
+              >
+                <ThemedText>Cancel</ThemedText>
+              </Pressable>
+              <Pressable
+                style={[
+                  styles.modalButton,
+                  styles.modalButtonDanger,
+                  { backgroundColor: '#dc3545' },
+                ]}
+                onPress={handleResetConfirm}
+              >
+                <ThemedText style={{ color: '#fff' }}>Reset</ThemedText>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  container: {
+    flex: 1,
+    paddingHorizontal: 16,
   },
-  titleContainer: {
-    flexDirection: 'row',
+  title: {
+    marginTop: 16,
+    marginBottom: 24,
+  },
+  emptyState: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     gap: 8,
+  },
+  emptyText: {
+    textAlign: 'center',
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 24,
+  },
+  statCard: {
+    flex: 1,
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  statValue: {
+    fontSize: 24,
+    fontWeight: '700',
+  },
+  statLabel: {
+    fontSize: 12,
+    marginTop: 4,
+  },
+  sectionTitle: {
+    marginBottom: 12,
+  },
+  listContent: {
+    paddingBottom: 16,
+    gap: 8,
+  },
+  scoreItem: {
+    padding: 12,
+    borderWidth: 1,
+    borderRadius: 12,
+  },
+  scoreHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  scoreAccuracy: {
+    fontSize: 20,
+    fontWeight: '600',
+  },
+  scoreDate: {
+    fontSize: 12,
+  },
+  scoreDetails: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  resetButton: {
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    alignItems: 'center',
+    marginTop: 8,
+    marginBottom: 24,
+  },
+  resetButtonText: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#dc3545',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    width: '100%',
+    maxWidth: 340,
+    borderRadius: 16,
+    padding: 20,
+  },
+  modalTitle: {
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  modalText: {
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  modalButton: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    alignItems: 'center',
+  },
+  modalButtonDanger: {
+    borderWidth: 0,
   },
 });

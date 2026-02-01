@@ -42,3 +42,11 @@ export interface GameSettings {
 }
 
 export type KeyFeedback = 'none' | 'correct' | 'incorrect';
+
+export interface GameScore {
+  id: string;
+  difficulty: Difficulty;
+  accuracy: number;
+  elapsedMs: number;
+  timestamp: number;
+}
