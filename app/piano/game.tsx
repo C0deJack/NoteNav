@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as ScreenOrientation from 'expo-screen-orientation';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -13,6 +13,7 @@ import { QuitGameModal } from '@/components/piano/QuitGameModal';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useGameSettings } from '@/hooks/useGameSettings';
+import { useInactivityTimeout } from '@/hooks/useInactivityTimeout';
 import { usePianoAudio } from '@/hooks/usePianoAudio';
 import { usePianoGame } from '@/hooks/usePianoGame';
 import { useTheme } from '@/hooks/useTheme';
@@ -36,6 +37,16 @@ export default function PianoGameScreen() {
   const { settings } = useGameSettings();
   const { colors } = useTheme();
   const [showQuitModal, setShowQuitModal] = useState(false);
+
+  const handleInactivityTimeout = useCallback(() => {
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+    router.replace('/' as any);
+  }, []);
+
+  const { resetTimer: resetInactivityTimer } = useInactivityTimeout({
+    onTimeout: handleInactivityTimeout,
+    enabled: state.status === 'playing',
+  });
 
   const dynamicStyles = useMemo(
     () => ({
@@ -88,6 +99,9 @@ export default function PianoGameScreen() {
 
   const onKeyPress = async (note: NoteName) => {
     if (state.status !== 'playing' || showQuitModal) return;
+
+    // Reset inactivity timer on any key press
+    resetInactivityTimer();
 
     const isCorrect = handleKeyPress(note);
 
