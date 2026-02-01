@@ -34,20 +34,31 @@ export function StaffDisplay({
 }: StaffDisplayProps) {
   const { colors } = useTheme();
 
-  // Use staff line color normally, green when correct
-  const noteColor =
-    feedback === 'correct' ? colors.correctFeedback : colors.staffLine;
-
-  // Calculate incorrect note position if present
-  const incorrectPosition =
-    incorrectNote !== null
-      ? (NOTE_STAFF_POSITIONS[incorrectNote] ?? null)
-      : null;
-
   // Parse the note to get base note and accidental
   const isSharp = note.includes('#');
   const isFlat = note.includes('b');
   const baseLetter = note.charAt(0).toUpperCase();
+
+  // Check if user pressed the natural note when they should have pressed the sharp/flat
+  // e.g., target is C# but user pressed C, or target is Db but user pressed D
+  const pressedNaturalInsteadOfAccidental =
+    (isSharp || isFlat) && incorrectNote === baseLetter;
+
+  // Use staff line color normally, green when correct
+  const noteColor =
+    feedback === 'correct' ? colors.correctFeedback : colors.staffLine;
+
+  // Highlight accidental in red if user pressed the natural note instead
+  const accidentalColor = pressedNaturalInsteadOfAccidental
+    ? colors.incorrectFeedback
+    : noteColor;
+
+  // Calculate incorrect note position if present
+  // Don't show incorrect feedback for sharps/flats - only natural notes
+  const incorrectPosition =
+    incorrectNote !== null && !incorrectNote.includes('#')
+      ? (NOTE_STAFF_POSITIONS[incorrectNote] ?? null)
+      : null;
 
   // Map display note to NoteName for position lookup
   // For flats, map to the equivalent sharp (Db -> C#, etc.)
@@ -137,7 +148,7 @@ export function StaffDisplay({
           );
         })}
 
-        {/* Hidden line indicator for incorrect notes (between visible staff lines) */}
+        {/* Hidden line indicator for incorrect notes (between visible staff lines or on ledger line) */}
         {incorrectPosition !== null &&
           (() => {
             const incorrectY = centerY - incorrectPosition * (lineSpacing / 2);
@@ -145,11 +156,9 @@ export function StaffDisplay({
             const isOnStaffLine = staffLineYs.some(
               (y) => Math.abs(y - incorrectY) < 1,
             );
-            // Check if it's on the ledger line position
-            const isOnLedgerLine = incorrectPosition <= -6;
-            // Only show the hidden line if it's NOT on a visible staff line
-            // (ledger lines are handled separately below)
-            const showHiddenLine = !isOnStaffLine && !isOnLedgerLine;
+            // Show the full-width line if it's NOT on a visible staff line
+            // This includes spaces between lines AND the ledger line position (C)
+            const showHiddenLine = !isOnStaffLine;
 
             return showHiddenLine ? (
               <Line
@@ -168,34 +177,25 @@ export function StaffDisplay({
           <TrebleClef color={colors.staffLine} />
         </G>
 
-        {/* Ledger line for middle C - turns red if incorrect note is on ledger line */}
-        {needsLedgerLine &&
-          (() => {
-            const isIncorrectOnLedger =
-              incorrectPosition !== null && incorrectPosition <= -6;
-            return (
-              <Line
-                x1={noteX - noteRadius - 6}
-                y1={noteY}
-                x2={noteX + noteRadius + 6}
-                y2={noteY}
-                stroke={
-                  isIncorrectOnLedger
-                    ? colors.incorrectFeedback
-                    : colors.staffLine
-                }
-                strokeWidth={isIncorrectOnLedger ? 2 : 1.5}
-              />
-            );
-          })()}
+        {/* Ledger line for middle C */}
+        {needsLedgerLine && (
+          <Line
+            x1={noteX - noteRadius - 6}
+            y1={noteY}
+            x2={noteX + noteRadius + 6}
+            y2={noteY}
+            stroke={colors.staffLine}
+            strokeWidth={1.5}
+          />
+        )}
 
-        {/* Accidental (sharp or flat) */}
+        {/* Accidental (sharp or flat) - highlights red if user pressed natural instead */}
         {(isSharp || isFlat) && (
           <G transform={`translate(${noteX - accidentalOffset}, ${noteY})`}>
             {isSharp ? (
-              <SharpSymbol color={noteColor} />
+              <SharpSymbol color={accidentalColor} />
             ) : (
-              <FlatSymbol color={noteColor} />
+              <FlatSymbol color={accidentalColor} />
             )}
           </G>
         )}
