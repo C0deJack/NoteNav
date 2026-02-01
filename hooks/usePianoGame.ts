@@ -66,6 +66,7 @@ export function usePianoGame() {
       KeyFeedback
     >,
   );
+  const [incorrectNote, setIncorrectNote] = useState<NoteName | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const feedbackKeyRef = useRef(0);
 
@@ -126,12 +127,20 @@ export function usePianoGame() {
         [pressedNote]: isCorrect ? 'correct' : 'incorrect',
       }));
 
+      // Track incorrect note for staff display
+      if (!isCorrect) {
+        setIncorrectNote(pressedNote);
+      }
+
       // Clear feedback after animation
       setTimeout(() => {
         setKeyFeedback((prev) => ({
           ...prev,
           [pressedNote]: 'none',
         }));
+        if (!isCorrect) {
+          setIncorrectNote(null);
+        }
       }, 300);
 
       if (isCorrect) {
@@ -213,11 +222,13 @@ export function usePianoGame() {
         KeyFeedback
       >,
     );
+    setIncorrectNote(null);
   }, []);
 
   return {
     state,
     keyFeedback,
+    incorrectNote,
     setDifficulty,
     startGame,
     handleKeyPress,

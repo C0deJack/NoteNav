@@ -2,14 +2,30 @@ import { StyleSheet, View } from 'react-native';
 import Svg, { Ellipse, G, Line, Path } from 'react-native-svg';
 import { NOTE_STAFF_POSITIONS, STAFF_CONFIG } from '@/constants/StaffConfig';
 import { useTheme } from '@/hooks/useTheme';
-import type { NoteName } from '@/types/piano';
+import type { KeyFeedback, NoteName } from '@/types/piano';
 
 interface StaffDisplayProps {
   note: string; // Display name like "C#" or "Db"
+  feedback?: KeyFeedback;
+  incorrectNote?: NoteName | null;
 }
 
-export function StaffDisplay({ note }: StaffDisplayProps) {
+export function StaffDisplay({
+  note,
+  feedback = 'none',
+  incorrectNote = null,
+}: StaffDisplayProps) {
   const { colors } = useTheme();
+
+  // Use staff line color normally, green when correct
+  const noteColor =
+    feedback === 'correct' ? colors.correctFeedback : colors.staffLine;
+
+  // Calculate incorrect note position if present
+  const incorrectPosition =
+    incorrectNote !== null
+      ? (NOTE_STAFF_POSITIONS[incorrectNote] ?? null)
+      : null;
 
   // Parse the note to get base note and accidental
   const isSharp = note.includes('#');
@@ -70,43 +86,91 @@ export function StaffDisplay({ note }: StaffDisplayProps) {
       style={[styles.container, { backgroundColor: colors.staffBackground }]}
     >
       <Svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
-        {/* Staff lines */}
-        {staffLineYs.map((y) => (
-          <Line
-            key={y}
-            x1={leftPadding - 10}
-            y1={y}
-            x2={width - 10}
-            y2={y}
-            stroke={colors.staffLine}
-            strokeWidth={1.5}
-          />
-        ))}
+        {/* Staff lines - turn red if incorrect note is on this line */}
+        {staffLineYs.map((y) => {
+          const incorrectY =
+            incorrectPosition !== null
+              ? centerY - incorrectPosition * (lineSpacing / 2)
+              : null;
+          const isIncorrectOnThisLine =
+            incorrectY !== null && Math.abs(y - incorrectY) < 1;
+
+          return (
+            <Line
+              key={y}
+              x1={leftPadding - 10}
+              y1={y}
+              x2={width - 10}
+              y2={y}
+              stroke={
+                isIncorrectOnThisLine
+                  ? colors.incorrectFeedback
+                  : colors.staffLine
+              }
+              strokeWidth={isIncorrectOnThisLine ? 2 : 1.5}
+            />
+          );
+        })}
+
+        {/* Hidden line indicator for incorrect notes (between visible staff lines) */}
+        {incorrectPosition !== null &&
+          (() => {
+            const incorrectY = centerY - incorrectPosition * (lineSpacing / 2);
+            // Check if this position is on a visible staff line
+            const isOnStaffLine = staffLineYs.some(
+              (y) => Math.abs(y - incorrectY) < 1,
+            );
+            // Check if it's on the ledger line position
+            const isOnLedgerLine = incorrectPosition <= -6;
+            // Only show the hidden line if it's NOT on a visible staff line
+            // (ledger lines are handled separately below)
+            const showHiddenLine = !isOnStaffLine && !isOnLedgerLine;
+
+            return showHiddenLine ? (
+              <Line
+                x1={leftPadding - 10}
+                y1={incorrectY}
+                x2={width - 10}
+                y2={incorrectY}
+                stroke={colors.incorrectFeedback}
+                strokeWidth={2}
+              />
+            ) : null;
+          })()}
 
         {/* Treble clef */}
         <G transform={`translate(${leftPadding - 10}, ${centerY - 50})`}>
           <TrebleClef color={colors.staffLine} />
         </G>
 
-        {/* Ledger line for middle C */}
-        {needsLedgerLine && (
-          <Line
-            x1={noteX - noteRadius - 6}
-            y1={noteY}
-            x2={noteX + noteRadius + 6}
-            y2={noteY}
-            stroke={colors.staffLine}
-            strokeWidth={1.5}
-          />
-        )}
+        {/* Ledger line for middle C - turns red if incorrect note is on ledger line */}
+        {needsLedgerLine &&
+          (() => {
+            const isIncorrectOnLedger =
+              incorrectPosition !== null && incorrectPosition <= -6;
+            return (
+              <Line
+                x1={noteX - noteRadius - 6}
+                y1={noteY}
+                x2={noteX + noteRadius + 6}
+                y2={noteY}
+                stroke={
+                  isIncorrectOnLedger
+                    ? colors.incorrectFeedback
+                    : colors.staffLine
+                }
+                strokeWidth={isIncorrectOnLedger ? 2 : 1.5}
+              />
+            );
+          })()}
 
         {/* Accidental (sharp or flat) */}
         {(isSharp || isFlat) && (
           <G transform={`translate(${noteX - accidentalOffset}, ${noteY})`}>
             {isSharp ? (
-              <SharpSymbol color={colors.staffAccidental} />
+              <SharpSymbol color={noteColor} />
             ) : (
-              <FlatSymbol color={colors.staffAccidental} />
+              <FlatSymbol color={noteColor} />
             )}
           </G>
         )}
@@ -117,7 +181,7 @@ export function StaffDisplay({ note }: StaffDisplayProps) {
           y1={noteY}
           x2={noteX + noteRadius - 1}
           y2={noteY - lineSpacing * 3}
-          stroke={colors.staffNote}
+          stroke={noteColor}
           strokeWidth={1.5}
         />
 
@@ -127,7 +191,7 @@ export function StaffDisplay({ note }: StaffDisplayProps) {
           cy={noteY}
           rx={noteRadius}
           ry={noteRadius * 0.75}
-          fill={colors.staffNote}
+          fill={noteColor}
           transform={`rotate(-20, ${noteX}, ${noteY})`}
         />
       </Svg>

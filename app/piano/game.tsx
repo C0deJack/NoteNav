@@ -28,6 +28,7 @@ export default function PianoGameScreen() {
   const {
     state,
     keyFeedback,
+    incorrectNote,
     startGame,
     handleKeyPress,
     pauseGame,
@@ -136,6 +137,8 @@ export default function PianoGameScreen() {
           <NoteDisplay
             note={currentNote.displayName}
             displayMode={settings.noteDisplayMode}
+            feedback={keyFeedback[currentNote.name]}
+            incorrectNote={incorrectNote}
           />
         </View>
 

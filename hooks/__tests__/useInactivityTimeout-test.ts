@@ -140,7 +140,8 @@ describe('useInactivityTimeout', () => {
     const timeoutMs = 1000;
 
     const { rerender } = renderHook(
-      (props: { enabled: boolean }) => useInactivityTimeout({ onTimeout, timeoutMs, enabled: props.enabled }),
+      (props: { enabled: boolean }) =>
+        useInactivityTimeout({ onTimeout, timeoutMs, enabled: props.enabled }),
       { initialProps: { enabled: false } },
     );
 
@@ -164,7 +165,8 @@ describe('useInactivityTimeout', () => {
     const timeoutMs = 1000;
 
     const { rerender } = renderHook(
-      (props: { enabled: boolean }) => useInactivityTimeout({ onTimeout, timeoutMs, enabled: props.enabled }),
+      (props: { enabled: boolean }) =>
+        useInactivityTimeout({ onTimeout, timeoutMs, enabled: props.enabled }),
       { initialProps: { enabled: true } },
     );
 
