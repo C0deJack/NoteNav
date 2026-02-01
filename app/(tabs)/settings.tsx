@@ -348,7 +348,7 @@ export default function Settings() {
               </Pressable>
 
               {preference === 'custom' && customColorsExpanded && (
-                <View style={styles.nestedExpandableContent}>
+                <View style={styles.expandableContent}>
                   {customColorOptions.map((option) => (
                     <Pressable
                       key={option.key}
