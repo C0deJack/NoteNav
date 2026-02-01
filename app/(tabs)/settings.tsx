@@ -87,6 +87,10 @@ export default function Settings() {
     });
   };
 
+  const handleToggleIncorrectFeedback = () => {
+    updateSettings({ showIncorrectFeedback: !settings.showIncorrectFeedback });
+  };
+
   return (
     <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
       <ScrollView
@@ -164,6 +168,26 @@ export default function Settings() {
             <Switch
               value={settings.noteDisplayMode === 'staff'}
               onValueChange={handleToggleNoteDisplayMode}
+              trackColor={{ false: colors.border, true: colors.primary }}
+              thumbColor={colors.surface}
+            />
+          </Pressable>
+
+          <Pressable
+            style={[styles.settingRow, { borderColor: colors.border }]}
+            onPress={handleToggleIncorrectFeedback}
+          >
+            <View style={styles.settingInfo}>
+              <ThemedText style={styles.settingLabel}>
+                Show Incorrect Position
+              </ThemedText>
+              <ThemedText type="muted" style={styles.settingDescription}>
+                Highlight the staff line where an incorrect note was played
+              </ThemedText>
+            </View>
+            <Switch
+              value={settings.showIncorrectFeedback}
+              onValueChange={handleToggleIncorrectFeedback}
               trackColor={{ false: colors.border, true: colors.primary }}
               thumbColor={colors.surface}
             />

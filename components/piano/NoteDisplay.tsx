@@ -9,6 +9,7 @@ interface NoteDisplayProps {
   displayMode?: NoteDisplayMode;
   feedback?: KeyFeedback;
   incorrectNote?: NoteName | null;
+  showIncorrectFeedback?: boolean;
 }
 
 export function NoteDisplay({
@@ -16,6 +17,7 @@ export function NoteDisplay({
   displayMode = 'text',
   feedback = 'none',
   incorrectNote = null,
+  showIncorrectFeedback = true,
 }: NoteDisplayProps) {
   const { colors } = useTheme();
 
@@ -24,7 +26,7 @@ export function NoteDisplay({
       <StaffDisplay
         note={note}
         feedback={feedback}
-        incorrectNote={incorrectNote}
+        incorrectNote={showIncorrectFeedback ? incorrectNote : null}
       />
     );
   }

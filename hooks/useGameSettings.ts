@@ -10,6 +10,7 @@ const defaultSettings: GameSettings = {
   showWhiteKeyLabels: false,
   showBlackKeyLabels: false,
   noteDisplayMode: 'text',
+  showIncorrectFeedback: true,
 };
 
 export function useGameSettings() {

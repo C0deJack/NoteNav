@@ -39,6 +39,7 @@ export interface GameSettings {
   showWhiteKeyLabels: boolean;
   showBlackKeyLabels: boolean;
   noteDisplayMode: NoteDisplayMode;
+  showIncorrectFeedback: boolean;
 }
 
 export type KeyFeedback = 'none' | 'correct' | 'incorrect';

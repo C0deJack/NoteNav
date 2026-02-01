@@ -139,6 +139,7 @@ export default function PianoGameScreen() {
             displayMode={settings.noteDisplayMode}
             feedback={keyFeedback[currentNote.name]}
             incorrectNote={incorrectNote}
+            showIncorrectFeedback={settings.showIncorrectFeedback}
           />
         </View>
 
