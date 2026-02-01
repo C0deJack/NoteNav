@@ -91,6 +91,10 @@ export default function Settings() {
     updateSettings({ showIncorrectFeedback: !settings.showIncorrectFeedback });
   };
 
+  const handleToggleHapticFeedback = () => {
+    updateSettings({ enableHapticFeedback: !settings.enableHapticFeedback });
+  };
+
   return (
     <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
       <ScrollView
@@ -188,6 +192,26 @@ export default function Settings() {
             <Switch
               value={settings.showIncorrectFeedback}
               onValueChange={handleToggleIncorrectFeedback}
+              trackColor={{ false: colors.border, true: colors.primary }}
+              thumbColor={colors.surface}
+            />
+          </Pressable>
+
+          <Pressable
+            style={[styles.settingRow, { borderColor: colors.border }]}
+            onPress={handleToggleHapticFeedback}
+          >
+            <View style={styles.settingInfo}>
+              <ThemedText style={styles.settingLabel}>
+                Haptic Feedback
+              </ThemedText>
+              <ThemedText type="muted" style={styles.settingDescription}>
+                Vibrate on correct and incorrect key presses
+              </ThemedText>
+            </View>
+            <Switch
+              value={settings.enableHapticFeedback}
+              onValueChange={handleToggleHapticFeedback}
               trackColor={{ false: colors.border, true: colors.primary }}
               thumbColor={colors.surface}
             />

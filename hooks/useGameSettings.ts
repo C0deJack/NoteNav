@@ -11,6 +11,7 @@ const defaultSettings: GameSettings = {
   showBlackKeyLabels: false,
   noteDisplayMode: 'text',
   showIncorrectFeedback: true,
+  enableHapticFeedback: true,
 };
 
 export function useGameSettings() {

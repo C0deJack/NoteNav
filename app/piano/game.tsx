@@ -108,10 +108,14 @@ export default function PianoGameScreen() {
 
     if (isCorrect) {
       await playNote(note);
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      if (settings.enableHapticFeedback) {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
     } else {
       await playError();
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      if (settings.enableHapticFeedback) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
     }
   };
 

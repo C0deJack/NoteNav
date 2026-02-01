@@ -40,6 +40,7 @@ export interface GameSettings {
   showBlackKeyLabels: boolean;
   noteDisplayMode: NoteDisplayMode;
   showIncorrectFeedback: boolean;
+  enableHapticFeedback: boolean;
 }
 
 export type KeyFeedback = 'none' | 'correct' | 'incorrect';
