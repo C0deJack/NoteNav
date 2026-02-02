@@ -11,6 +11,8 @@ interface NoteDisplayProps {
   incorrectNote?: NoteName | null;
   showIncorrectFeedback?: boolean;
   showStaffLabels?: boolean;
+  correctAnimationTrigger?: number;
+  lastCorrectNote?: string | null;
 }
 
 export function NoteDisplay({
@@ -20,6 +22,8 @@ export function NoteDisplay({
   incorrectNote = null,
   showIncorrectFeedback = true,
   showStaffLabels = false,
+  correctAnimationTrigger = 0,
+  lastCorrectNote = null,
 }: NoteDisplayProps) {
   const { colors } = useTheme();
 
@@ -30,6 +34,8 @@ export function NoteDisplay({
         feedback={feedback}
         incorrectNote={showIncorrectFeedback ? incorrectNote : null}
         showLabels={showStaffLabels}
+        correctAnimationTrigger={correctAnimationTrigger}
+        lastCorrectNote={lastCorrectNote}
       />
     );
   }

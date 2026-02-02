@@ -1,8 +1,10 @@
+import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Svg, { Ellipse, G, Line, Path, Text as SvgText } from 'react-native-svg';
 import { NOTE_STAFF_POSITIONS, STAFF_CONFIG } from '@/constants/StaffConfig';
 import { useTheme } from '@/hooks/useTheme';
 import type { KeyFeedback, NoteName } from '@/types/piano';
+import { CorrectNoteAnimation } from './CorrectNoteAnimation';
 
 // Position to note letter mapping (covers staff lines and spaces)
 const POSITION_TO_LETTER: Record<number, string> = {
@@ -24,6 +26,8 @@ interface StaffDisplayProps {
   feedback?: KeyFeedback;
   incorrectNote?: NoteName | null;
   showLabels?: boolean;
+  correctAnimationTrigger?: number;
+  lastCorrectNote?: string | null;
 }
 
 export function StaffDisplay({
@@ -31,8 +35,11 @@ export function StaffDisplay({
   feedback = 'none',
   incorrectNote = null,
   showLabels = false,
+  correctAnimationTrigger = 0,
+  lastCorrectNote = null,
 }: StaffDisplayProps) {
   const { colors } = useTheme();
+  const [animationPosition, setAnimationPosition] = useState({ x: 0, y: 0 });
 
   // Parse the note to get base note and accidental
   const isSharp = note.includes('#');
@@ -83,6 +90,32 @@ export function StaffDisplay({
     accidentalOffset,
   } = STAFF_CONFIG;
 
+  // Calculate animation position when a correct note is triggered
+  useEffect(() => {
+    if (correctAnimationTrigger > 0 && lastCorrectNote) {
+      // Parse the last correct note to get its position
+      const lastIsSharp = lastCorrectNote.includes('#');
+      const lastIsFlat = lastCorrectNote.includes('♭');
+      const lastBaseLetter = lastCorrectNote.charAt(0).toUpperCase();
+
+      let lastNoteName: NoteName;
+      if (lastIsFlat) {
+        lastNoteName = lastBaseLetter as NoteName;
+      } else if (lastIsSharp) {
+        lastNoteName = lastCorrectNote as NoteName;
+      } else {
+        lastNoteName = lastBaseLetter as NoteName;
+      }
+
+      const lastPosition = NOTE_STAFF_POSITIONS[lastNoteName] ?? 0;
+      const centerY = height / 2;
+      const lastNoteY = centerY - lastPosition * (lineSpacing / 2);
+      const lastNoteX = leftPadding + 100;
+
+      setAnimationPosition({ x: lastNoteX, y: lastNoteY });
+    }
+  }, [correctAnimationTrigger, lastCorrectNote, height, lineSpacing, leftPadding]);
+
   // Calculate Y position for the note
   // Staff center is at height/2, each position step moves by half lineSpacing
   const centerY = height / 2;
@@ -107,10 +140,20 @@ export function StaffDisplay({
   const labelAreaWidth = showLabels ? 45 : 0;
   const totalWidth = width + labelAreaWidth;
 
+  // Container padding for animation positioning
+  const containerPadding = 10;
+
   return (
     <View
       style={[styles.container, { backgroundColor: colors.staffBackground }]}
     >
+      <CorrectNoteAnimation
+        x={animationPosition.x + containerPadding}
+        y={animationPosition.y + containerPadding}
+        trigger={correctAnimationTrigger}
+        width={totalWidth + containerPadding * 2}
+        height={height + containerPadding * 2}
+      />
       <Svg
         width={totalWidth}
         height={height}

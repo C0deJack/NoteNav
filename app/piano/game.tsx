@@ -44,6 +44,8 @@ export default function PianoGameScreen() {
   const { colors } = useTheme();
   const [showQuitModal, setShowQuitModal] = useState(false);
   const [showStaffLabels, setShowStaffLabels] = useState(false);
+  const [correctAnimationTrigger, setCorrectAnimationTrigger] = useState(0);
+  const [lastCorrectNote, setLastCorrectNote] = useState<string | null>(null);
 
   // Reset sound state when settings change (e.g., when returning to game)
   useEffect(() => {
@@ -122,9 +124,16 @@ export default function PianoGameScreen() {
     // Reset inactivity timer on any key press
     resetInactivityTimer();
 
+    // Capture current note before handleKeyPress moves to next note
+    const currentNoteDisplayName = state.notes[state.currentNoteIndex]?.displayName;
+
     const isCorrect = handleKeyPress(note);
 
     if (isCorrect) {
+      // Trigger the correct animation with the note that was just played
+      setLastCorrectNote(currentNoteDisplayName);
+      setCorrectAnimationTrigger((prev) => prev + 1);
+
       if (soundEnabled) {
         await playNote(note);
       }
@@ -192,6 +201,8 @@ export default function PianoGameScreen() {
             incorrectNote={incorrectNote}
             showIncorrectFeedback={settings.showIncorrectFeedback}
             showStaffLabels={showStaffLabels}
+            correctAnimationTrigger={correctAnimationTrigger}
+            lastCorrectNote={lastCorrectNote}
           />
         </View>
 
