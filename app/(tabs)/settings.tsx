@@ -118,6 +118,10 @@ export default function Settings() {
     updateSettings({ showTimer: !settings.showTimer });
   };
 
+  const handleToggleCorrectAnimation = () => {
+    updateSettings({ showCorrectAnimation: !settings.showCorrectAnimation });
+  };
+
   return (
     <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
       <ScrollView
@@ -303,6 +307,26 @@ export default function Settings() {
                 <Switch
                   value={settings.enableHapticFeedback}
                   onValueChange={handleToggleHapticFeedback}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                  thumbColor={colors.surface}
+                />
+              </Pressable>
+
+              <Pressable
+                style={[styles.settingRow, { borderColor: colors.border }]}
+                onPress={handleToggleCorrectAnimation}
+              >
+                <View style={styles.settingInfo}>
+                  <ThemedText style={styles.settingLabel}>
+                    Correct Note Animation
+                  </ThemedText>
+                  <ThemedText type="muted" style={styles.settingDescription}>
+                    Show animation when a correct note is played
+                  </ThemedText>
+                </View>
+                <Switch
+                  value={settings.showCorrectAnimation}
+                  onValueChange={handleToggleCorrectAnimation}
                   trackColor={{ false: colors.border, true: colors.primary }}
                   thumbColor={colors.surface}
                 />
