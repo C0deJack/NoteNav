@@ -9,7 +9,7 @@ const DIFFICULTY_KEY = '@piano_game_difficulty';
 const defaultSettings: GameSettings = {
   showWhiteKeyLabels: false,
   showBlackKeyLabels: false,
-  noteDisplayMode: 'text',
+  noteDisplayMode: 'staff',
   showIncorrectFeedback: true,
   enableHapticFeedback: true,
   playSoundInSilentMode: true,
