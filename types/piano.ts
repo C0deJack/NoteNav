@@ -17,8 +17,7 @@ export type NoteName =
   | 'D2'
   | 'D#2'
   | 'E2'
-  | 'F2'
-  | 'F#2';
+  | 'F2';
 
 export type Difficulty = 3 | 10 | 25 | 100;
 

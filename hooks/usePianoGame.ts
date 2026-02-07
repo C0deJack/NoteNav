@@ -34,7 +34,6 @@ export const NOTE_TO_BASE: Record<NoteName, NoteName> = {
   'D#2': 'D#',
   E2: 'E',
   F2: 'F',
-  'F#2': 'F#',
 };
 
 function generateRandomNotes(count: number): Note[] {

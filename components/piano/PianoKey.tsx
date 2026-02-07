@@ -21,7 +21,6 @@ const SHARP_TO_FLAT: Record<string, string> = {
   // Second octave
   'C#2': 'D♭',
   'D#2': 'E♭',
-  'F#2': 'G♭',
 };
 
 interface PianoKeyProps {

@@ -26,7 +26,6 @@ const BLACK_KEY_OFFSETS: Partial<Record<NoteName, number>> = {
   // Second octave offsets (relative to start of second octave)
   'C#2': 0,
   'D#2': 1,
-  'F#2': 3,
 };
 
 export function PianoKeyboard({

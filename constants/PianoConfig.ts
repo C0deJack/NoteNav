@@ -20,7 +20,6 @@ export const NOTES: Record<NoteName, Omit<Note, 'displayName'>> = {
   'D#2': { name: 'D#2', isBlack: true, soundFile: 'd1s.wav' },
   E2: { name: 'E2', isBlack: false, soundFile: 'e1.wav' },
   F2: { name: 'F2', isBlack: false, soundFile: 'f1.wav' },
-  'F#2': { name: 'F#2', isBlack: true, soundFile: 'f1s.wav' },
 };
 
 // Display names for sharps (randomly pick sharp or flat notation)
@@ -33,7 +32,6 @@ export const SHARP_DISPLAY_NAMES: Record<string, [string, string]> = {
   // Second octave
   'C#2': ['C#', 'D♭'],
   'D#2': ['D#', 'E♭'],
-  'F#2': ['F#', 'G♭'],
 };
 
 // Order of keys on keyboard (left to right)
@@ -57,7 +55,6 @@ export const KEY_ORDER: NoteName[] = [
   'D#2',
   'E2',
   'F2',
-  'F#2',
 ];
 
 export const WHITE_KEYS: NoteName[] = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
@@ -65,7 +62,7 @@ export const BLACK_KEYS: NoteName[] = ['C#', 'D#', 'F#', 'G#', 'A#'];
 
 // Second octave keys (up to F2 on treble clef)
 export const WHITE_KEYS_OCTAVE2: NoteName[] = ['C2', 'D2', 'E2', 'F2'];
-export const BLACK_KEYS_OCTAVE2: NoteName[] = ['C#2', 'D#2', 'F#2'];
+export const BLACK_KEYS_OCTAVE2: NoteName[] = ['C#2', 'D#2'];
 
 // Black key positions relative to white keys (as percentage offset from left edge of preceding white key)
 export const BLACK_KEY_POSITIONS: Record<NoteName, number> = {
@@ -89,7 +86,6 @@ export const BLACK_KEY_POSITIONS: Record<NoteName, number> = {
   'D#2': -1,
   E2: -1,
   F2: -1,
-  'F#2': -1,
 };
 
 export const DIFFICULTIES: { value: Difficulty; label: string }[] = [
