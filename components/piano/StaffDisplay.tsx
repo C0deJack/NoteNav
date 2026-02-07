@@ -106,7 +106,7 @@ export function StaffDisplay({
 
       setAnimationPosition({ x: lastNoteX, y: lastNoteY });
     }
-  }, [correctAnimationTrigger, lastCorrectNote, height, lineSpacing, leftPadding]);
+  }, [correctAnimationTrigger, lastCorrectNote]);
 
   // Calculate Y position for the note
   // Staff center is at height/2, each position step moves by half lineSpacing

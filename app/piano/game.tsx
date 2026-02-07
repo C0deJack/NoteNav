@@ -202,7 +202,9 @@ export default function PianoGameScreen() {
             incorrectNote={incorrectNote}
             showIncorrectFeedback={settings.showIncorrectFeedback}
             showStaffLabels={showStaffLabels}
-            correctAnimationTrigger={settings.showCorrectAnimation ? correctAnimationTrigger : 0}
+            correctAnimationTrigger={
+              settings.showCorrectAnimation ? correctAnimationTrigger : 0
+            }
             lastCorrectNote={lastCorrectNote}
           />
         </View>

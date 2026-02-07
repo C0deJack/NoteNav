@@ -87,10 +87,7 @@ export function PianoKey({
       />
       {showLabel && (
         <View
-          style={[
-            styles.labelContainer,
-            isBlack && styles.blackLabelContainer,
-          ]}
+          style={[styles.labelContainer, isBlack && styles.blackLabelContainer]}
           pointerEvents="none"
         >
           <Text style={[styles.label, isBlack && styles.blackLabel]}>

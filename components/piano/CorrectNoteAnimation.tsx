@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
+import type { SharedValue } from 'react-native-reanimated';
 import Animated, {
   Easing,
   useAnimatedProps,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import type { SharedValue } from 'react-native-reanimated';
 import Svg, { Line } from 'react-native-svg';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -57,7 +57,10 @@ export function CorrectNoteAnimation({
   });
 
   return (
-    <View style={[StyleSheet.absoluteFill, styles.container]} pointerEvents="none">
+    <View
+      style={[StyleSheet.absoluteFill, styles.container]}
+      pointerEvents="none"
+    >
       <Svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
         {lines.map(({ angle, index }) => (
           <AnimatedLineComponent
