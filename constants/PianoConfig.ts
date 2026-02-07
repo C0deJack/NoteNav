@@ -13,7 +13,8 @@ export const NOTES: Record<NoteName, Omit<Note, 'displayName'>> = {
   A: { name: 'A', isBlack: false, soundFile: 'a1.wav' },
   'A#': { name: 'A#', isBlack: true, soundFile: 'a1s.wav' },
   B: { name: 'B', isBlack: false, soundFile: 'b1.wav' },
-  // Second octave (uses same sounds, maps to same keyboard keys)
+  // TODO: Add correct sound files for second octave notes (c2.wav, c2s.wav, etc.)
+  // Second octave (currently uses same sounds as first octave)
   C2: { name: 'C2', isBlack: false, soundFile: 'c1.wav' },
   'C#2': { name: 'C#2', isBlack: true, soundFile: 'c1s.wav' },
   D2: { name: 'D2', isBlack: false, soundFile: 'd1.wav' },
