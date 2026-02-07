@@ -144,10 +144,11 @@ export function usePianoGame() {
       if (state.status !== 'playing') return false;
 
       const currentNote = state.notes[state.currentNoteIndex];
-      // Check if pressed note matches, accounting for second octave notes
-      // (e.g., pressing 'C' is correct for both 'C' and 'C2')
+      // Check if pressed note matches, accounting for octave equivalents
+      // (e.g., pressing 'C' or 'C2' is correct for 'C2', and vice versa)
+      const pressedBaseNote = NOTE_TO_BASE[pressedNote];
       const expectedBaseNote = NOTE_TO_BASE[currentNote.name];
-      const isCorrect = pressedNote === expectedBaseNote;
+      const isCorrect = pressedBaseNote === expectedBaseNote;
 
       // Set feedback with unique key to trigger animation
       feedbackKeyRef.current += 1;

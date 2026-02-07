@@ -15,6 +15,7 @@ const defaultSettings: GameSettings = {
   playSoundInSilentMode: true,
   showTimer: true,
   showCorrectAnimation: true,
+  showSecondOctave: false,
 };
 
 export function useGameSettings() {

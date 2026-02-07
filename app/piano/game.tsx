@@ -218,6 +218,7 @@ export default function PianoGameScreen() {
           keyFeedback={keyFeedback}
           showWhiteKeyLabels={settings.showWhiteKeyLabels}
           showBlackKeyLabels={settings.showBlackKeyLabels}
+          showSecondOctave={settings.showSecondOctave}
         />
       </View>
 

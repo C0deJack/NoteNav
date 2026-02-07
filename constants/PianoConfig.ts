@@ -63,6 +63,10 @@ export const KEY_ORDER: NoteName[] = [
 export const WHITE_KEYS: NoteName[] = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
 export const BLACK_KEYS: NoteName[] = ['C#', 'D#', 'F#', 'G#', 'A#'];
 
+// Second octave keys (up to F2 on treble clef)
+export const WHITE_KEYS_OCTAVE2: NoteName[] = ['C2', 'D2', 'E2', 'F2'];
+export const BLACK_KEYS_OCTAVE2: NoteName[] = ['C#2', 'D#2', 'F#2'];
+
 // Black key positions relative to white keys (as percentage offset from left edge of preceding white key)
 export const BLACK_KEY_POSITIONS: Record<NoteName, number> = {
   'C#': 0, // After C

@@ -52,6 +52,7 @@ export interface GameSettings {
   playSoundInSilentMode: boolean;
   showTimer: boolean;
   showCorrectAnimation: boolean;
+  showSecondOctave: boolean;
 }
 
 export type KeyFeedback = 'none' | 'correct' | 'incorrect';

@@ -18,6 +18,10 @@ const SHARP_TO_FLAT: Record<string, string> = {
   'F#': 'G♭',
   'G#': 'A♭',
   'A#': 'B♭',
+  // Second octave
+  'C#2': 'D♭',
+  'D#2': 'E♭',
+  'F#2': 'G♭',
 };
 
 interface PianoKeyProps {
@@ -63,7 +67,8 @@ export function PianoKey({
     };
   });
 
-  const displayNote = note.replace('#', '\u266F'); // Use sharp symbol
+  // Strip octave suffix and use sharp symbol for display
+  const displayNote = note.replace('2', '').replace('#', '\u266F');
   const flatNote = SHARP_TO_FLAT[note]; // Get flat equivalent for black keys
 
   return (

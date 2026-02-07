@@ -122,6 +122,10 @@ export default function Settings() {
     updateSettings({ showCorrectAnimation: !settings.showCorrectAnimation });
   };
 
+  const handleToggleSecondOctave = () => {
+    updateSettings({ showSecondOctave: !settings.showSecondOctave });
+  };
+
   return (
     <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
       <ScrollView
@@ -226,6 +230,26 @@ export default function Settings() {
                 <Switch
                   value={settings.showTimer}
                   onValueChange={handleToggleTimer}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                  thumbColor={colors.surface}
+                />
+              </Pressable>
+
+              <Pressable
+                style={[styles.settingRow, { borderColor: colors.border }]}
+                onPress={handleToggleSecondOctave}
+              >
+                <View style={styles.settingInfo}>
+                  <ThemedText style={styles.settingLabel}>
+                    Second Octave Keyboard
+                  </ThemedText>
+                  <ThemedText type="muted" style={styles.settingDescription}>
+                    Show additional keys for notes above middle B
+                  </ThemedText>
+                </View>
+                <Switch
+                  value={settings.showSecondOctave}
+                  onValueChange={handleToggleSecondOctave}
                   trackColor={{ false: colors.border, true: colors.primary }}
                   thumbColor={colors.surface}
                 />
