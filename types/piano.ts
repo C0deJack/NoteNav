@@ -63,3 +63,14 @@ export interface GameScore {
   elapsedMs: number;
   timestamp: number;
 }
+
+// Route param types for type-safe navigation
+export interface GameRouteParams {
+  difficulty: Difficulty;
+}
+
+export interface ResultsRouteParams {
+  difficulty: string;
+  elapsedMs: string;
+  accuracy: string;
+}

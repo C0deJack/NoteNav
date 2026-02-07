@@ -10,6 +10,7 @@ import { DIFFICULTIES } from '@/constants/PianoConfig';
 import { useProgress } from '@/hooks/useProgress';
 import { useTheme } from '@/hooks/useTheme';
 import type { Difficulty } from '@/types/piano';
+import { formatTime } from '@/utils/formatting';
 
 export default function PianoResultsScreen() {
   const params = useLocalSearchParams<{
@@ -32,24 +33,21 @@ export default function PianoResultsScreen() {
     }
   }, [addScore, difficulty, elapsedMs, accuracy]);
 
-  const seconds = Math.floor(elapsedMs / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  const formattedTime = `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  const formattedTime = formatTime(elapsedMs);
 
   const difficultyLabel =
     DIFFICULTIES.find((d) => d.value === difficulty)?.label || 'Unknown';
 
   const handlePlayAgain = () => {
     router.replace({
-      pathname: '/piano/game' as const,
-      params: { difficulty },
-    } as any);
+      pathname: '/piano/game',
+      params: { difficulty: String(difficulty) },
+    });
   };
 
   const handleBackToMenu = () => {
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
-    router.replace('/' as any);
+    router.replace('/');
   };
 
   return (

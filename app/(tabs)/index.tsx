@@ -19,9 +19,9 @@ export default function PianoMenuScreen() {
   const handleStartGame = () => {
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
     router.push({
-      pathname: '/piano/game' as const,
-      params: { difficulty: lastDifficulty },
-    } as any);
+      pathname: '/piano/game',
+      params: { difficulty: String(lastDifficulty) },
+    });
   };
 
   if (!loaded) {

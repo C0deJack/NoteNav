@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { useTheme } from '@/hooks/useTheme';
@@ -16,7 +17,7 @@ interface NoteDisplayProps {
   lastCorrectNote?: NoteName | null;
 }
 
-export function NoteDisplay({
+export const NoteDisplay = memo(function NoteDisplay({
   note,
   noteName,
   displayMode = 'text',
@@ -57,7 +58,7 @@ export function NoteDisplay({
       </ThemedText>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   noteContainer: {

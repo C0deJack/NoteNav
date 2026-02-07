@@ -93,6 +93,9 @@ export function usePianoGame() {
   );
   const [incorrectNote, setIncorrectNote] = useState<NoteName | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const feedbackTimeoutsRef = useRef<Set<ReturnType<typeof setTimeout>>>(
+    new Set(),
+  );
   const feedbackKeyRef = useRef(0);
 
   // Timer update effect
@@ -161,8 +164,9 @@ export function usePianoGame() {
         setIncorrectNote(pressedNote);
       }
 
-      // Clear feedback after animation
-      setTimeout(() => {
+      // Clear feedback after animation (with cleanup tracking)
+      const timeoutId = setTimeout(() => {
+        feedbackTimeoutsRef.current.delete(timeoutId);
         setKeyFeedback((prev) => ({
           ...prev,
           [pressedNote]: 'none',
@@ -171,6 +175,7 @@ export function usePianoGame() {
           setIncorrectNote(null);
         }
       }, 300);
+      feedbackTimeoutsRef.current.add(timeoutId);
 
       if (isCorrect) {
         const nextIndex = state.currentNoteIndex + 1;
@@ -244,6 +249,11 @@ export function usePianoGame() {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
+    // Clear all pending feedback timeouts
+    for (const timeoutId of feedbackTimeoutsRef.current) {
+      clearTimeout(timeoutId);
+    }
+    feedbackTimeoutsRef.current.clear();
     setState(initialState);
     setKeyFeedback(
       Object.fromEntries(KEY_ORDER.map((k) => [k, 'none'])) as Record<
@@ -252,6 +262,18 @@ export function usePianoGame() {
       >,
     );
     setIncorrectNote(null);
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+      for (const timeoutId of feedbackTimeoutsRef.current) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, []);
 
   return {

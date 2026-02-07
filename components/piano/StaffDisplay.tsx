@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Svg, { Ellipse, G, Line, Path, Text as SvgText } from 'react-native-svg';
 import { NOTE_STAFF_POSITIONS, STAFF_CONFIG } from '@/constants/StaffConfig';
@@ -31,7 +31,7 @@ interface StaffDisplayProps {
   lastCorrectNote?: NoteName | null;
 }
 
-export function StaffDisplay({
+export const StaffDisplay = memo(function StaffDisplay({
   note,
   noteName,
   feedback = 'none',
@@ -277,7 +277,7 @@ export function StaffDisplay({
       </Svg>
     </View>
   );
-}
+});
 
 function TrebleClef({ color }: { color: string }) {
   // Path from assets/images/treble_clef.svg, scaled to fit staff

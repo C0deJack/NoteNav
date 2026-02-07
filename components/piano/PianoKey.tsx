@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { memo, useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   interpolateColor,
@@ -31,7 +31,7 @@ interface PianoKeyProps {
   showLabel?: boolean;
 }
 
-export function PianoKey({
+export const PianoKey = memo(function PianoKey({
   note,
   isBlack,
   onPress,
@@ -102,7 +102,7 @@ export function PianoKey({
       )}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   whiteKey: {

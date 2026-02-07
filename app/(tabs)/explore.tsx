@@ -8,13 +8,7 @@ import { DIFFICULTIES } from '@/constants/PianoConfig';
 import { useProgress } from '@/hooks/useProgress';
 import { useTheme } from '@/hooks/useTheme';
 import type { GameScore } from '@/types/piano';
-
-function formatTime(ms: number): string {
-  const seconds = Math.floor(ms / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-}
+import { formatTime } from '@/utils/formatting';
 
 function formatDate(timestamp: number): string {
   const date = new Date(timestamp);

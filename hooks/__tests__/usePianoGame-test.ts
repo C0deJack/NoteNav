@@ -1,6 +1,5 @@
 import { act, renderHook } from '@testing-library/react-native';
 import { NOTE_TO_BASE, usePianoGame } from '../usePianoGame';
-import { Difficulty } from '@/types/piano';
 
 describe('usePianoGame', () => {
   beforeEach(() => {
