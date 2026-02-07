@@ -2,13 +2,11 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ColorPickerModal } from '@/components/ColorPickerModal';
-import {
-  ColorSwatch,
-  SegmentedControl,
-  SettingRow,
-  SettingsSection,
-  SettingToggle,
-} from '@/components/settings';
+import { ColorSwatch } from '@/components/settings/ColorSwatch';
+import { SegmentedControl } from '@/components/settings/SegmentedControl';
+import { SettingRow } from '@/components/settings/SettingRow';
+import { SettingsSection } from '@/components/settings/SettingsSection';
+import { SettingToggle } from '@/components/settings/SettingToggle';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { defaultBrandColors } from '@/constants/Colors';
