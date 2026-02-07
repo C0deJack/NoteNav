@@ -44,7 +44,7 @@ export default function PianoGameScreen() {
   const { colors } = useTheme();
   const [showQuitModal, setShowQuitModal] = useState(false);
   const [showStaffLabels, setShowStaffLabels] = useState(false);
-  const [correctAnimationTrigger, setCorrectAnimationTrigger] = useState(0);
+  const [correctAnimationCounter, setCorrectAnimationCounter] = useState(0);
   const [lastCorrectNote, setLastCorrectNote] = useState<NoteName | null>(null);
 
   // Reset sound state when settings change (e.g., when returning to game)

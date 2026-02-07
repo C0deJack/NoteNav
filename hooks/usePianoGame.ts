@@ -96,7 +96,6 @@ export function usePianoGame() {
   const feedbackTimeoutsRef = useRef<Set<ReturnType<typeof setTimeout>>>(
     new Set(),
   );
-  const feedbackKeyRef = useRef(0);
 
   // Timer update effect
   useEffect(() => {
@@ -152,8 +151,7 @@ export function usePianoGame() {
       const expectedBaseNote = NOTE_TO_BASE[currentNote.name];
       const isCorrect = pressedBaseNote === expectedBaseNote;
 
-      // Set feedback with unique key to trigger animation
-      feedbackKeyRef.current += 1;
+      // Set feedback
       setKeyFeedback((prev) => ({
         ...prev,
         [pressedNote]: isCorrect ? 'correct' : 'incorrect',

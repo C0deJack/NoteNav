@@ -1,6 +1,7 @@
 import { memo, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Svg, { Ellipse, G, Line, Path, Text as SvgText } from 'react-native-svg';
+import { STAFF_ANIMATION_CONFIG } from '@/constants/KeyboardConfig';
 import { NOTE_STAFF_POSITIONS, STAFF_CONFIG } from '@/constants/StaffConfig';
 import { useTheme } from '@/hooks/useTheme';
 import type { KeyFeedback, NoteName } from '@/types/piano';
@@ -103,7 +104,7 @@ export const StaffDisplay = memo(function StaffDisplay({
       const lastPosition = NOTE_STAFF_POSITIONS[lastCorrectNote] ?? 0;
       const centerY = height / 2;
       const lastNoteY = centerY - lastPosition * (lineSpacing / 2);
-      const lastNoteX = leftPadding + 100;
+      const lastNoteX = leftPadding + STAFF_ANIMATION_CONFIG.noteXOffset;
 
       setAnimationPosition({ x: lastNoteX, y: lastNoteY });
     }
@@ -115,7 +116,7 @@ export const StaffDisplay = memo(function StaffDisplay({
   const noteY = centerY - position * (lineSpacing / 2);
 
   // Note X position
-  const noteX = leftPadding + 100;
+  const noteX = leftPadding + STAFF_ANIMATION_CONFIG.noteXOffset;
 
   // Determine if we need a ledger line (for middle C)
   const needsLedgerLine = position <= -6;

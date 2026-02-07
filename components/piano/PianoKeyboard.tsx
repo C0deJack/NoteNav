@@ -1,4 +1,5 @@
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import { KEYBOARD_CONFIG } from '@/constants/KeyboardConfig';
 import {
   BLACK_KEYS,
   BLACK_KEYS_OCTAVE2,
@@ -42,12 +43,22 @@ export function PianoKeyboard({
   const totalWhiteKeys = showSecondOctave
     ? WHITE_KEYS.length + WHITE_KEYS_OCTAVE2.length
     : WHITE_KEYS.length;
-  const maxKeyboardWidth = showSecondOctave ? 800 : 600;
-  const keyboardWidth = Math.min(width - 32, maxKeyboardWidth);
+  const maxKeyboardWidth = showSecondOctave
+    ? KEYBOARD_CONFIG.maxWidthWithSecondOctave
+    : KEYBOARD_CONFIG.maxWidthSingleOctave;
+  const keyboardWidth = Math.min(
+    width - KEYBOARD_CONFIG.horizontalPadding,
+    maxKeyboardWidth,
+  );
   const whiteKeyWidth = keyboardWidth / totalWhiteKeys;
-  const blackKeyWidth = whiteKeyWidth * 0.6;
-  const maxKeyboardHeight = isLandscape ? 180 : 300;
-  const keyboardHeight = Math.min(keyboardWidth * 0.35, maxKeyboardHeight);
+  const blackKeyWidth = whiteKeyWidth * KEYBOARD_CONFIG.blackKeyWidthRatio;
+  const maxKeyboardHeight = isLandscape
+    ? KEYBOARD_CONFIG.maxHeightLandscape
+    : KEYBOARD_CONFIG.maxHeightPortrait;
+  const keyboardHeight = Math.min(
+    keyboardWidth * KEYBOARD_CONFIG.heightToWidthRatio,
+    maxKeyboardHeight,
+  );
 
   // Offset for second octave black keys (after 7 white keys of first octave)
   const octave2Offset = WHITE_KEYS.length;
@@ -98,7 +109,7 @@ export function PianoKeyboard({
                 {
                   left: leftPosition,
                   width: blackKeyWidth,
-                  height: keyboardHeight * 0.6,
+                  height: keyboardHeight * KEYBOARD_CONFIG.blackKeyHeightRatio,
                 },
               ]}
             >
@@ -128,7 +139,7 @@ export function PianoKeyboard({
                   {
                     left: leftPosition,
                     width: blackKeyWidth,
-                    height: keyboardHeight * 0.6,
+                    height: keyboardHeight * KEYBOARD_CONFIG.blackKeyHeightRatio,
                   },
                 ]}
               >

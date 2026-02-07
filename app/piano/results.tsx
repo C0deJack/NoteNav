@@ -6,11 +6,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { DIFFICULTIES } from '@/constants/PianoConfig';
 import { useProgress } from '@/hooks/useProgress';
 import { useTheme } from '@/hooks/useTheme';
 import type { Difficulty } from '@/types/piano';
 import { formatTime } from '@/utils/formatting';
+import { getDifficultyLabel } from '@/utils/game';
 
 export default function PianoResultsScreen() {
   const params = useLocalSearchParams<{
@@ -35,8 +35,7 @@ export default function PianoResultsScreen() {
 
   const formattedTime = formatTime(elapsedMs);
 
-  const difficultyLabel =
-    DIFFICULTIES.find((d) => d.value === difficulty)?.label || 'Unknown';
+  const difficultyLabel = getDifficultyLabel(difficulty);
 
   const handlePlayAgain = () => {
     router.replace({

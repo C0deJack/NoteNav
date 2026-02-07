@@ -4,11 +4,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { DIFFICULTIES } from '@/constants/PianoConfig';
 import { useProgress } from '@/hooks/useProgress';
 import { useTheme } from '@/hooks/useTheme';
 import type { GameScore } from '@/types/piano';
 import { formatTime } from '@/utils/formatting';
+import { getDifficultyLabel } from '@/utils/game';
 
 function formatDate(timestamp: number): string {
   const date = new Date(timestamp);
@@ -21,8 +21,7 @@ function formatDate(timestamp: number): string {
 }
 
 function ScoreItem({ score, colors }: { score: GameScore; colors: any }) {
-  const difficultyLabel =
-    DIFFICULTIES.find((d) => d.value === score.difficulty)?.label || 'Unknown';
+  const difficultyLabel = getDifficultyLabel(score.difficulty);
 
   return (
     <View style={[styles.scoreItem, { borderColor: colors.border }]}>
