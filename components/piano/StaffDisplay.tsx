@@ -70,15 +70,16 @@ export function StaffDisplay({
       : null;
 
   // Determine the position on the staff
-  // If noteName prop is provided (includes octave info like 'C2'), use it directly
-  // Otherwise, derive from display note
+  // Flats must use their letter position (e.g., A♭ at A's position, not G#'s position)
   let positionNoteName: NoteName;
-  if (noteName) {
+  if (isFlat) {
+    // For flats, use the base letter position
+    // Preserve octave suffix if noteName has one (e.g., C#2 displayed as D♭ → D2)
+    const hasOctave2 = noteName?.includes('2');
+    positionNoteName = (hasOctave2 ? `${baseLetter}2` : baseLetter) as NoteName;
+  } else if (noteName) {
     // Use the provided note name (handles second octave notes like 'C2')
     positionNoteName = noteName;
-  } else if (isFlat) {
-    // Use the base letter for position (e.g., A♭ uses A's position)
-    positionNoteName = baseLetter as NoteName;
   } else if (isSharp) {
     positionNoteName = note as NoteName;
   } else {
