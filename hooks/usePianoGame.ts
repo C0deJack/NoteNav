@@ -13,6 +13,30 @@ import type {
   NoteName,
 } from '@/types/piano';
 
+// Map second octave notes to their base notes (for keyboard input validation)
+export const NOTE_TO_BASE: Record<NoteName, NoteName> = {
+  C: 'C',
+  'C#': 'C#',
+  D: 'D',
+  'D#': 'D#',
+  E: 'E',
+  F: 'F',
+  'F#': 'F#',
+  G: 'G',
+  'G#': 'G#',
+  A: 'A',
+  'A#': 'A#',
+  B: 'B',
+  // Second octave maps to base notes
+  C2: 'C',
+  'C#2': 'C#',
+  D2: 'D',
+  'D#2': 'D#',
+  E2: 'E',
+  F2: 'F',
+  'F#2': 'F#',
+};
+
 function generateRandomNotes(count: number): Note[] {
   const notes: Note[] = [];
   let previousNote: NoteName | null = null;
@@ -27,7 +51,9 @@ function generateRandomNotes(count: number): Note[] {
     previousNote = note;
 
     const noteData = NOTES[note];
-    let displayName: string = note;
+    // For display, use the base note name (strip octave suffix)
+    // e.g., 'C2' -> 'C', 'C#2' -> 'C#'
+    let displayName: string = note.replace('2', '');
 
     // For sharps, randomly pick sharp or flat notation
     if (SHARP_DISPLAY_NAMES[note]) {
@@ -118,7 +144,10 @@ export function usePianoGame() {
       if (state.status !== 'playing') return false;
 
       const currentNote = state.notes[state.currentNoteIndex];
-      const isCorrect = pressedNote === currentNote.name;
+      // Check if pressed note matches, accounting for second octave notes
+      // (e.g., pressing 'C' is correct for both 'C' and 'C2')
+      const expectedBaseNote = NOTE_TO_BASE[currentNote.name];
+      const isCorrect = pressedNote === expectedBaseNote;
 
       // Set feedback with unique key to trigger animation
       feedbackKeyRef.current += 1;

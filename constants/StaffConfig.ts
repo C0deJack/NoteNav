@@ -27,6 +27,14 @@ export const NOTE_STAFF_POSITIONS: Record<NoteName, number> = {
   A: -1,
   'A#': -1,
   B: 0, // Middle line of treble staff
+  // Second octave
+  C2: 1, // Space above middle line
+  'C#2': 1,
+  D2: 2, // Fourth line from bottom
+  'D#2': 2,
+  E2: 3, // Space below top line
+  F2: 4, // Top line of treble staff
+  'F#2': 4,
 };
 
 // Treble clef SVG path (simplified)

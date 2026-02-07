@@ -10,7 +10,15 @@ export type NoteName =
   | 'G#'
   | 'A'
   | 'A#'
-  | 'B';
+  | 'B'
+  // Second octave (up to F on top line of treble clef)
+  | 'C2'
+  | 'C#2'
+  | 'D2'
+  | 'D#2'
+  | 'E2'
+  | 'F2'
+  | 'F#2';
 
 export type Difficulty = 3 | 10 | 25 | 100;
 

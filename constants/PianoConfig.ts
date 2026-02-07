@@ -13,6 +13,14 @@ export const NOTES: Record<NoteName, Omit<Note, 'displayName'>> = {
   A: { name: 'A', isBlack: false, soundFile: 'a1.wav' },
   'A#': { name: 'A#', isBlack: true, soundFile: 'a1s.wav' },
   B: { name: 'B', isBlack: false, soundFile: 'b1.wav' },
+  // Second octave (uses same sounds, maps to same keyboard keys)
+  C2: { name: 'C2', isBlack: false, soundFile: 'c1.wav' },
+  'C#2': { name: 'C#2', isBlack: true, soundFile: 'c1s.wav' },
+  D2: { name: 'D2', isBlack: false, soundFile: 'd1.wav' },
+  'D#2': { name: 'D#2', isBlack: true, soundFile: 'd1s.wav' },
+  E2: { name: 'E2', isBlack: false, soundFile: 'e1.wav' },
+  F2: { name: 'F2', isBlack: false, soundFile: 'f1.wav' },
+  'F#2': { name: 'F#2', isBlack: true, soundFile: 'f1s.wav' },
 };
 
 // Display names for sharps (randomly pick sharp or flat notation)
@@ -22,6 +30,10 @@ export const SHARP_DISPLAY_NAMES: Record<string, [string, string]> = {
   'F#': ['F#', 'G♭'],
   'G#': ['G#', 'A♭'],
   'A#': ['A#', 'B♭'],
+  // Second octave
+  'C#2': ['C#', 'D♭'],
+  'D#2': ['D#', 'E♭'],
+  'F#2': ['F#', 'G♭'],
 };
 
 // Order of keys on keyboard (left to right)
@@ -38,6 +50,14 @@ export const KEY_ORDER: NoteName[] = [
   'A',
   'A#',
   'B',
+  // Second octave (for staff display, maps to same keyboard keys)
+  'C2',
+  'C#2',
+  'D2',
+  'D#2',
+  'E2',
+  'F2',
+  'F#2',
 ];
 
 export const WHITE_KEYS: NoteName[] = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
@@ -58,6 +78,14 @@ export const BLACK_KEY_POSITIONS: Record<NoteName, number> = {
   G: -1,
   A: -1,
   B: -1,
+  // Second octave (not rendered on keyboard, but needed for type safety)
+  C2: -1,
+  'C#2': -1,
+  D2: -1,
+  'D#2': -1,
+  E2: -1,
+  F2: -1,
+  'F#2': -1,
 };
 
 export const DIFFICULTIES: { value: Difficulty; label: string }[] = [

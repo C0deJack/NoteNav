@@ -15,7 +15,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { useGameSettings } from '@/hooks/useGameSettings';
 import { useInactivityTimeout } from '@/hooks/useInactivityTimeout';
 import { usePianoAudio } from '@/hooks/usePianoAudio';
-import { usePianoGame } from '@/hooks/usePianoGame';
+import { NOTE_TO_BASE, usePianoGame } from '@/hooks/usePianoGame';
 import { useTheme } from '@/hooks/useTheme';
 import type { Difficulty, NoteName } from '@/types/piano';
 
@@ -45,7 +45,7 @@ export default function PianoGameScreen() {
   const [showQuitModal, setShowQuitModal] = useState(false);
   const [showStaffLabels, setShowStaffLabels] = useState(false);
   const [correctAnimationTrigger, setCorrectAnimationTrigger] = useState(0);
-  const [lastCorrectNote, setLastCorrectNote] = useState<string | null>(null);
+  const [lastCorrectNote, setLastCorrectNote] = useState<NoteName | null>(null);
 
   // Reset sound state when settings change (e.g., when returning to game)
   useEffect(() => {
@@ -125,13 +125,13 @@ export default function PianoGameScreen() {
     resetInactivityTimer();
 
     // Capture current note before handleKeyPress moves to next note
-    const currentNoteDisplayName = state.notes[state.currentNoteIndex]?.displayName;
+    const currentNoteName = state.notes[state.currentNoteIndex]?.name;
 
     const isCorrect = handleKeyPress(note);
 
     if (isCorrect) {
       // Trigger the correct animation with the note that was just played
-      setLastCorrectNote(currentNoteDisplayName);
+      setLastCorrectNote(currentNoteName);
       setCorrectAnimationTrigger((prev) => prev + 1);
 
       if (soundEnabled) {
@@ -196,8 +196,9 @@ export default function PianoGameScreen() {
         <View style={styles.noteArea}>
           <NoteDisplay
             note={currentNote.displayName}
+            noteName={currentNote.name}
             displayMode={settings.noteDisplayMode}
-            feedback={keyFeedback[currentNote.name]}
+            feedback={keyFeedback[NOTE_TO_BASE[currentNote.name]]}
             incorrectNote={incorrectNote}
             showIncorrectFeedback={settings.showIncorrectFeedback}
             showStaffLabels={showStaffLabels}

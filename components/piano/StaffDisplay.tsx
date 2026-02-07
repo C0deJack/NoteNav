@@ -23,15 +23,17 @@ const POSITION_TO_LETTER: Record<number, string> = {
 
 interface StaffDisplayProps {
   note: string; // Display name like "C#" or "Db"
+  noteName?: NoteName; // Internal note name with octave (e.g., 'C2')
   feedback?: KeyFeedback;
   incorrectNote?: NoteName | null;
   showLabels?: boolean;
   correctAnimationTrigger?: number;
-  lastCorrectNote?: string | null;
+  lastCorrectNote?: NoteName | null;
 }
 
 export function StaffDisplay({
   note,
+  noteName,
   feedback = 'none',
   incorrectNote = null,
   showLabels = false,
@@ -68,19 +70,22 @@ export function StaffDisplay({
       : null;
 
   // Determine the position on the staff
-  // For flats, use the base letter position (A♭ goes on the A line/space)
-  // For sharps, use the sharp's position (G# goes on the G line/space)
-  let noteName: NoteName;
-  if (isFlat) {
+  // If noteName prop is provided (includes octave info like 'C2'), use it directly
+  // Otherwise, derive from display note
+  let positionNoteName: NoteName;
+  if (noteName) {
+    // Use the provided note name (handles second octave notes like 'C2')
+    positionNoteName = noteName;
+  } else if (isFlat) {
     // Use the base letter for position (e.g., A♭ uses A's position)
-    noteName = baseLetter as NoteName;
+    positionNoteName = baseLetter as NoteName;
   } else if (isSharp) {
-    noteName = note as NoteName;
+    positionNoteName = note as NoteName;
   } else {
-    noteName = baseLetter as NoteName;
+    positionNoteName = baseLetter as NoteName;
   }
 
-  const position = NOTE_STAFF_POSITIONS[noteName] ?? 0;
+  const position = NOTE_STAFF_POSITIONS[positionNoteName] ?? 0;
   const {
     width,
     height,
@@ -93,21 +98,8 @@ export function StaffDisplay({
   // Calculate animation position when a correct note is triggered
   useEffect(() => {
     if (correctAnimationTrigger > 0 && lastCorrectNote) {
-      // Parse the last correct note to get its position
-      const lastIsSharp = lastCorrectNote.includes('#');
-      const lastIsFlat = lastCorrectNote.includes('♭');
-      const lastBaseLetter = lastCorrectNote.charAt(0).toUpperCase();
-
-      let lastNoteName: NoteName;
-      if (lastIsFlat) {
-        lastNoteName = lastBaseLetter as NoteName;
-      } else if (lastIsSharp) {
-        lastNoteName = lastCorrectNote as NoteName;
-      } else {
-        lastNoteName = lastBaseLetter as NoteName;
-      }
-
-      const lastPosition = NOTE_STAFF_POSITIONS[lastNoteName] ?? 0;
+      // Use the full note name (including octave like 'C2') for position lookup
+      const lastPosition = NOTE_STAFF_POSITIONS[lastCorrectNote] ?? 0;
       const centerY = height / 2;
       const lastNoteY = centerY - lastPosition * (lineSpacing / 2);
       const lastNoteX = leftPadding + 100;

@@ -6,17 +6,19 @@ import { StaffDisplay } from './StaffDisplay';
 
 interface NoteDisplayProps {
   note: string;
+  noteName?: NoteName; // Internal note name with octave (e.g., 'C2')
   displayMode?: NoteDisplayMode;
   feedback?: KeyFeedback;
   incorrectNote?: NoteName | null;
   showIncorrectFeedback?: boolean;
   showStaffLabels?: boolean;
   correctAnimationTrigger?: number;
-  lastCorrectNote?: string | null;
+  lastCorrectNote?: NoteName | null;
 }
 
 export function NoteDisplay({
   note,
+  noteName,
   displayMode = 'text',
   feedback = 'none',
   incorrectNote = null,
@@ -31,6 +33,7 @@ export function NoteDisplay({
     return (
       <StaffDisplay
         note={note}
+        noteName={noteName}
         feedback={feedback}
         incorrectNote={showIncorrectFeedback ? incorrectNote : null}
         showLabels={showStaffLabels}
