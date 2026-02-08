@@ -214,7 +214,9 @@ describe('useProgress', () => {
       expect(stats).toEqual({
         totalGames: 0,
         averageAccuracy: 0,
-        bestAccuracy: 0,
+        bestSpeed: 0,
+        averageScore: 0,
+        bestScore: 0,
         totalTimePlayed: 0,
         gamesByDifficulty: {},
       });
@@ -296,27 +298,27 @@ describe('useProgress', () => {
       expect(stats.averageAccuracy).toBe(90); // (80 + 90 + 100) / 3 = 90
     });
 
-    it('calculates best accuracy correctly', async () => {
+    it('calculates best speed correctly', async () => {
       const storedScores = [
         {
           id: '1',
           difficulty: 10,
           accuracy: 80,
-          elapsedMs: 30000,
+          elapsedMs: 30000, // 10 notes in 30s = 20 npm
           timestamp: Date.now(),
         },
         {
           id: '2',
           difficulty: 10,
           accuracy: 95,
-          elapsedMs: 25000,
+          elapsedMs: 20000, // 10 notes in 20s = 30 npm (fastest)
           timestamp: Date.now(),
         },
         {
           id: '3',
           difficulty: 10,
           accuracy: 85,
-          elapsedMs: 20000,
+          elapsedMs: 25000, // 10 notes in 25s = 24 npm
           timestamp: Date.now(),
         },
       ];
@@ -331,7 +333,7 @@ describe('useProgress', () => {
 
       const stats = result.current.getStats();
 
-      expect(stats.bestAccuracy).toBe(95);
+      expect(stats.bestSpeed).toBe(30); // 10 notes / (20000ms / 60000) = 30 npm
     });
 
     it('calculates total time played correctly', async () => {

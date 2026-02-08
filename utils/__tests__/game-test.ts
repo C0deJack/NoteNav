@@ -1,9 +1,9 @@
 import {
   FLAT_SYMBOL,
-  SHARP_SYMBOL,
   formatNoteAccidentals,
   getBaseNoteName,
   getDifficultyLabel,
+  SHARP_SYMBOL,
 } from '../game';
 
 describe('getDifficultyLabel', () => {

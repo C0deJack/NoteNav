@@ -84,10 +84,10 @@ export default function ProgressScreen() {
               style={[styles.statCard, { backgroundColor: colors.surface }]}
             >
               <ThemedText style={styles.statValue}>
-                {stats.totalGames}
+                {stats.bestScore}
               </ThemedText>
               <ThemedText type="muted" style={styles.statLabel}>
-                Games Played
+                Best Score
               </ThemedText>
             </View>
             <View
@@ -104,10 +104,10 @@ export default function ProgressScreen() {
               style={[styles.statCard, { backgroundColor: colors.surface }]}
             >
               <ThemedText style={styles.statValue}>
-                {stats.bestAccuracy}%
+                {stats.bestSpeed}
               </ThemedText>
               <ThemedText type="muted" style={styles.statLabel}>
-                Best Accuracy
+                Best Speed
               </ThemedText>
             </View>
           </View>

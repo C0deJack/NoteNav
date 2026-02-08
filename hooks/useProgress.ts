@@ -1,6 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useState } from 'react';
 import type { Difficulty, GameScore } from '@/types/piano';
+import {
+  calculateNotesPerMinute,
+  calculateScoreFromGame,
+} from '@/utils/scoring';
 
 const PROGRESS_KEY = '@game_progress';
 
@@ -61,7 +65,9 @@ export function useProgress() {
       return {
         totalGames: 0,
         averageAccuracy: 0,
-        bestAccuracy: 0,
+        bestSpeed: 0,
+        averageScore: 0,
+        bestScore: 0,
         totalTimePlayed: 0,
         gamesByDifficulty: {} as Record<Difficulty, number>,
       };
@@ -71,7 +77,20 @@ export function useProgress() {
     const averageAccuracy = Math.round(
       scores.reduce((sum, s) => sum + s.accuracy, 0) / totalGames,
     );
-    const bestAccuracy = Math.max(...scores.map((s) => s.accuracy));
+
+    // Calculate speed stats (notes per minute)
+    const speeds = scores.map((s) =>
+      calculateNotesPerMinute(s.difficulty, s.elapsedMs),
+    );
+    const bestSpeed = Math.round(Math.max(...speeds));
+
+    // Calculate progression scores
+    const progressionScores = scores.map((s) => calculateScoreFromGame(s));
+    const averageScore = Math.round(
+      progressionScores.reduce((sum, s) => sum + s, 0) / totalGames,
+    );
+    const bestScore = Math.max(...progressionScores);
+
     const totalTimePlayed = scores.reduce((sum, s) => sum + s.elapsedMs, 0);
 
     const gamesByDifficulty = scores.reduce(
@@ -85,7 +104,9 @@ export function useProgress() {
     return {
       totalGames,
       averageAccuracy,
-      bestAccuracy,
+      bestSpeed,
+      averageScore,
+      bestScore,
       totalTimePlayed,
       gamesByDifficulty,
     };
