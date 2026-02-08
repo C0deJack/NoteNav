@@ -22,8 +22,8 @@ export function DifficultySelector({
 
   return (
     <View style={styles.container}>
-      {/* Difficulty Level Selector */}
-      <View style={styles.section}>
+      {/* Left Column: Difficulty Level */}
+      <View style={styles.column}>
         <ThemedText style={styles.title}>Difficulty</ThemedText>
         <View style={styles.options}>
           {DIFFICULTY_LEVELS.map(({ value, label }) => (
@@ -52,15 +52,15 @@ export function DifficultySelector({
         </View>
       </View>
 
-      {/* Note Count Selector */}
-      <View style={styles.section}>
+      {/* Right Column: Notes per Game */}
+      <View style={styles.column}>
         <ThemedText style={styles.title}>Notes per Game</ThemedText>
-        <View style={styles.noteCountOptions}>
+        <View style={styles.options}>
           {NOTE_COUNTS.map(({ value, label }) => (
             <Pressable
               key={value}
               style={[
-                styles.noteCountOption,
+                styles.option,
                 { borderColor: colors.border, backgroundColor: colors.surface },
                 selectedNoteCount === value && {
                   backgroundColor: colors.primary,
@@ -71,7 +71,7 @@ export function DifficultySelector({
             >
               <ThemedText
                 style={[
-                  styles.noteCountText,
+                  styles.optionText,
                   selectedNoteCount === value && styles.selectedText,
                 ]}
               >
@@ -87,9 +87,11 @@ export function DifficultySelector({
 
 const styles = StyleSheet.create({
   container: {
-    gap: 20,
+    flexDirection: 'row',
+    gap: 16,
   },
-  section: {
+  column: {
+    flex: 1,
     gap: 10,
   },
   title: {
@@ -98,38 +100,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   options: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: 8,
-    justifyContent: 'center',
   },
   option: {
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 10,
     borderWidth: 2,
-    minWidth: 80,
     alignItems: 'center',
   },
   optionText: {
     fontSize: 14,
     fontWeight: '600',
-  },
-  noteCountOptions: {
-    flexDirection: 'row',
-    gap: 8,
-    justifyContent: 'center',
-  },
-  noteCountOption: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    borderWidth: 2,
-    alignItems: 'center',
-  },
-  noteCountText: {
-    fontSize: 13,
-    fontWeight: '500',
   },
   selectedText: {
     color: '#fff',

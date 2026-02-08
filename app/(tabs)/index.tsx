@@ -62,6 +62,8 @@ export default function PianoMenuScreen() {
           />
         </View>
 
+        <View style={[styles.divider, { backgroundColor: colors.border }]} />
+
         <Pressable
           style={[styles.playButton, { backgroundColor: colors.primary }]}
           onPress={handleStartGame}
@@ -96,6 +98,10 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   selectorContainer: {
+    marginVertical: 8,
+  },
+  divider: {
+    height: 1,
     marginVertical: 8,
   },
   playButton: {
