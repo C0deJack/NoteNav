@@ -75,6 +75,16 @@ export interface GameScore {
   timestamp: number;
 }
 
+/** Stats for a single difficulty level */
+export interface DifficultyStats {
+  totalGames: number;
+  averageAccuracy: number;
+  bestSpeed: number;
+  averageScore: number;
+  bestScore: number;
+  totalTimePlayed: number;
+}
+
 // Route param types for type-safe navigation
 export interface GameRouteParams {
   difficultyLevel: DifficultyLevel;

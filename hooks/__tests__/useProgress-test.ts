@@ -224,7 +224,6 @@ describe('useProgress', () => {
         averageScore: 0,
         bestScore: 0,
         totalTimePlayed: 0,
-        gamesByDifficultyLevel: {},
       });
     });
 
@@ -383,8 +382,25 @@ describe('useProgress', () => {
 
       expect(stats.totalTimePlayed).toBe(55000); // 30000 + 25000
     });
+  });
 
-    it('counts games by difficulty level correctly', async () => {
+  describe('getStatsByDifficultyLevel', () => {
+    it('returns zeros for all levels when no scores', async () => {
+      const { result } = renderHook(() => useProgress());
+
+      await waitFor(() => {
+        expect(result.current.loaded).toBe(true);
+      });
+
+      const statsByLevel = result.current.getStatsByDifficultyLevel();
+
+      expect(statsByLevel.easy.totalGames).toBe(0);
+      expect(statsByLevel.medium.totalGames).toBe(0);
+      expect(statsByLevel.hard.totalGames).toBe(0);
+      expect(statsByLevel.expert.totalGames).toBe(0);
+    });
+
+    it('calculates stats separately for each difficulty level', async () => {
       const storedScores = [
         {
           id: '1',
@@ -396,26 +412,18 @@ describe('useProgress', () => {
         },
         {
           id: '2',
-          difficultyLevel: 'hard',
-          noteCount: 25,
-          accuracy: 90,
-          elapsedMs: 25000,
+          difficultyLevel: 'easy',
+          noteCount: 10,
+          accuracy: 100,
+          elapsedMs: 20000,
           timestamp: Date.now(),
         },
         {
           id: '3',
-          difficultyLevel: 'easy',
+          difficultyLevel: 'hard',
           noteCount: 10,
-          accuracy: 85,
-          elapsedMs: 28000,
-          timestamp: Date.now(),
-        },
-        {
-          id: '4',
-          difficultyLevel: 'expert',
-          noteCount: 100,
           accuracy: 70,
-          elapsedMs: 60000,
+          elapsedMs: 25000,
           timestamp: Date.now(),
         },
       ];
@@ -428,13 +436,61 @@ describe('useProgress', () => {
         expect(result.current.loaded).toBe(true);
       });
 
-      const stats = result.current.getStats();
+      const statsByLevel = result.current.getStatsByDifficultyLevel();
 
-      expect(stats.gamesByDifficultyLevel).toEqual({
-        easy: 2,
-        hard: 1,
-        expert: 1,
+      // Easy level: 2 games, average accuracy 90%
+      expect(statsByLevel.easy.totalGames).toBe(2);
+      expect(statsByLevel.easy.averageAccuracy).toBe(90);
+
+      // Hard level: 1 game, accuracy 70%
+      expect(statsByLevel.hard.totalGames).toBe(1);
+      expect(statsByLevel.hard.averageAccuracy).toBe(70);
+
+      // Medium and expert: no games
+      expect(statsByLevel.medium.totalGames).toBe(0);
+      expect(statsByLevel.expert.totalGames).toBe(0);
+    });
+
+    it('calculates best speed per level correctly', async () => {
+      const storedScores = [
+        {
+          id: '1',
+          difficultyLevel: 'easy',
+          noteCount: 10,
+          accuracy: 80,
+          elapsedMs: 30000, // 20 npm
+          timestamp: Date.now(),
+        },
+        {
+          id: '2',
+          difficultyLevel: 'easy',
+          noteCount: 10,
+          accuracy: 90,
+          elapsedMs: 20000, // 30 npm (fastest for easy)
+          timestamp: Date.now(),
+        },
+        {
+          id: '3',
+          difficultyLevel: 'hard',
+          noteCount: 10,
+          accuracy: 85,
+          elapsedMs: 15000, // 40 npm
+          timestamp: Date.now(),
+        },
+      ];
+
+      mockAsyncStorage.getItem.mockResolvedValue(JSON.stringify(storedScores));
+
+      const { result } = renderHook(() => useProgress());
+
+      await waitFor(() => {
+        expect(result.current.loaded).toBe(true);
       });
+
+      const statsByLevel = result.current.getStatsByDifficultyLevel();
+
+      expect(statsByLevel.easy.bestSpeed).toBe(30);
+      expect(statsByLevel.hard.bestSpeed).toBe(40);
     });
   });
 });

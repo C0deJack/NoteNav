@@ -1,6 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useState } from 'react';
-import type { DifficultyLevel, GameScore } from '@/types/piano';
+import { DIFFICULTY_LEVELS } from '@/constants/PianoConfig';
+import type {
+  DifficultyLevel,
+  DifficultyStats,
+  GameScore,
+} from '@/types/piano';
 import {
   calculateNotesPerMinute,
   calculateScoreFromGame,
@@ -60,57 +65,66 @@ export function useProgress() {
     }
   }, []);
 
-  const getStats = useCallback(() => {
-    if (scores.length === 0) {
+  const calculateStatsForScores = useCallback(
+    (scoreList: GameScore[]): DifficultyStats => {
+      if (scoreList.length === 0) {
+        return {
+          totalGames: 0,
+          averageAccuracy: 0,
+          bestSpeed: 0,
+          averageScore: 0,
+          bestScore: 0,
+          totalTimePlayed: 0,
+        };
+      }
+
+      const totalGames = scoreList.length;
+      const averageAccuracy = Math.round(
+        scoreList.reduce((sum, s) => sum + s.accuracy, 0) / totalGames,
+      );
+
+      const speeds = scoreList.map((s) =>
+        calculateNotesPerMinute(s.noteCount, s.elapsedMs),
+      );
+      const bestSpeed = Math.round(Math.max(...speeds));
+
+      const progressionScores = scoreList.map((s) => calculateScoreFromGame(s));
+      const averageScore = Math.round(
+        progressionScores.reduce((sum, s) => sum + s, 0) / totalGames,
+      );
+      const bestScore = Math.max(...progressionScores);
+
+      const totalTimePlayed = scoreList.reduce(
+        (sum, s) => sum + s.elapsedMs,
+        0,
+      );
+
       return {
-        totalGames: 0,
-        averageAccuracy: 0,
-        bestSpeed: 0,
-        averageScore: 0,
-        bestScore: 0,
-        totalTimePlayed: 0,
-        gamesByDifficultyLevel: {} as Record<DifficultyLevel, number>,
+        totalGames,
+        averageAccuracy,
+        bestSpeed,
+        averageScore,
+        bestScore,
+        totalTimePlayed,
       };
+    },
+    [],
+  );
+
+  const getStats = useCallback(() => {
+    return calculateStatsForScores(scores);
+  }, [scores, calculateStatsForScores]);
+
+  const getStatsByDifficultyLevel = useCallback(() => {
+    const statsByLevel = {} as Record<DifficultyLevel, DifficultyStats>;
+
+    for (const { value: level } of DIFFICULTY_LEVELS) {
+      const levelScores = scores.filter((s) => s.difficultyLevel === level);
+      statsByLevel[level] = calculateStatsForScores(levelScores);
     }
 
-    const totalGames = scores.length;
-    const averageAccuracy = Math.round(
-      scores.reduce((sum, s) => sum + s.accuracy, 0) / totalGames,
-    );
-
-    // Calculate speed stats (notes per minute)
-    const speeds = scores.map((s) =>
-      calculateNotesPerMinute(s.noteCount, s.elapsedMs),
-    );
-    const bestSpeed = Math.round(Math.max(...speeds));
-
-    // Calculate progression scores
-    const progressionScores = scores.map((s) => calculateScoreFromGame(s));
-    const averageScore = Math.round(
-      progressionScores.reduce((sum, s) => sum + s, 0) / totalGames,
-    );
-    const bestScore = Math.max(...progressionScores);
-
-    const totalTimePlayed = scores.reduce((sum, s) => sum + s.elapsedMs, 0);
-
-    const gamesByDifficultyLevel = scores.reduce(
-      (acc, s) => {
-        acc[s.difficultyLevel] = (acc[s.difficultyLevel] || 0) + 1;
-        return acc;
-      },
-      {} as Record<DifficultyLevel, number>,
-    );
-
-    return {
-      totalGames,
-      averageAccuracy,
-      bestSpeed,
-      averageScore,
-      bestScore,
-      totalTimePlayed,
-      gamesByDifficultyLevel,
-    };
-  }, [scores]);
+    return statsByLevel;
+  }, [scores, calculateStatsForScores]);
 
   return {
     scores,
@@ -118,5 +132,6 @@ export function useProgress() {
     addScore,
     resetProgress,
     getStats,
+    getStatsByDifficultyLevel,
   };
 }

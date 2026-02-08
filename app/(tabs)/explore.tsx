@@ -4,9 +4,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { DIFFICULTY_LEVELS } from '@/constants/PianoConfig';
 import { useProgress } from '@/hooks/useProgress';
 import { useTheme } from '@/hooks/useTheme';
-import type { GameScore } from '@/types/piano';
+import type {
+  DifficultyLevel,
+  DifficultyStats,
+  GameScore,
+} from '@/types/piano';
 import { formatTime } from '@/utils/formatting';
 import { getDifficultyLabel } from '@/utils/game';
 
@@ -41,13 +46,94 @@ function ScoreItem({ score, colors }: { score: GameScore; colors: any }) {
   );
 }
 
+function StatsCard({ stats, colors }: { stats: DifficultyStats; colors: any }) {
+  if (stats.totalGames === 0) {
+    return (
+      <View style={styles.emptyLevelState}>
+        <ThemedText type="muted" style={styles.emptyText}>
+          No games played at this level yet.
+        </ThemedText>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.statsContainer}>
+      <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
+        <ThemedText style={styles.statValue}>{stats.bestScore}</ThemedText>
+        <ThemedText type="muted" style={styles.statLabel}>
+          Best Score
+        </ThemedText>
+      </View>
+      <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
+        <ThemedText style={styles.statValue}>
+          {stats.averageAccuracy}%
+        </ThemedText>
+        <ThemedText type="muted" style={styles.statLabel}>
+          Avg Accuracy
+        </ThemedText>
+      </View>
+      <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
+        <ThemedText style={styles.statValue}>{stats.bestSpeed}</ThemedText>
+        <ThemedText type="muted" style={styles.statLabel}>
+          Best Speed
+        </ThemedText>
+      </View>
+    </View>
+  );
+}
+
+function DifficultyTabs({
+  selectedLevel,
+  onSelectLevel,
+  colors,
+}: {
+  selectedLevel: DifficultyLevel;
+  onSelectLevel: (level: DifficultyLevel) => void;
+  colors: any;
+}) {
+  return (
+    <View style={styles.tabsContainer}>
+      {DIFFICULTY_LEVELS.map(({ value, label }) => (
+        <Pressable
+          key={value}
+          style={[
+            styles.tab,
+            {
+              backgroundColor:
+                selectedLevel === value ? colors.primary : colors.surface,
+              borderColor: colors.border,
+            },
+          ]}
+          onPress={() => onSelectLevel(value)}
+        >
+          <ThemedText
+            style={[
+              styles.tabText,
+              selectedLevel === value && styles.tabTextSelected,
+            ]}
+          >
+            {label}
+          </ThemedText>
+        </Pressable>
+      ))}
+    </View>
+  );
+}
+
 export default function ProgressScreen() {
   const { colors } = useTheme();
-  const { scores, loaded, resetProgress, getStats } = useProgress();
+  const { scores, loaded, resetProgress, getStatsByDifficultyLevel } =
+    useProgress();
   const insets = useSafeAreaInsets();
   const [showResetModal, setShowResetModal] = useState(false);
+  const [selectedLevel, setSelectedLevel] = useState<DifficultyLevel>('easy');
 
-  const stats = getStats();
+  const statsByLevel = getStatsByDifficultyLevel();
+  const currentStats = statsByLevel[selectedLevel];
+  const filteredScores = scores.filter(
+    (s) => s.difficultyLevel === selectedLevel,
+  );
 
   const handleResetConfirm = () => {
     resetProgress();
@@ -79,52 +165,31 @@ export default function ProgressScreen() {
         </View>
       ) : (
         <>
-          <View style={styles.statsContainer}>
-            <View
-              style={[styles.statCard, { backgroundColor: colors.surface }]}
-            >
-              <ThemedText style={styles.statValue}>
-                {stats.bestScore}
-              </ThemedText>
-              <ThemedText type="muted" style={styles.statLabel}>
-                Best Score
-              </ThemedText>
-            </View>
-            <View
-              style={[styles.statCard, { backgroundColor: colors.surface }]}
-            >
-              <ThemedText style={styles.statValue}>
-                {stats.averageAccuracy}%
-              </ThemedText>
-              <ThemedText type="muted" style={styles.statLabel}>
-                Avg Accuracy
-              </ThemedText>
-            </View>
-            <View
-              style={[styles.statCard, { backgroundColor: colors.surface }]}
-            >
-              <ThemedText style={styles.statValue}>
-                {stats.bestSpeed}
-              </ThemedText>
-              <ThemedText type="muted" style={styles.statLabel}>
-                Best Speed
-              </ThemedText>
-            </View>
-          </View>
-
-          <ThemedText type="subtitle" style={styles.sectionTitle}>
-            Recent Games
-          </ThemedText>
-
-          <FlatList
-            data={scores}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <ScoreItem score={item} colors={colors} />
-            )}
-            contentContainerStyle={styles.listContent}
-            showsVerticalScrollIndicator={false}
+          <DifficultyTabs
+            selectedLevel={selectedLevel}
+            onSelectLevel={setSelectedLevel}
+            colors={colors}
           />
+
+          <StatsCard stats={currentStats} colors={colors} />
+
+          {filteredScores.length > 0 && (
+            <>
+              <ThemedText type="subtitle" style={styles.sectionTitle}>
+                Recent Games
+              </ThemedText>
+
+              <FlatList
+                data={filteredScores}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                  <ScoreItem score={item} colors={colors} />
+                )}
+                contentContainerStyle={styles.listContent}
+                showsVerticalScrollIndicator={false}
+              />
+            </>
+          )}
 
           <Pressable
             style={[styles.resetButton, { borderColor: colors.border }]}
@@ -194,8 +259,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
+  emptyLevelState: {
+    paddingVertical: 24,
+    alignItems: 'center',
+  },
   emptyText: {
     textAlign: 'center',
+  },
+  tabsContainer: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 16,
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    alignItems: 'center',
+  },
+  tabText: {
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  tabTextSelected: {
+    color: '#fff',
   },
   statsContainer: {
     flexDirection: 'row',
