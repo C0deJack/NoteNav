@@ -80,8 +80,8 @@ export default function PianoGameScreen() {
     [insets],
   );
 
-  // Start game on mount
-  // biome-ignore lint/correctness/useExhaustiveDependencies: Only run on mount with initial difficulty
+  // Start game when difficulty param changes (including initial mount).
+  // biome-ignore lint/correctness/useExhaustiveDependencies: startGame is intentionally excluded - it depends on internal state.difficulty which would cause unwanted re-runs. We only want to restart when the URL difficulty param changes.
   useEffect(() => {
     startGame(difficulty);
   }, [difficulty]);

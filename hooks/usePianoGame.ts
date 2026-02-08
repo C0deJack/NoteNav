@@ -12,6 +12,7 @@ import type {
   Note,
   NoteName,
 } from '@/types/piano';
+import { getBaseNoteName } from '@/utils/game';
 
 // Map second octave notes to their base notes (for keyboard input validation)
 export const NOTE_TO_BASE: Record<NoteName, NoteName> = {
@@ -51,8 +52,7 @@ function generateRandomNotes(count: number): Note[] {
 
     const noteData = NOTES[note];
     // For display, use the base note name (strip octave suffix)
-    // e.g., 'C2' -> 'C', 'C#2' -> 'C#'
-    let displayName: string = note.replace('2', '');
+    let displayName: string = getBaseNoteName(note);
 
     // For sharps, randomly pick sharp or flat notation
     if (SHARP_DISPLAY_NAMES[note]) {
@@ -140,10 +140,15 @@ export function usePianoGame() {
     [state.difficulty],
   );
 
+  /**
+   * Handles a piano key press during gameplay.
+   * Returns true if the pressed note was correct, false otherwise.
+   */
   const handleKeyPress = useCallback(
     (pressedNote: NoteName): boolean => {
       if (state.status !== 'playing') return false;
 
+      // --- 1. Validate the pressed note against the expected note ---
       const currentNote = state.notes[state.currentNoteIndex];
       // Check if pressed note matches, accounting for octave equivalents
       // (e.g., pressing 'C' or 'C2' is correct for 'C2', and vice versa)
@@ -151,18 +156,18 @@ export function usePianoGame() {
       const expectedBaseNote = NOTE_TO_BASE[currentNote.name];
       const isCorrect = pressedBaseNote === expectedBaseNote;
 
-      // Set feedback
+      // --- 2. Update visual feedback on the pressed key ---
       setKeyFeedback((prev) => ({
         ...prev,
         [pressedNote]: isCorrect ? 'correct' : 'incorrect',
       }));
 
-      // Track incorrect note for staff display
+      // Track incorrect note for staff display highlighting
       if (!isCorrect) {
         setIncorrectNote(pressedNote);
       }
 
-      // Clear feedback after animation (with cleanup tracking)
+      // --- 3. Schedule feedback cleanup after animation ---
       const timeoutId = setTimeout(() => {
         feedbackTimeoutsRef.current.delete(timeoutId);
         setKeyFeedback((prev) => ({
@@ -175,17 +180,18 @@ export function usePianoGame() {
       }, 300);
       feedbackTimeoutsRef.current.add(timeoutId);
 
+      // --- 4. Update game state based on correctness ---
       if (isCorrect) {
         const nextIndex = state.currentNoteIndex + 1;
 
         if (nextIndex >= state.notes.length) {
-          // Game complete
+          // Game complete: stop timer and calculate final accuracy
           if (timerRef.current) {
             clearInterval(timerRef.current);
             timerRef.current = null;
           }
           setState((prev) => {
-            const total = prev.correctCount + prev.incorrectCount + 1; // +1 for this last correct
+            const total = prev.correctCount + prev.incorrectCount + 1;
             const correct = prev.correctCount + 1;
             const accuracy = total > 0 ? correct / total : 0;
             return {
@@ -197,7 +203,7 @@ export function usePianoGame() {
             };
           });
         } else {
-          // Move to next note and increment correctCount
+          // Advance to next note
           setState((prev) => ({
             ...prev,
             currentNoteIndex: nextIndex,
@@ -205,7 +211,7 @@ export function usePianoGame() {
           }));
         }
       } else {
-        // Increment incorrectCount
+        // Wrong note: increment error count (player must retry same note)
         setState((prev) => ({
           ...prev,
           incorrectCount: prev.incorrectCount + 1,

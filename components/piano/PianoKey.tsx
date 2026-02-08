@@ -8,6 +8,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useTheme } from '@/hooks/useTheme';
 import type { KeyFeedback, NoteName } from '@/types/piano';
+import { getBaseNoteName } from '@/utils/game';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -67,7 +68,7 @@ export const PianoKey = memo(function PianoKey({
   });
 
   // Strip octave suffix and use sharp symbol for display
-  const displayNote = note.replace('2', '').replace('#', '\u266F');
+  const displayNote = getBaseNoteName(note).replace('#', '\u266F');
   const flatNote = SHARP_TO_FLAT[note]; // Get flat equivalent for black keys
 
   return (
