@@ -13,7 +13,7 @@ interface NoteDisplayProps {
   incorrectNote?: NoteName | null;
   showIncorrectFeedback?: boolean;
   showStaffLabels?: boolean;
-  correctAnimationTrigger?: number;
+  correctAnimationCounter?: number;
   lastCorrectNote?: NoteName | null;
 }
 
@@ -25,7 +25,7 @@ export const NoteDisplay = memo(function NoteDisplay({
   incorrectNote = null,
   showIncorrectFeedback = true,
   showStaffLabels = false,
-  correctAnimationTrigger = 0,
+  correctAnimationCounter = 0,
   lastCorrectNote = null,
 }: NoteDisplayProps) {
   const { colors } = useTheme();
@@ -38,7 +38,7 @@ export const NoteDisplay = memo(function NoteDisplay({
         feedback={feedback}
         incorrectNote={showIncorrectFeedback ? incorrectNote : null}
         showLabels={showStaffLabels}
-        correctAnimationTrigger={correctAnimationTrigger}
+        correctAnimationCounter={correctAnimationCounter}
         lastCorrectNote={lastCorrectNote}
       />
     );

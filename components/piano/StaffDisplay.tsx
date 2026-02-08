@@ -28,7 +28,7 @@ interface StaffDisplayProps {
   feedback?: KeyFeedback;
   incorrectNote?: NoteName | null;
   showLabels?: boolean;
-  correctAnimationTrigger?: number;
+  correctAnimationCounter?: number;
   lastCorrectNote?: NoteName | null;
 }
 
@@ -38,7 +38,7 @@ export const StaffDisplay = memo(function StaffDisplay({
   feedback = 'none',
   incorrectNote = null,
   showLabels = false,
-  correctAnimationTrigger = 0,
+  correctAnimationCounter = 0,
   lastCorrectNote = null,
 }: StaffDisplayProps) {
   const { colors } = useTheme();
@@ -99,7 +99,7 @@ export const StaffDisplay = memo(function StaffDisplay({
 
   // Calculate animation position when a correct note is triggered
   useEffect(() => {
-    if (correctAnimationTrigger > 0 && lastCorrectNote) {
+    if (correctAnimationCounter > 0 && lastCorrectNote) {
       // Use the full note name (including octave like 'C2') for position lookup
       const lastPosition = NOTE_STAFF_POSITIONS[lastCorrectNote] ?? 0;
       const centerY = height / 2;
@@ -108,7 +108,7 @@ export const StaffDisplay = memo(function StaffDisplay({
 
       setAnimationPosition({ x: lastNoteX, y: lastNoteY });
     }
-  }, [correctAnimationTrigger, lastCorrectNote]);
+  }, [correctAnimationCounter, lastCorrectNote]);
 
   // Calculate Y position for the note
   // Staff center is at height/2, each position step moves by half lineSpacing
@@ -144,7 +144,7 @@ export const StaffDisplay = memo(function StaffDisplay({
       <CorrectNoteAnimation
         x={animationPosition.x + containerPadding}
         y={animationPosition.y + containerPadding}
-        trigger={correctAnimationTrigger}
+        trigger={correctAnimationCounter}
         width={totalWidth + containerPadding * 2}
         height={height + containerPadding * 2}
       />

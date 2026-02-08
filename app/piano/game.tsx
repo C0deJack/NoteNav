@@ -132,7 +132,7 @@ export default function PianoGameScreen() {
     if (isCorrect) {
       // Trigger the correct animation with the note that was just played
       setLastCorrectNote(currentNoteName);
-      setCorrectAnimationTrigger((prev) => prev + 1);
+      setCorrectAnimationCounter((prev) => prev + 1);
 
       if (soundEnabled) {
         await playNote(note);
@@ -202,8 +202,8 @@ export default function PianoGameScreen() {
             incorrectNote={incorrectNote}
             showIncorrectFeedback={settings.showIncorrectFeedback}
             showStaffLabels={showStaffLabels}
-            correctAnimationTrigger={
-              settings.showCorrectAnimation ? correctAnimationTrigger : 0
+            correctAnimationCounter={
+              settings.showCorrectAnimation ? correctAnimationCounter : 0
             }
             lastCorrectNote={lastCorrectNote}
           />

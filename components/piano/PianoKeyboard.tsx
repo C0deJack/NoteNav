@@ -139,7 +139,8 @@ export function PianoKeyboard({
                   {
                     left: leftPosition,
                     width: blackKeyWidth,
-                    height: keyboardHeight * KEYBOARD_CONFIG.blackKeyHeightRatio,
+                    height:
+                      keyboardHeight * KEYBOARD_CONFIG.blackKeyHeightRatio,
                   },
                 ]}
               >
