@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { useTheme } from '@/hooks/useTheme';
 import type { KeyFeedback, NoteDisplayMode, NoteName } from '@/types/piano';
+import { formatNoteAccidentals } from '@/utils/game';
 import { StaffDisplay } from './StaffDisplay';
 
 interface NoteDisplayProps {
@@ -44,8 +45,8 @@ export const NoteDisplay = memo(function NoteDisplay({
     );
   }
 
-  // Convert sharp notation for display
-  const displayNote = note.replace('#', '\u266F');
+  // Convert accidentals for display
+  const displayNote = formatNoteAccidentals(note);
 
   // Use staff line color normally, green when correct
   const backgroundColor =

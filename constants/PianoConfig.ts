@@ -1,5 +1,11 @@
 import type { Difficulty, Note, NoteName } from '@/types/piano';
 
+/** Unicode sharp symbol (♯) */
+export const SHARP_SYMBOL = '\u266F';
+
+/** Unicode flat symbol (♭) */
+export const FLAT_SYMBOL = '\u266D';
+
 export const NOTES: Record<NoteName, Omit<Note, 'displayName'>> = {
   C: { name: 'C', isBlack: false, soundFile: 'c1.wav' },
   'C#': { name: 'C#', isBlack: true, soundFile: 'c1s.wav' },
@@ -25,14 +31,14 @@ export const NOTES: Record<NoteName, Omit<Note, 'displayName'>> = {
 
 // Display names for sharps (randomly pick sharp or flat notation)
 export const SHARP_DISPLAY_NAMES: Record<string, [string, string]> = {
-  'C#': ['C#', 'D♭'],
-  'D#': ['D#', 'E♭'],
-  'F#': ['F#', 'G♭'],
-  'G#': ['G#', 'A♭'],
-  'A#': ['A#', 'B♭'],
+  'C#': ['C#', `D${FLAT_SYMBOL}`],
+  'D#': ['D#', `E${FLAT_SYMBOL}`],
+  'F#': ['F#', `G${FLAT_SYMBOL}`],
+  'G#': ['G#', `A${FLAT_SYMBOL}`],
+  'A#': ['A#', `B${FLAT_SYMBOL}`],
   // Second octave
-  'C#2': ['C#', 'D♭'],
-  'D#2': ['D#', 'E♭'],
+  'C#2': ['C#', `D${FLAT_SYMBOL}`],
+  'D#2': ['D#', `E${FLAT_SYMBOL}`],
 };
 
 // Order of keys on keyboard (left to right)

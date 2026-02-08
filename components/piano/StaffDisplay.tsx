@@ -2,6 +2,7 @@ import { memo, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Svg, { Ellipse, G, Line, Path, Text as SvgText } from 'react-native-svg';
 import { STAFF_ANIMATION_CONFIG } from '@/constants/KeyboardConfig';
+import { FLAT_SYMBOL } from '@/constants/PianoConfig';
 import { NOTE_STAFF_POSITIONS, STAFF_CONFIG } from '@/constants/StaffConfig';
 import { useTheme } from '@/hooks/useTheme';
 import type { KeyFeedback, NoteName } from '@/types/piano';
@@ -46,7 +47,7 @@ export const StaffDisplay = memo(function StaffDisplay({
 
   // Parse the note to get base note and accidental
   const isSharp = note.includes('#');
-  const isFlat = note.includes('♭');
+  const isFlat = note.includes(FLAT_SYMBOL);
   const baseLetter = note.charAt(0).toUpperCase();
 
   // Check if user pressed the natural note when they should have pressed the sharp/flat

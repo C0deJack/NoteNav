@@ -1,4 +1,8 @@
-import { DIFFICULTIES } from '@/constants/PianoConfig';
+import {
+  DIFFICULTIES,
+  FLAT_SYMBOL,
+  SHARP_SYMBOL,
+} from '@/constants/PianoConfig';
 import type { Difficulty, NoteName } from '@/types/piano';
 
 /**
@@ -14,4 +18,16 @@ export function getDifficultyLabel(difficulty: Difficulty): string {
  */
 export function getBaseNoteName(note: NoteName | string): string {
   return note.replace('2', '');
+}
+
+// Re-export symbols for convenience
+export { FLAT_SYMBOL, SHARP_SYMBOL };
+
+/**
+ * Formats a note for display by converting accidental characters to musical symbols.
+ * '#' -> '♯' (sharp) and 'b' -> '♭' (flat)
+ * e.g., 'C#' -> 'C♯', 'Db' -> 'D♭'
+ */
+export function formatNoteAccidentals(note: string): string {
+  return note.replace('#', SHARP_SYMBOL).replace('b', FLAT_SYMBOL);
 }
