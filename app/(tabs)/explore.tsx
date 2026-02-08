@@ -1,5 +1,13 @@
-import { useState } from 'react';
-import { FlatList, Modal, Pressable, StyleSheet, View } from 'react-native';
+import { useMemo, useState } from 'react';
+import {
+  Dimensions,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
+import { LineChart } from 'react-native-chart-kit';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/ThemedText';
@@ -14,6 +22,10 @@ import type {
 } from '@/types/piano';
 import { formatTime } from '@/utils/formatting';
 import { getDifficultyLabel } from '@/utils/game';
+import {
+  calculateNotesPerMinute,
+  calculateScoreFromGame,
+} from '@/utils/scoring';
 
 function formatDate(timestamp: number): string {
   const date = new Date(timestamp);
@@ -121,8 +133,134 @@ function DifficultyTabs({
   );
 }
 
+const CHART_COLORS = {
+  score: '#4CAF50', // Green
+  accuracy: '#2196F3', // Blue
+  speed: '#FF9800', // Orange
+};
+
+function ProgressLineChart({
+  scores,
+  colors,
+  isDark,
+}: {
+  scores: GameScore[];
+  colors: any;
+  isDark: boolean;
+}) {
+  const chartData = useMemo(() => {
+    // Take the last 10 games and reverse so oldest is first (left to right)
+    const recentScores = scores.slice(0, 10).reverse();
+
+    if (recentScores.length < 2) {
+      return null;
+    }
+
+    const scoreValues = recentScores.map((s) => calculateScoreFromGame(s));
+    const accuracyValues = recentScores.map((s) => s.accuracy);
+    const speedValues = recentScores.map((s) => {
+      const npm = calculateNotesPerMinute(s.noteCount, s.elapsedMs);
+      // Normalize speed to 0-100 scale for chart (cap at 60 npm = 100)
+      return Math.min(100, Math.round((npm / 60) * 100));
+    });
+
+    return {
+      labels: recentScores.map((_, i) => String(i + 1)),
+      datasets: [
+        {
+          data: scoreValues,
+          color: () => CHART_COLORS.score,
+          strokeWidth: 2,
+        },
+        {
+          data: accuracyValues,
+          color: () => CHART_COLORS.accuracy,
+          strokeWidth: 2,
+        },
+        {
+          data: speedValues,
+          color: () => CHART_COLORS.speed,
+          strokeWidth: 2,
+        },
+      ],
+      legend: ['Score', 'Accuracy', 'Speed'],
+    };
+  }, [scores]);
+
+  if (!chartData) {
+    return (
+      <View style={styles.chartPlaceholder}>
+        <ThemedText type="muted" style={styles.emptyText}>
+          Play at least 2 games to see your progress chart.
+        </ThemedText>
+      </View>
+    );
+  }
+
+  const screenWidth = Dimensions.get('window').width - 32;
+
+  return (
+    <View style={styles.chartContainer}>
+      <LineChart
+        data={chartData}
+        width={screenWidth}
+        height={180}
+        chartConfig={{
+          backgroundColor: colors.surface,
+          backgroundGradientFrom: colors.surface,
+          backgroundGradientTo: colors.surface,
+          decimalPlaces: 0,
+          color: (opacity = 1) =>
+            isDark
+              ? `rgba(255, 255, 255, ${opacity})`
+              : `rgba(0, 0, 0, ${opacity})`,
+          labelColor: (opacity = 1) =>
+            isDark
+              ? `rgba(255, 255, 255, ${opacity})`
+              : `rgba(0, 0, 0, ${opacity})`,
+          style: {
+            borderRadius: 12,
+          },
+          propsForDots: {
+            r: '4',
+            strokeWidth: '1',
+          },
+        }}
+        bezier
+        style={styles.chart}
+        fromZero
+        yAxisSuffix=""
+        yAxisInterval={1}
+      />
+      <View style={styles.legendContainer}>
+        <View style={styles.legendItem}>
+          <View
+            style={[styles.legendDot, { backgroundColor: CHART_COLORS.score }]}
+          />
+          <ThemedText style={styles.legendText}>Score</ThemedText>
+        </View>
+        <View style={styles.legendItem}>
+          <View
+            style={[
+              styles.legendDot,
+              { backgroundColor: CHART_COLORS.accuracy },
+            ]}
+          />
+          <ThemedText style={styles.legendText}>Accuracy</ThemedText>
+        </View>
+        <View style={styles.legendItem}>
+          <View
+            style={[styles.legendDot, { backgroundColor: CHART_COLORS.speed }]}
+          />
+          <ThemedText style={styles.legendText}>Speed</ThemedText>
+        </View>
+      </View>
+    </View>
+  );
+}
+
 export default function ProgressScreen() {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const { scores, loaded, resetProgress, getStatsByDifficultyLevel } =
     useProgress();
   const insets = useSafeAreaInsets();
@@ -173,21 +311,27 @@ export default function ProgressScreen() {
 
           <StatsCard stats={currentStats} colors={colors} />
 
+          <ProgressLineChart
+            scores={filteredScores}
+            colors={colors}
+            isDark={isDark}
+          />
+
           {filteredScores.length > 0 && (
             <>
               <ThemedText type="subtitle" style={styles.sectionTitle}>
                 Recent Games
               </ThemedText>
 
-              <FlatList
-                data={filteredScores}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                  <ScoreItem score={item} colors={colors} />
-                )}
+              <ScrollView
+                style={styles.scoresList}
                 contentContainerStyle={styles.listContent}
                 showsVerticalScrollIndicator={false}
-              />
+              >
+                {filteredScores.map((score) => (
+                  <ScoreItem key={score.id} score={score} colors={colors} />
+                ))}
+              </ScrollView>
             </>
           )}
 
@@ -304,8 +448,40 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 4,
   },
+  chartContainer: {
+    marginBottom: 16,
+  },
+  chart: {
+    borderRadius: 12,
+  },
+  chartPlaceholder: {
+    paddingVertical: 24,
+    alignItems: 'center',
+  },
+  legendContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 16,
+    marginTop: 8,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  legendDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+  },
+  legendText: {
+    fontSize: 12,
+  },
   sectionTitle: {
     marginBottom: 12,
+  },
+  scoresList: {
+    flex: 1,
   },
   listContent: {
     paddingBottom: 16,
