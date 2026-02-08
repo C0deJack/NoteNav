@@ -81,7 +81,7 @@ export function calculateProgressionScore(
 export function calculateScoreFromGame(score: GameScore): number {
   return calculateProgressionScore(
     score.accuracy,
-    score.difficulty,
+    score.noteCount,
     score.elapsedMs,
   );
 }

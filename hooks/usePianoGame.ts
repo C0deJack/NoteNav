@@ -1,15 +1,18 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  DEFAULT_DIFFICULTY,
+  DEFAULT_DIFFICULTY_LEVEL,
+  DEFAULT_NOTE_COUNT,
+  DIFFICULTY_NOTE_POOLS,
   KEY_ORDER,
   NOTES,
   SHARP_DISPLAY_NAMES,
 } from '@/constants/PianoConfig';
 import type {
-  Difficulty,
+  DifficultyLevel,
   GameState,
   KeyFeedback,
   Note,
+  NoteCount,
   NoteName,
 } from '@/types/piano';
 import { getBaseNoteName } from '@/utils/game';
@@ -37,7 +40,11 @@ export const NOTE_TO_BASE: Record<NoteName, NoteName> = {
   F2: 'F',
 };
 
-function generateRandomNotes(count: number): Note[] {
+function generateRandomNotes(
+  count: NoteCount,
+  difficultyLevel: DifficultyLevel,
+): Note[] {
+  const notePool = DIFFICULTY_NOTE_POOLS[difficultyLevel];
   const notes: Note[] = [];
   let previousNote: NoteName | null = null;
 
@@ -45,8 +52,8 @@ function generateRandomNotes(count: number): Note[] {
     let note: NoteName;
     // Ensure no consecutive repeats
     do {
-      note = KEY_ORDER[Math.floor(Math.random() * KEY_ORDER.length)];
-    } while (note === previousNote);
+      note = notePool[Math.floor(Math.random() * notePool.length)];
+    } while (note === previousNote && notePool.length > 1);
 
     previousNote = note;
 
@@ -73,7 +80,8 @@ function generateRandomNotes(count: number): Note[] {
 
 const initialState: GameState = {
   status: 'idle',
-  difficulty: DEFAULT_DIFFICULTY,
+  difficultyLevel: DEFAULT_DIFFICULTY_LEVEL,
+  noteCount: DEFAULT_NOTE_COUNT,
   currentNoteIndex: 0,
   notes: [],
   startTime: null,
@@ -116,18 +124,16 @@ export function usePianoGame() {
     };
   }, [state.status, state.startTime]);
 
-  const setDifficulty = useCallback((difficulty: Difficulty) => {
-    setState((prev) => ({ ...prev, difficulty }));
-  }, []);
-
   const startGame = useCallback(
-    (difficulty?: Difficulty) => {
-      const diff = difficulty ?? state.difficulty;
-      const notes = generateRandomNotes(diff);
+    (difficultyLevel?: DifficultyLevel, noteCount?: NoteCount) => {
+      const level = difficultyLevel ?? state.difficultyLevel;
+      const count = noteCount ?? state.noteCount;
+      const notes = generateRandomNotes(count, level);
 
       setState({
         status: 'playing',
-        difficulty: diff,
+        difficultyLevel: level,
+        noteCount: count,
         currentNoteIndex: 0,
         notes,
         startTime: Date.now(),
@@ -137,7 +143,7 @@ export function usePianoGame() {
         incorrectCount: 0,
       });
     },
-    [state.difficulty],
+    [state.difficultyLevel, state.noteCount],
   );
 
   /**
@@ -284,7 +290,6 @@ export function usePianoGame() {
     state,
     keyFeedback,
     incorrectNote,
-    setDifficulty,
     startGame,
     handleKeyPress,
     pauseGame,

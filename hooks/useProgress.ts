@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useState } from 'react';
-import type { Difficulty, GameScore } from '@/types/piano';
+import type { DifficultyLevel, GameScore } from '@/types/piano';
 import {
   calculateNotesPerMinute,
   calculateScoreFromGame,
@@ -69,7 +69,7 @@ export function useProgress() {
         averageScore: 0,
         bestScore: 0,
         totalTimePlayed: 0,
-        gamesByDifficulty: {} as Record<Difficulty, number>,
+        gamesByDifficultyLevel: {} as Record<DifficultyLevel, number>,
       };
     }
 
@@ -80,7 +80,7 @@ export function useProgress() {
 
     // Calculate speed stats (notes per minute)
     const speeds = scores.map((s) =>
-      calculateNotesPerMinute(s.difficulty, s.elapsedMs),
+      calculateNotesPerMinute(s.noteCount, s.elapsedMs),
     );
     const bestSpeed = Math.round(Math.max(...speeds));
 
@@ -93,12 +93,12 @@ export function useProgress() {
 
     const totalTimePlayed = scores.reduce((sum, s) => sum + s.elapsedMs, 0);
 
-    const gamesByDifficulty = scores.reduce(
+    const gamesByDifficultyLevel = scores.reduce(
       (acc, s) => {
-        acc[s.difficulty] = (acc[s.difficulty] || 0) + 1;
+        acc[s.difficultyLevel] = (acc[s.difficultyLevel] || 0) + 1;
         return acc;
       },
-      {} as Record<Difficulty, number>,
+      {} as Record<DifficultyLevel, number>,
     );
 
     return {
@@ -108,7 +108,7 @@ export function useProgress() {
       averageScore,
       bestScore,
       totalTimePlayed,
-      gamesByDifficulty,
+      gamesByDifficultyLevel,
     };
   }, [scores]);
 

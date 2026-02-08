@@ -35,7 +35,8 @@ describe('useProgress', () => {
       const storedScores = [
         {
           id: '1',
-          difficulty: 10,
+          difficultyLevel: 'easy',
+          noteCount: 10,
           accuracy: 85,
           elapsedMs: 30000,
           timestamp: Date.now(),
@@ -87,7 +88,8 @@ describe('useProgress', () => {
 
       await act(async () => {
         newScore = await result.current.addScore({
-          difficulty: 10,
+          difficultyLevel: 'easy',
+          noteCount: 10,
           accuracy: 90,
           elapsedMs: 25000,
         });
@@ -103,7 +105,8 @@ describe('useProgress', () => {
       const existingScores = [
         {
           id: '1',
-          difficulty: 10,
+          difficultyLevel: 'easy',
+          noteCount: 10,
           accuracy: 80,
           elapsedMs: 30000,
           timestamp: Date.now() - 1000,
@@ -122,7 +125,8 @@ describe('useProgress', () => {
 
       await act(async () => {
         await result.current.addScore({
-          difficulty: 25,
+          difficultyLevel: 'hard',
+          noteCount: 25,
           accuracy: 95,
           elapsedMs: 20000,
         });
@@ -142,7 +146,8 @@ describe('useProgress', () => {
 
       await act(async () => {
         await result.current.addScore({
-          difficulty: 10,
+          difficultyLevel: 'easy',
+          noteCount: 10,
           accuracy: 90,
           elapsedMs: 25000,
         });
@@ -160,7 +165,8 @@ describe('useProgress', () => {
       const existingScores = [
         {
           id: '1',
-          difficulty: 10,
+          difficultyLevel: 'easy',
+          noteCount: 10,
           accuracy: 80,
           elapsedMs: 30000,
           timestamp: Date.now(),
@@ -218,7 +224,7 @@ describe('useProgress', () => {
         averageScore: 0,
         bestScore: 0,
         totalTimePlayed: 0,
-        gamesByDifficulty: {},
+        gamesByDifficultyLevel: {},
       });
     });
 
@@ -226,21 +232,24 @@ describe('useProgress', () => {
       const storedScores = [
         {
           id: '1',
-          difficulty: 10,
+          difficultyLevel: 'easy',
+          noteCount: 10,
           accuracy: 80,
           elapsedMs: 30000,
           timestamp: Date.now(),
         },
         {
           id: '2',
-          difficulty: 25,
+          difficultyLevel: 'hard',
+          noteCount: 25,
           accuracy: 90,
           elapsedMs: 25000,
           timestamp: Date.now(),
         },
         {
           id: '3',
-          difficulty: 10,
+          difficultyLevel: 'easy',
+          noteCount: 10,
           accuracy: 85,
           elapsedMs: 28000,
           timestamp: Date.now(),
@@ -264,21 +273,24 @@ describe('useProgress', () => {
       const storedScores = [
         {
           id: '1',
-          difficulty: 10,
+          difficultyLevel: 'easy',
+          noteCount: 10,
           accuracy: 80,
           elapsedMs: 30000,
           timestamp: Date.now(),
         },
         {
           id: '2',
-          difficulty: 10,
+          difficultyLevel: 'easy',
+          noteCount: 10,
           accuracy: 90,
           elapsedMs: 25000,
           timestamp: Date.now(),
         },
         {
           id: '3',
-          difficulty: 10,
+          difficultyLevel: 'easy',
+          noteCount: 10,
           accuracy: 100,
           elapsedMs: 20000,
           timestamp: Date.now(),
@@ -302,21 +314,24 @@ describe('useProgress', () => {
       const storedScores = [
         {
           id: '1',
-          difficulty: 10,
+          difficultyLevel: 'easy',
+          noteCount: 10,
           accuracy: 80,
           elapsedMs: 30000, // 10 notes in 30s = 20 npm
           timestamp: Date.now(),
         },
         {
           id: '2',
-          difficulty: 10,
+          difficultyLevel: 'easy',
+          noteCount: 10,
           accuracy: 95,
           elapsedMs: 20000, // 10 notes in 20s = 30 npm (fastest)
           timestamp: Date.now(),
         },
         {
           id: '3',
-          difficulty: 10,
+          difficultyLevel: 'easy',
+          noteCount: 10,
           accuracy: 85,
           elapsedMs: 25000, // 10 notes in 25s = 24 npm
           timestamp: Date.now(),
@@ -340,14 +355,16 @@ describe('useProgress', () => {
       const storedScores = [
         {
           id: '1',
-          difficulty: 10,
+          difficultyLevel: 'easy',
+          noteCount: 10,
           accuracy: 80,
           elapsedMs: 30000,
           timestamp: Date.now(),
         },
         {
           id: '2',
-          difficulty: 10,
+          difficultyLevel: 'easy',
+          noteCount: 10,
           accuracy: 90,
           elapsedMs: 25000,
           timestamp: Date.now(),
@@ -367,32 +384,36 @@ describe('useProgress', () => {
       expect(stats.totalTimePlayed).toBe(55000); // 30000 + 25000
     });
 
-    it('counts games by difficulty correctly', async () => {
+    it('counts games by difficulty level correctly', async () => {
       const storedScores = [
         {
           id: '1',
-          difficulty: 10,
+          difficultyLevel: 'easy',
+          noteCount: 10,
           accuracy: 80,
           elapsedMs: 30000,
           timestamp: Date.now(),
         },
         {
           id: '2',
-          difficulty: 25,
+          difficultyLevel: 'hard',
+          noteCount: 25,
           accuracy: 90,
           elapsedMs: 25000,
           timestamp: Date.now(),
         },
         {
           id: '3',
-          difficulty: 10,
+          difficultyLevel: 'easy',
+          noteCount: 10,
           accuracy: 85,
           elapsedMs: 28000,
           timestamp: Date.now(),
         },
         {
           id: '4',
-          difficulty: 100,
+          difficultyLevel: 'expert',
+          noteCount: 100,
           accuracy: 70,
           elapsedMs: 60000,
           timestamp: Date.now(),
@@ -409,10 +430,10 @@ describe('useProgress', () => {
 
       const stats = result.current.getStats();
 
-      expect(stats.gamesByDifficulty).toEqual({
-        10: 2,
-        25: 1,
-        100: 1,
+      expect(stats.gamesByDifficultyLevel).toEqual({
+        easy: 2,
+        hard: 1,
+        expert: 1,
       });
     });
   });

@@ -17,12 +17,15 @@ import { useInactivityTimeout } from '@/hooks/useInactivityTimeout';
 import { usePianoAudio } from '@/hooks/usePianoAudio';
 import { NOTE_TO_BASE, usePianoGame } from '@/hooks/usePianoGame';
 import { useTheme } from '@/hooks/useTheme';
-import type { Difficulty, NoteName } from '@/types/piano';
+import type { DifficultyLevel, NoteCount, NoteName } from '@/types/piano';
 
 export default function PianoGameScreen() {
-  const params = useLocalSearchParams<{ difficulty: string }>();
-  const difficulty =
-    (parseInt(params.difficulty || '10', 10) as Difficulty) || 10;
+  const params = useLocalSearchParams<{
+    difficultyLevel: string;
+    noteCount: string;
+  }>();
+  const difficultyLevel = (params.difficultyLevel || 'easy') as DifficultyLevel;
+  const noteCount = (parseInt(params.noteCount || '10', 10) || 10) as NoteCount;
   const insets = useSafeAreaInsets();
 
   const {
@@ -80,11 +83,11 @@ export default function PianoGameScreen() {
     [insets],
   );
 
-  // Start game when difficulty param changes (including initial mount).
-  // biome-ignore lint/correctness/useExhaustiveDependencies: startGame is intentionally excluded - it depends on internal state.difficulty which would cause unwanted re-runs. We only want to restart when the URL difficulty param changes.
+  // Start game when params change (including initial mount).
+  // biome-ignore lint/correctness/useExhaustiveDependencies: startGame is intentionally excluded - it depends on internal state which would cause unwanted re-runs. We only want to restart when the URL params change.
   useEffect(() => {
-    startGame(difficulty);
-  }, [difficulty]);
+    startGame(difficultyLevel, noteCount);
+  }, [difficultyLevel, noteCount]);
 
   // Navigate to results when finished
   useEffect(() => {
@@ -92,13 +95,21 @@ export default function PianoGameScreen() {
       router.replace({
         pathname: '/piano/results' as const,
         params: {
-          difficulty: state.difficulty,
+          difficultyLevel: state.difficultyLevel,
+          noteCount: state.noteCount,
           elapsedMs: state.elapsedMs,
-          accuracy: 100 * state.accuracy,
+          accuracy: Math.round(100 * state.accuracy),
         },
       } as any);
     }
-  }, [state.status, state.difficulty, state.elapsedMs, state.accuracy]);
+  }, [
+    state.status,
+    state.difficultyLevel,
+    state.noteCount,
+    state.elapsedMs,
+    state.accuracy,
+  ]);
+
   const handleQuitPress = () => {
     pauseGame();
     setShowQuitModal(true);

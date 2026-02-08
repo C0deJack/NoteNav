@@ -37,14 +37,15 @@ describe('useGameSettings', () => {
       });
     });
 
-    it('has default difficulty of 10 after loading', async () => {
+    it('has default difficulty level and note count after loading', async () => {
       const { result } = renderHook(() => useGameSettings());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
       });
 
-      expect(result.current.lastDifficulty).toBe(10);
+      expect(result.current.lastDifficultyLevel).toBe('easy');
+      expect(result.current.lastNoteCount).toBe(10);
     });
   });
 
@@ -74,9 +75,12 @@ describe('useGameSettings', () => {
       expect(result.current.settings.noteDisplayMode).toBe('staff');
     });
 
-    it('loads difficulty from AsyncStorage on mount', async () => {
+    it('loads difficulty level and note count from AsyncStorage on mount', async () => {
       mockAsyncStorage.getItem.mockImplementation((key) => {
-        if (key === '@piano_game_difficulty') {
+        if (key === '@piano_game_difficulty_level') {
+          return Promise.resolve(JSON.stringify('hard'));
+        }
+        if (key === '@piano_game_note_count') {
           return Promise.resolve(JSON.stringify(25));
         }
         return Promise.resolve(null);
@@ -88,7 +92,8 @@ describe('useGameSettings', () => {
         expect(result.current.loaded).toBe(true);
       });
 
-      expect(result.current.lastDifficulty).toBe(25);
+      expect(result.current.lastDifficultyLevel).toBe('hard');
+      expect(result.current.lastNoteCount).toBe(25);
     });
 
     it('sets loaded to true even on error', async () => {
@@ -196,8 +201,8 @@ describe('useGameSettings', () => {
     });
   });
 
-  describe('saveLastDifficulty', () => {
-    it('updates difficulty state', async () => {
+  describe('saveLastDifficultyLevel', () => {
+    it('updates difficulty level state', async () => {
       const { result } = renderHook(() => useGameSettings());
 
       await waitFor(() => {
@@ -205,13 +210,13 @@ describe('useGameSettings', () => {
       });
 
       await act(async () => {
-        await result.current.saveLastDifficulty(25);
+        await result.current.saveLastDifficultyLevel('hard');
       });
 
-      expect(result.current.lastDifficulty).toBe(25);
+      expect(result.current.lastDifficultyLevel).toBe('hard');
     });
 
-    it('saves difficulty to AsyncStorage', async () => {
+    it('saves difficulty level to AsyncStorage', async () => {
       const { result } = renderHook(() => useGameSettings());
 
       await waitFor(() => {
@@ -219,11 +224,44 @@ describe('useGameSettings', () => {
       });
 
       await act(async () => {
-        await result.current.saveLastDifficulty(100);
+        await result.current.saveLastDifficultyLevel('expert');
       });
 
       expect(mockAsyncStorage.setItem).toHaveBeenCalledWith(
-        '@piano_game_difficulty',
+        '@piano_game_difficulty_level',
+        '"expert"',
+      );
+    });
+  });
+
+  describe('saveLastNoteCount', () => {
+    it('updates note count state', async () => {
+      const { result } = renderHook(() => useGameSettings());
+
+      await waitFor(() => {
+        expect(result.current.loaded).toBe(true);
+      });
+
+      await act(async () => {
+        await result.current.saveLastNoteCount(25);
+      });
+
+      expect(result.current.lastNoteCount).toBe(25);
+    });
+
+    it('saves note count to AsyncStorage', async () => {
+      const { result } = renderHook(() => useGameSettings());
+
+      await waitFor(() => {
+        expect(result.current.loaded).toBe(true);
+      });
+
+      await act(async () => {
+        await result.current.saveLastNoteCount(100);
+      });
+
+      expect(mockAsyncStorage.setItem).toHaveBeenCalledWith(
+        '@piano_game_note_count',
         '100',
       );
     });

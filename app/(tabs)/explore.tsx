@@ -21,7 +21,7 @@ function formatDate(timestamp: number): string {
 }
 
 function ScoreItem({ score, colors }: { score: GameScore; colors: any }) {
-  const difficultyLabel = getDifficultyLabel(score.difficulty);
+  const difficultyLabel = getDifficultyLabel(score.difficultyLevel);
 
   return (
     <View style={[styles.scoreItem, { borderColor: colors.border }]}>
@@ -33,7 +33,7 @@ function ScoreItem({ score, colors }: { score: GameScore; colors: any }) {
       </View>
       <View style={styles.scoreDetails}>
         <ThemedText type="muted">
-          {difficultyLabel} ({score.difficulty} notes)
+          {difficultyLabel} ({score.noteCount} notes)
         </ThemedText>
         <ThemedText type="muted">{formatTime(score.elapsedMs)}</ThemedText>
       </View>

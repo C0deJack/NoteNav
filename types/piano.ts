@@ -19,7 +19,16 @@ export type NoteName =
   | 'E2'
   | 'F2';
 
-export type Difficulty = 3 | 10 | 25 | 100;
+/** Number of notes per game */
+export type NoteCount = 3 | 10 | 25 | 100;
+
+/** Difficulty level determines which notes are included */
+export type DifficultyLevel = 'easy' | 'medium' | 'hard' | 'expert';
+
+/**
+ * @deprecated Use NoteCount instead. Kept for backward compatibility with saved scores.
+ */
+export type Difficulty = NoteCount;
 
 export interface Note {
   name: NoteName;
@@ -30,7 +39,8 @@ export interface Note {
 
 export interface GameState {
   status: 'idle' | 'playing' | 'paused' | 'finished';
-  difficulty: Difficulty;
+  difficultyLevel: DifficultyLevel;
+  noteCount: NoteCount;
   currentNoteIndex: number;
   notes: Note[];
   startTime: number | null;
@@ -58,7 +68,8 @@ export type KeyFeedback = 'none' | 'correct' | 'incorrect';
 
 export interface GameScore {
   id: string;
-  difficulty: Difficulty;
+  difficultyLevel: DifficultyLevel;
+  noteCount: NoteCount;
   accuracy: number;
   elapsedMs: number;
   timestamp: number;
@@ -66,11 +77,13 @@ export interface GameScore {
 
 // Route param types for type-safe navigation
 export interface GameRouteParams {
-  difficulty: Difficulty;
+  difficultyLevel: DifficultyLevel;
+  noteCount: NoteCount;
 }
 
 export interface ResultsRouteParams {
-  difficulty: string;
+  difficultyLevel: string;
+  noteCount: string;
   elapsedMs: string;
   accuracy: string;
 }

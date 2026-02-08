@@ -19,22 +19,11 @@ describe('usePianoGame', () => {
       expect(result.current.state.currentNoteIndex).toBe(0);
     });
 
-    it('has default difficulty of 10', () => {
+    it('has default difficulty level and note count', () => {
       const { result } = renderHook(() => usePianoGame());
 
-      expect(result.current.state.difficulty).toBe(10);
-    });
-  });
-
-  describe('setDifficulty', () => {
-    it('updates difficulty', () => {
-      const { result } = renderHook(() => usePianoGame());
-
-      act(() => {
-        result.current.setDifficulty(25);
-      });
-
-      expect(result.current.state.difficulty).toBe(25);
+      expect(result.current.state.difficultyLevel).toBe('easy');
+      expect(result.current.state.noteCount).toBe(10);
     });
   });
 
@@ -43,28 +32,38 @@ describe('usePianoGame', () => {
       const { result } = renderHook(() => usePianoGame());
 
       act(() => {
-        result.current.startGame();
+        result.current.startGame('easy', 10);
       });
 
       expect(result.current.state.status).toBe('playing');
     });
 
-    it('generates notes based on difficulty', () => {
+    it('generates notes based on note count', () => {
       const { result } = renderHook(() => usePianoGame());
 
       act(() => {
-        result.current.startGame(3);
+        result.current.startGame('easy', 3);
       });
 
       expect(result.current.state.notes).toHaveLength(3);
-      expect(result.current.state.difficulty).toBe(3);
+      expect(result.current.state.noteCount).toBe(3);
+    });
+
+    it('sets difficulty level', () => {
+      const { result } = renderHook(() => usePianoGame());
+
+      act(() => {
+        result.current.startGame('hard', 10);
+      });
+
+      expect(result.current.state.difficultyLevel).toBe('hard');
     });
 
     it('sets start time', () => {
       const { result } = renderHook(() => usePianoGame());
 
       act(() => {
-        result.current.startGame();
+        result.current.startGame('easy', 10);
       });
 
       expect(result.current.state.startTime).not.toBeNull();
@@ -74,7 +73,7 @@ describe('usePianoGame', () => {
       const { result } = renderHook(() => usePianoGame());
 
       act(() => {
-        result.current.startGame();
+        result.current.startGame('easy', 10);
       });
 
       expect(result.current.state.correctCount).toBe(0);
@@ -88,7 +87,7 @@ describe('usePianoGame', () => {
       const { result } = renderHook(() => usePianoGame());
 
       act(() => {
-        result.current.startGame(3);
+        result.current.startGame('easy', 3);
       });
 
       const currentNote = result.current.state.notes[0].name;
@@ -106,7 +105,7 @@ describe('usePianoGame', () => {
       const { result } = renderHook(() => usePianoGame());
 
       act(() => {
-        result.current.startGame(3);
+        result.current.startGame('easy', 3);
       });
 
       const currentNote = result.current.state.notes[0].name;
@@ -126,7 +125,7 @@ describe('usePianoGame', () => {
       const { result } = renderHook(() => usePianoGame());
 
       act(() => {
-        result.current.startGame(3);
+        result.current.startGame('easy', 3);
       });
 
       const currentNote = result.current.state.notes[0].name;
@@ -144,7 +143,7 @@ describe('usePianoGame', () => {
       const { result } = renderHook(() => usePianoGame());
 
       act(() => {
-        result.current.startGame(3);
+        result.current.startGame('easy', 3);
       });
 
       const currentNote = result.current.state.notes[0].name;
@@ -163,7 +162,7 @@ describe('usePianoGame', () => {
       const { result } = renderHook(() => usePianoGame());
 
       act(() => {
-        result.current.startGame(3);
+        result.current.startGame('easy', 3);
       });
 
       // Complete all 3 notes
@@ -195,7 +194,7 @@ describe('usePianoGame', () => {
       const { result } = renderHook(() => usePianoGame());
 
       act(() => {
-        result.current.startGame(3);
+        result.current.startGame('easy', 3);
       });
 
       const currentNote = result.current.state.notes[0].name;
@@ -212,7 +211,7 @@ describe('usePianoGame', () => {
       const { result } = renderHook(() => usePianoGame());
 
       act(() => {
-        result.current.startGame(3);
+        result.current.startGame('easy', 3);
       });
 
       const currentNote = result.current.state.notes[0].name;
@@ -235,7 +234,7 @@ describe('usePianoGame', () => {
       const { result } = renderHook(() => usePianoGame());
 
       act(() => {
-        result.current.startGame();
+        result.current.startGame('easy', 10);
       });
 
       act(() => {
@@ -261,7 +260,7 @@ describe('usePianoGame', () => {
       const { result } = renderHook(() => usePianoGame());
 
       act(() => {
-        result.current.startGame();
+        result.current.startGame('easy', 10);
       });
 
       act(() => {
@@ -279,7 +278,7 @@ describe('usePianoGame', () => {
       const { result } = renderHook(() => usePianoGame());
 
       act(() => {
-        result.current.startGame();
+        result.current.startGame('easy', 10);
       });
 
       act(() => {
@@ -295,7 +294,7 @@ describe('usePianoGame', () => {
       const { result } = renderHook(() => usePianoGame());
 
       act(() => {
-        result.current.startGame(25);
+        result.current.startGame('hard', 25);
       });
 
       act(() => {
@@ -313,7 +312,7 @@ describe('usePianoGame', () => {
       const { result } = renderHook(() => usePianoGame());
 
       act(() => {
-        result.current.startGame(3);
+        result.current.startGame('easy', 3);
       });
 
       // Get first note wrong once

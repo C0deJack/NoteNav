@@ -7,26 +7,25 @@ import {
 } from '../game';
 
 describe('getDifficultyLabel', () => {
-  it('returns correct label for Easy difficulty (3)', () => {
-    expect(getDifficultyLabel(3)).toBe('Easy');
+  it('returns correct label for easy difficulty', () => {
+    expect(getDifficultyLabel('easy')).toBe('Easy');
   });
 
-  it('returns correct label for Medium difficulty (10)', () => {
-    expect(getDifficultyLabel(10)).toBe('Medium');
+  it('returns correct label for medium difficulty', () => {
+    expect(getDifficultyLabel('medium')).toBe('Medium');
   });
 
-  it('returns correct label for Hard difficulty (25)', () => {
-    expect(getDifficultyLabel(25)).toBe('Hard');
+  it('returns correct label for hard difficulty', () => {
+    expect(getDifficultyLabel('hard')).toBe('Hard');
   });
 
-  it('returns correct label for Expert difficulty (100)', () => {
-    expect(getDifficultyLabel(100)).toBe('Expert');
+  it('returns correct label for expert difficulty', () => {
+    expect(getDifficultyLabel('expert')).toBe('Expert');
   });
 
   it('returns "Unknown" for invalid difficulty values', () => {
-    expect(getDifficultyLabel(0 as any)).toBe('Unknown');
-    expect(getDifficultyLabel(5 as any)).toBe('Unknown');
-    expect(getDifficultyLabel(50 as any)).toBe('Unknown');
+    expect(getDifficultyLabel('invalid' as any)).toBe('Unknown');
+    expect(getDifficultyLabel('' as any)).toBe('Unknown');
   });
 });
 

@@ -1,4 +1,4 @@
-import type { Difficulty, Note, NoteName } from '@/types/piano';
+import type { DifficultyLevel, Note, NoteCount, NoteName } from '@/types/piano';
 
 /** Unicode sharp symbol (♯) */
 export const SHARP_SYMBOL = '\u266F';
@@ -95,13 +95,56 @@ export const BLACK_KEY_POSITIONS: Record<NoteName, number> = {
   F2: -1,
 };
 
-export const DIFFICULTIES: { value: Difficulty; label: string }[] = [
-  { value: 3, label: 'Easy' },
-  { value: 10, label: 'Medium' },
-  { value: 25, label: 'Hard' },
-  { value: 100, label: 'Expert' },
+/**
+ * Note pools for each difficulty level.
+ * Easy: C1 to G1, no sharps/flats
+ * Medium: C1 to F2, no sharps/flats
+ * Hard: C1 to G1, with sharps/flats
+ * Expert: C1 to F2, with sharps/flats
+ */
+export const DIFFICULTY_NOTE_POOLS: Record<DifficultyLevel, NoteName[]> = {
+  easy: ['C', 'D', 'E', 'F', 'G'],
+  medium: ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C2', 'D2', 'E2', 'F2'],
+  hard: ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G'],
+  expert: [
+    'C',
+    'C#',
+    'D',
+    'D#',
+    'E',
+    'F',
+    'F#',
+    'G',
+    'G#',
+    'A',
+    'A#',
+    'B',
+    'C2',
+    'C#2',
+    'D2',
+    'D#2',
+    'E2',
+    'F2',
+  ],
+};
+
+/** Difficulty level options */
+export const DIFFICULTY_LEVELS: { value: DifficultyLevel; label: string }[] = [
+  { value: 'easy', label: 'Easy' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'hard', label: 'Hard' },
+  { value: 'expert', label: 'Expert' },
+];
+
+/** Note count options */
+export const NOTE_COUNTS: { value: NoteCount; label: string }[] = [
+  { value: 3, label: '3 notes' },
+  { value: 10, label: '10 notes' },
+  { value: 25, label: '25 notes' },
+  { value: 100, label: '100 notes' },
 ];
 
 export const ERROR_SOUND_FILE = 'kick.wav';
 
-export const DEFAULT_DIFFICULTY: Difficulty = 10;
+export const DEFAULT_DIFFICULTY_LEVEL: DifficultyLevel = 'easy';
+export const DEFAULT_NOTE_COUNT: NoteCount = 10;

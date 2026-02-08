@@ -136,7 +136,8 @@ describe('calculateScoreFromGame', () => {
   it('calculates score from GameScore object', () => {
     const gameScore = {
       id: '1',
-      difficulty: 10 as const,
+      difficultyLevel: 'easy' as const,
+      noteCount: 10 as const,
       accuracy: 90,
       elapsedMs: 30000, // 30 seconds = 20 npm
       timestamp: Date.now(),
@@ -147,26 +148,28 @@ describe('calculateScoreFromGame', () => {
     expect(score).toBeLessThanOrEqual(100);
   });
 
-  it('uses difficulty as note count', () => {
-    const easyGame = {
+  it('uses noteCount for speed calculation', () => {
+    const shortGame = {
       id: '1',
-      difficulty: 3 as const,
+      difficultyLevel: 'easy' as const,
+      noteCount: 3 as const,
       accuracy: 100,
       elapsedMs: 6000, // 6 seconds for 3 notes = 30 npm
       timestamp: Date.now(),
     };
 
-    const hardGame = {
+    const longGame = {
       id: '2',
-      difficulty: 25 as const,
+      difficultyLevel: 'hard' as const,
+      noteCount: 25 as const,
       accuracy: 100,
       elapsedMs: 50000, // 50 seconds for 25 notes = 30 npm
       timestamp: Date.now(),
     };
 
     // Same npm, same accuracy = same score
-    expect(calculateScoreFromGame(easyGame)).toBe(
-      calculateScoreFromGame(hardGame),
+    expect(calculateScoreFromGame(shortGame)).toBe(
+      calculateScoreFromGame(longGame),
     );
   });
 });

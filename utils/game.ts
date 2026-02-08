@@ -1,15 +1,15 @@
 import {
-  DIFFICULTIES,
+  DIFFICULTY_LEVELS,
   FLAT_SYMBOL,
   SHARP_SYMBOL,
 } from '@/constants/PianoConfig';
-import type { Difficulty, NoteName } from '@/types/piano';
+import type { DifficultyLevel, NoteName } from '@/types/piano';
 
 /**
  * Gets the human-readable label for a difficulty level
  */
-export function getDifficultyLabel(difficulty: Difficulty): string {
-  return DIFFICULTIES.find((d) => d.value === difficulty)?.label ?? 'Unknown';
+export function getDifficultyLabel(level: DifficultyLevel): string {
+  return DIFFICULTY_LEVELS.find((d) => d.value === level)?.label ?? 'Unknown';
 }
 
 /**

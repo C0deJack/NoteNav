@@ -6,21 +6,34 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useGameSettings } from '@/hooks/useGameSettings';
 import { useTheme } from '@/hooks/useTheme';
-import type { Difficulty } from '@/types/piano';
+import type { DifficultyLevel, NoteCount } from '@/types/piano';
 
 export default function PianoMenuScreen() {
-  const { lastDifficulty, saveLastDifficulty, loaded } = useGameSettings();
+  const {
+    lastDifficultyLevel,
+    lastNoteCount,
+    saveLastDifficultyLevel,
+    saveLastNoteCount,
+    loaded,
+  } = useGameSettings();
   const { colors } = useTheme();
 
-  const handleDifficultySelect = (difficulty: Difficulty) => {
-    saveLastDifficulty(difficulty);
+  const handleLevelSelect = (level: DifficultyLevel) => {
+    saveLastDifficultyLevel(level);
+  };
+
+  const handleNoteCountSelect = (count: NoteCount) => {
+    saveLastNoteCount(count);
   };
 
   const handleStartGame = () => {
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
     router.push({
       pathname: '/piano/game',
-      params: { difficulty: String(lastDifficulty) },
+      params: {
+        difficultyLevel: lastDifficultyLevel,
+        noteCount: String(lastNoteCount),
+      },
     });
   };
 
@@ -42,8 +55,10 @@ export default function PianoMenuScreen() {
 
         <View style={styles.selectorContainer}>
           <DifficultySelector
-            selected={lastDifficulty}
-            onSelect={handleDifficultySelect}
+            selectedLevel={lastDifficultyLevel}
+            selectedNoteCount={lastNoteCount}
+            onSelectLevel={handleLevelSelect}
+            onSelectNoteCount={handleNoteCountSelect}
           />
         </View>
 
