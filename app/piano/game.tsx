@@ -278,6 +278,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignSelf: 'flex-start',
     marginBlockStart: 40,
+    marginLeft: -24,
   },
   progress: {
     fontSize: 20,

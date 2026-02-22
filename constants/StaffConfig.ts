@@ -2,12 +2,12 @@ import type { NoteName } from '@/types/piano';
 
 // Staff dimensions
 export const STAFF_CONFIG = {
-  width: 344,
+  width: 520,
   height: 235,
   lineSpacing: 24,
   noteRadius: 18,
   clefWidth: 78,
-  leftPadding: 94,
+  leftPadding: 30,
   accidentalOffset: 38,
 } as const;
 

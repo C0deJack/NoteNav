@@ -204,6 +204,16 @@ export const StaffDisplay = memo(function StaffDisplay({
             ) : null;
           })()}
 
+        {/* Target note line */}
+        <Line
+          x1={(leftPadding - 10 + width - 10) / 2}
+          y1={centerY - 4 * lineSpacing}
+          x2={(leftPadding - 10 + width - 10) / 2}
+          y2={centerY + 3 * lineSpacing}
+          stroke="white"
+          strokeWidth={1.5}
+        />
+
         {/* Treble clef */}
         <G transform={`translate(${leftPadding - 10}, ${centerY - 50})`}>
           <TrebleClef color={colors.staffLine} />
