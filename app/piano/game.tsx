@@ -169,6 +169,9 @@ export default function PianoGameScreen() {
   }
 
   const currentNote = state.notes[state.currentNoteIndex];
+  const upcomingNotes = state.notes
+    .slice(state.currentNoteIndex + 1, state.currentNoteIndex + 4)
+    .map((n) => ({ displayName: n.displayName, name: n.name }));
 
   return (
     <ThemedView style={styles.container}>
@@ -217,6 +220,7 @@ export default function PianoGameScreen() {
               settings.showCorrectAnimation ? correctAnimationCounter : 0
             }
             lastCorrectNote={lastCorrectNote}
+            upcomingNotes={upcomingNotes}
           />
         </View>
 

@@ -23,6 +23,8 @@ const POSITION_TO_LETTER: Record<number, string> = {
   '4': 'F',
 };
 
+const NOTE_SPACING = 100;
+
 interface StaffDisplayProps {
   note: string; // Display name like "C#" or "Db"
   noteName?: NoteName; // Internal note name with octave (e.g., 'C2')
@@ -31,6 +33,7 @@ interface StaffDisplayProps {
   showLabels?: boolean;
   correctAnimationCounter?: number;
   lastCorrectNote?: NoteName | null;
+  upcomingNotes?: Array<{ displayName: string; name: NoteName }>;
 }
 
 export const StaffDisplay = memo(function StaffDisplay({
@@ -41,6 +44,7 @@ export const StaffDisplay = memo(function StaffDisplay({
   showLabels = false,
   correctAnimationCounter = 0,
   lastCorrectNote = null,
+  upcomingNotes,
 }: StaffDisplayProps) {
   const { colors } = useTheme();
   const [animationPosition, setAnimationPosition] = useState({ x: 0, y: 0 });
@@ -206,9 +210,9 @@ export const StaffDisplay = memo(function StaffDisplay({
 
         {/* Target note line */}
         <Line
-          x1={(leftPadding - 10 + width - 10) / 2}
+          x1={noteX}
           y1={centerY - 4 * lineSpacing}
-          x2={(leftPadding - 10 + width - 10) / 2}
+          x2={noteX}
           y2={centerY + 3 * lineSpacing}
           stroke="white"
           strokeWidth={1.5}
@@ -261,6 +265,74 @@ export const StaffDisplay = memo(function StaffDisplay({
           fill={noteColor}
           transform={`rotate(-20, ${noteX}, ${noteY})`}
         />
+
+        {/* Upcoming notes (next 3, faded) */}
+        {upcomingNotes?.map((upcoming, i) => {
+          const upcomingX = noteX + (i + 1) * NOTE_SPACING;
+          const upIsSharp = upcoming.displayName.includes('#');
+          const upIsFlat = upcoming.displayName.includes(FLAT_SYMBOL);
+          const upBaseLetter = upcoming.displayName.charAt(0).toUpperCase();
+
+          let upPositionNoteName: NoteName;
+          if (upIsFlat) {
+            const hasOctave2 = upcoming.name?.includes('2');
+            upPositionNoteName = (
+              hasOctave2 ? `${upBaseLetter}2` : upBaseLetter
+            ) as NoteName;
+          } else if (upcoming.name) {
+            upPositionNoteName = upcoming.name;
+          } else if (upIsSharp) {
+            upPositionNoteName = upcoming.displayName as NoteName;
+          } else {
+            upPositionNoteName = upBaseLetter as NoteName;
+          }
+
+          const upPosition = NOTE_STAFF_POSITIONS[upPositionNoteName] ?? 0;
+          const upNoteY = centerY - upPosition * (lineSpacing / 2);
+          const upNeedsLedgerLine = upPosition <= -6;
+
+          return (
+            <G key={upcoming.name}>
+              {upNeedsLedgerLine && (
+                <Line
+                  x1={upcomingX - noteRadius - 6}
+                  y1={upNoteY}
+                  x2={upcomingX + noteRadius + 6}
+                  y2={upNoteY}
+                  stroke={colors.staffLine}
+                  strokeWidth={1.5}
+                />
+              )}
+              {(upIsSharp || upIsFlat) && (
+                <G
+                  transform={`translate(${upcomingX - accidentalOffset}, ${upNoteY})`}
+                >
+                  {upIsSharp ? (
+                    <SharpSymbol color={colors.staffLine} />
+                  ) : (
+                    <FlatSymbol color={colors.staffLine} />
+                  )}
+                </G>
+              )}
+              <Line
+                x1={upcomingX + noteRadius - 1}
+                y1={upNoteY}
+                x2={upcomingX + noteRadius - 1}
+                y2={upNoteY - lineSpacing * 3}
+                stroke={colors.staffLine}
+                strokeWidth={1.5}
+              />
+              <Ellipse
+                cx={upcomingX}
+                cy={upNoteY}
+                rx={noteRadius}
+                ry={noteRadius * 0.75}
+                fill={colors.staffLine}
+                transform={`rotate(-20, ${upcomingX}, ${upNoteY})`}
+              />
+            </G>
+          );
+        })}
 
         {/* Staff line/space labels (shown when info button is held) */}
         {showLabels &&
