@@ -66,7 +66,7 @@ function createColors(
     correctFeedback: brand.primary,
     incorrectFeedback: brand.highlight,
     noteDisplay: brand.highlight,
-    noteDisplayText: brand.light,
+    noteDisplayText: brand.dark,
     blackKeyBorder: '#444444',
     whiteKeyBorder: '#CCCCCC',
     staffBackground: '#1A1A1A',

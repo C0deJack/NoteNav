@@ -16,7 +16,7 @@ interface NoteDisplayProps {
   showStaffLabels?: boolean;
   correctAnimationCounter?: number;
   lastCorrectNote?: NoteName | null;
-  upcomingNotes?: Array<{ displayName: string; name: NoteName }>;
+  upcomingNotes?: Array<{ displayName: string; name: NoteName; sequenceIndex: number }>;
 }
 
 export const NoteDisplay = memo(function NoteDisplay({
@@ -73,6 +73,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 8,
     fontSize: 48,
+    lineHeight: 60,
     fontWeight: 'bold',
   },
 });
