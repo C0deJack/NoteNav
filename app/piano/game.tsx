@@ -157,15 +157,14 @@ export default function PianoGameScreen() {
         // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
       }
-    } else {
-      if (soundEnabled) {
+    } else if (soundEnabled && settings.playIncorrectSound) {
         await playError();
       }
       // TODO - Testing - Increased haptic feedback for correct notes
       // if (settings.enableHapticFeedback) {
       //   Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       // }
-    }
+    
   };
 
   if (state.status === 'idle' || state.notes.length === 0) {

@@ -16,7 +16,11 @@ interface NoteDisplayProps {
   showStaffLabels?: boolean;
   correctAnimationCounter?: number;
   lastCorrectNote?: NoteName | null;
-  upcomingNotes?: Array<{ displayName: string; name: NoteName; sequenceIndex: number }>;
+  upcomingNotes?: Array<{
+    displayName: string;
+    name: NoteName;
+    sequenceIndex: number;
+  }>;
 }
 
 export const NoteDisplay = memo(function NoteDisplay({

@@ -181,6 +181,16 @@ export default function Settings() {
             }
           />
           <SettingToggle
+            label="Incorrect Note Sound"
+            description="Play a sound when an incorrect note is pressed"
+            value={settings.playIncorrectSound}
+            onToggle={() =>
+              updateSettings({
+                playIncorrectSound: !settings.playIncorrectSound,
+              })
+            }
+          />
+          <SettingToggle
             label="Haptic Feedback"
             description="Vibrate on correct and incorrect key presses"
             value={settings.enableHapticFeedback}

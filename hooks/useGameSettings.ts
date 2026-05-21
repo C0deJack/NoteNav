@@ -15,6 +15,7 @@ const defaultSettings: GameSettings = {
   showBlackKeyLabels: false,
   noteDisplayMode: 'staff',
   showIncorrectFeedback: true,
+  playIncorrectSound: true,
   enableHapticFeedback: true,
   playSoundInSilentMode: true,
   showTimer: true,

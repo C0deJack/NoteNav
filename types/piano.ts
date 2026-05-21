@@ -57,6 +57,7 @@ export interface GameSettings {
   showBlackKeyLabels: boolean;
   noteDisplayMode: NoteDisplayMode;
   showIncorrectFeedback: boolean;
+  playIncorrectSound: boolean;
   enableHapticFeedback: boolean;
   playSoundInSilentMode: boolean;
   showTimer: boolean;
