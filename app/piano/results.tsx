@@ -49,7 +49,9 @@ export default function PianoResultsScreen() {
   };
 
   const handleBackToMenu = () => {
-    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+    ScreenOrientation.lockAsync(
+      ScreenOrientation.OrientationLock.PORTRAIT_UP,
+    ).catch(() => {});
     router.replace('/');
   };
 

@@ -27,7 +27,9 @@ export default function PianoMenuScreen() {
   };
 
   const handleStartGame = () => {
-    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+    ScreenOrientation.lockAsync(
+      ScreenOrientation.OrientationLock.LANDSCAPE,
+    ).catch(() => {});
     router.push({
       pathname: '/piano/game',
       params: {

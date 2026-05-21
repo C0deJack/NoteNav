@@ -60,7 +60,9 @@ export default function PianoGameScreen() {
   }, []);
 
   const handleInactivityTimeout = useCallback(() => {
-    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+    ScreenOrientation.lockAsync(
+      ScreenOrientation.OrientationLock.PORTRAIT_UP,
+    ).catch(() => {});
     router.replace('/' as any);
   }, []);
 
@@ -122,7 +124,9 @@ export default function PianoGameScreen() {
 
   const handleQuitConfirm = () => {
     setShowQuitModal(false);
-    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+    ScreenOrientation.lockAsync(
+      ScreenOrientation.OrientationLock.PORTRAIT_UP,
+    ).catch(() => {});
     router.replace('/' as any);
   };
 
@@ -171,7 +175,11 @@ export default function PianoGameScreen() {
   const currentNote = state.notes[state.currentNoteIndex];
   const upcomingNotes = state.notes
     .slice(state.currentNoteIndex + 1, state.currentNoteIndex + 4)
-    .map((n) => ({ displayName: n.displayName, name: n.name }));
+    .map((n, i) => ({
+      displayName: n.displayName,
+      name: n.name,
+      sequenceIndex: state.currentNoteIndex + 1 + i,
+    }));
 
   return (
     <ThemedView style={styles.container}>

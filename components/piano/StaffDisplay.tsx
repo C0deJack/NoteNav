@@ -33,7 +33,11 @@ interface StaffDisplayProps {
   showLabels?: boolean;
   correctAnimationCounter?: number;
   lastCorrectNote?: NoteName | null;
-  upcomingNotes?: Array<{ displayName: string; name: NoteName }>;
+  upcomingNotes?: Array<{
+    displayName: string;
+    name: NoteName;
+    sequenceIndex: number;
+  }>;
 }
 
 export const StaffDisplay = memo(function StaffDisplay({
@@ -292,7 +296,7 @@ export const StaffDisplay = memo(function StaffDisplay({
           const upNeedsLedgerLine = upPosition <= -6;
 
           return (
-            <G key={upcoming.name}>
+            <G key={upcoming.sequenceIndex}>
               {upNeedsLedgerLine && (
                 <Line
                   x1={upcomingX - noteRadius - 6}
