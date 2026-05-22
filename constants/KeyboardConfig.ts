@@ -26,4 +26,8 @@ export const KEYBOARD_CONFIG = {
 export const STAFF_ANIMATION_CONFIG = {
   /** X offset for note position on staff */
   noteXOffset: 100,
+  /** Horizontal spacing between notes */
+  NOTE_SPACING: 100,
+  /** Duration of the staff scroll animation in ms */
+  STAFF_SCROLL_DURATION_MS: 700,
 } as const;

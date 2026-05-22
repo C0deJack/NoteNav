@@ -173,7 +173,7 @@ export default function PianoGameScreen() {
 
   const currentNote = state.notes[state.currentNoteIndex];
   const upcomingNotes = state.notes
-    .slice(state.currentNoteIndex + 1, state.currentNoteIndex + 4)
+    .slice(state.currentNoteIndex + 1, state.currentNoteIndex + 5)
     .map((n, i) => ({
       displayName: n.displayName,
       name: n.name,

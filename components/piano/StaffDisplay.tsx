@@ -1,6 +1,14 @@
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import Animated, {
+  Easing,
+  useAnimatedProps,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import Svg, { Ellipse, G, Line, Path, Text as SvgText } from 'react-native-svg';
+
+const AnimatedG = Animated.createAnimatedComponent(G);
 import { STAFF_ANIMATION_CONFIG } from '@/constants/KeyboardConfig';
 import { FLAT_SYMBOL } from '@/constants/PianoConfig';
 import { NOTE_STAFF_POSITIONS, STAFF_CONFIG } from '@/constants/StaffConfig';
@@ -23,7 +31,6 @@ const POSITION_TO_LETTER: Record<number, string> = {
   '4': 'F',
 };
 
-const NOTE_SPACING = 100;
 
 interface StaffDisplayProps {
   note: string; // Display name like "C#" or "Db"
@@ -52,6 +59,18 @@ export const StaffDisplay = memo(function StaffDisplay({
 }: StaffDisplayProps) {
   const { colors } = useTheme();
   const [animationPosition, setAnimationPosition] = useState({ x: 0, y: 0 });
+
+  const departingNoteRef = useRef<{ note: string; noteName: NoteName | undefined } | null>(null);
+
+  useEffect(() => {
+    departingNoteRef.current = { note, noteName };
+  }, [note, noteName]);
+
+  const scrollOffset = useSharedValue(0);
+
+  const animatedGroupProps = useAnimatedProps(() => ({
+    transform: [{ translateX: scrollOffset.value }],
+  }));
 
   // Parse the note to get base note and accidental
   const isSharp = note.includes('#');
@@ -116,6 +135,13 @@ export const StaffDisplay = memo(function StaffDisplay({
       const lastNoteX = leftPadding + STAFF_ANIMATION_CONFIG.noteXOffset;
 
       setAnimationPosition({ x: lastNoteX, y: lastNoteY });
+
+      // Snap all notes one slot right, then animate back to rest
+      scrollOffset.value = STAFF_ANIMATION_CONFIG.NOTE_SPACING;
+      scrollOffset.value = withTiming(0, {
+        duration: STAFF_ANIMATION_CONFIG.STAFF_SCROLL_DURATION_MS,
+        easing: Easing.out(Easing.cubic),
+      });
     }
   }, [correctAnimationCounter, lastCorrectNote]);
 
@@ -222,121 +248,188 @@ export const StaffDisplay = memo(function StaffDisplay({
           strokeWidth={1.5}
         />
 
-        {/* Treble clef */}
+        {/* Treble clef — static */}
         <G transform={`translate(${leftPadding - 10}, ${centerY - 50})`}>
           <TrebleClef color={colors.staffLine} />
         </G>
 
-        {/* Ledger line for middle C */}
-        {needsLedgerLine && (
+        {/* Note group — translates together on each correct press */}
+        <AnimatedG animatedProps={animatedGroupProps}>
+          {/* Departing note — slides out left during animation */}
+          {departingNoteRef.current && (() => {
+            const dep = departingNoteRef.current!;
+            const depIsSharp = dep.note.includes('#');
+            const depIsFlat = dep.note.includes(FLAT_SYMBOL);
+            const depBaseLetter = dep.note.charAt(0).toUpperCase();
+
+            let depPositionNoteName: NoteName;
+            if (depIsFlat) {
+              const hasOctave2 = dep.noteName?.includes('2');
+              depPositionNoteName = (hasOctave2 ? `${depBaseLetter}2` : depBaseLetter) as NoteName;
+            } else if (dep.noteName) {
+              depPositionNoteName = dep.noteName;
+            } else if (depIsSharp) {
+              depPositionNoteName = dep.note as NoteName;
+            } else {
+              depPositionNoteName = depBaseLetter as NoteName;
+            }
+
+            const depPosition = NOTE_STAFF_POSITIONS[depPositionNoteName] ?? 0;
+            const depX = noteX - STAFF_ANIMATION_CONFIG.NOTE_SPACING;
+            const depY = centerY - depPosition * (lineSpacing / 2);
+            const depNeedsLedgerLine = depPosition <= -6;
+
+            return (
+              <G key="departing">
+                {depNeedsLedgerLine && (
+                  <Line
+                    x1={depX - noteRadius - 6}
+                    y1={depY}
+                    x2={depX + noteRadius + 6}
+                    y2={depY}
+                    stroke={colors.correctFeedback}
+                    strokeWidth={1.5}
+                  />
+                )}
+                {(depIsSharp || depIsFlat) && (
+                  <G transform={`translate(${depX - accidentalOffset}, ${depY})`}>
+                    {depIsSharp
+                      ? <SharpSymbol color={colors.correctFeedback} />
+                      : <FlatSymbol color={colors.correctFeedback} />
+                    }
+                  </G>
+                )}
+                <Line
+                  x1={depX + noteRadius - 1}
+                  y1={depY}
+                  x2={depX + noteRadius - 1}
+                  y2={depY - lineSpacing * 3}
+                  stroke={colors.correctFeedback}
+                  strokeWidth={1.5}
+                />
+                <Ellipse
+                  cx={depX}
+                  cy={depY}
+                  rx={noteRadius}
+                  ry={noteRadius * 0.75}
+                  fill={colors.correctFeedback}
+                  transform={`rotate(-20, ${depX}, ${depY})`}
+                />
+              </G>
+            );
+          })()}
+
+          {/* Current note ledger line */}
+          {needsLedgerLine && (
+            <Line
+              x1={noteX - noteRadius - 6}
+              y1={noteY}
+              x2={noteX + noteRadius + 6}
+              y2={noteY}
+              stroke={colors.staffLine}
+              strokeWidth={1.5}
+            />
+          )}
+
+          {/* Accidental (sharp or flat) - highlights red if user pressed natural instead */}
+          {(isSharp || isFlat) && (
+            <G transform={`translate(${noteX - accidentalOffset}, ${noteY})`}>
+              {isSharp ? (
+                <SharpSymbol color={accidentalColor} />
+              ) : (
+                <FlatSymbol color={accidentalColor} />
+              )}
+            </G>
+          )}
+
+          {/* Note stem (upward) */}
           <Line
-            x1={noteX - noteRadius - 6}
+            x1={noteX + noteRadius - 1}
             y1={noteY}
-            x2={noteX + noteRadius + 6}
-            y2={noteY}
-            stroke={colors.staffLine}
+            x2={noteX + noteRadius - 1}
+            y2={noteY - lineSpacing * 3}
+            stroke={noteColor}
             strokeWidth={1.5}
           />
-        )}
 
-        {/* Accidental (sharp or flat) - highlights red if user pressed natural instead */}
-        {(isSharp || isFlat) && (
-          <G transform={`translate(${noteX - accidentalOffset}, ${noteY})`}>
-            {isSharp ? (
-              <SharpSymbol color={accidentalColor} />
-            ) : (
-              <FlatSymbol color={accidentalColor} />
-            )}
-          </G>
-        )}
+          {/* Note head (filled ellipse for quarter note) */}
+          <Ellipse
+            cx={noteX}
+            cy={noteY}
+            rx={noteRadius}
+            ry={noteRadius * 0.75}
+            fill={noteColor}
+            transform={`rotate(-20, ${noteX}, ${noteY})`}
+          />
 
-        {/* Note stem (upward) */}
-        <Line
-          x1={noteX + noteRadius - 1}
-          y1={noteY}
-          x2={noteX + noteRadius - 1}
-          y2={noteY - lineSpacing * 3}
-          stroke={noteColor}
-          strokeWidth={1.5}
-        />
+          {/* Upcoming notes (next 4, faded) */}
+          {upcomingNotes?.map((upcoming, i) => {
+            const upcomingX = noteX + (i + 1) * STAFF_ANIMATION_CONFIG.NOTE_SPACING;
+            const upIsSharp = upcoming.displayName.includes('#');
+            const upIsFlat = upcoming.displayName.includes(FLAT_SYMBOL);
+            const upBaseLetter = upcoming.displayName.charAt(0).toUpperCase();
 
-        {/* Note head (filled ellipse for quarter note) */}
-        <Ellipse
-          cx={noteX}
-          cy={noteY}
-          rx={noteRadius}
-          ry={noteRadius * 0.75}
-          fill={noteColor}
-          transform={`rotate(-20, ${noteX}, ${noteY})`}
-        />
+            let upPositionNoteName: NoteName;
+            if (upIsFlat) {
+              const hasOctave2 = upcoming.name?.includes('2');
+              upPositionNoteName = (
+                hasOctave2 ? `${upBaseLetter}2` : upBaseLetter
+              ) as NoteName;
+            } else if (upcoming.name) {
+              upPositionNoteName = upcoming.name;
+            } else if (upIsSharp) {
+              upPositionNoteName = upcoming.displayName as NoteName;
+            } else {
+              upPositionNoteName = upBaseLetter as NoteName;
+            }
 
-        {/* Upcoming notes (next 3, faded) */}
-        {upcomingNotes?.map((upcoming, i) => {
-          const upcomingX = noteX + (i + 1) * NOTE_SPACING;
-          const upIsSharp = upcoming.displayName.includes('#');
-          const upIsFlat = upcoming.displayName.includes(FLAT_SYMBOL);
-          const upBaseLetter = upcoming.displayName.charAt(0).toUpperCase();
+            const upPosition = NOTE_STAFF_POSITIONS[upPositionNoteName] ?? 0;
+            const upNoteY = centerY - upPosition * (lineSpacing / 2);
+            const upNeedsLedgerLine = upPosition <= -6;
 
-          let upPositionNoteName: NoteName;
-          if (upIsFlat) {
-            const hasOctave2 = upcoming.name?.includes('2');
-            upPositionNoteName = (
-              hasOctave2 ? `${upBaseLetter}2` : upBaseLetter
-            ) as NoteName;
-          } else if (upcoming.name) {
-            upPositionNoteName = upcoming.name;
-          } else if (upIsSharp) {
-            upPositionNoteName = upcoming.displayName as NoteName;
-          } else {
-            upPositionNoteName = upBaseLetter as NoteName;
-          }
-
-          const upPosition = NOTE_STAFF_POSITIONS[upPositionNoteName] ?? 0;
-          const upNoteY = centerY - upPosition * (lineSpacing / 2);
-          const upNeedsLedgerLine = upPosition <= -6;
-
-          return (
-            <G key={upcoming.sequenceIndex}>
-              {upNeedsLedgerLine && (
+            return (
+              <G key={upcoming.sequenceIndex}>
+                {upNeedsLedgerLine && (
+                  <Line
+                    x1={upcomingX - noteRadius - 6}
+                    y1={upNoteY}
+                    x2={upcomingX + noteRadius + 6}
+                    y2={upNoteY}
+                    stroke={colors.staffLine}
+                    strokeWidth={1.5}
+                  />
+                )}
+                {(upIsSharp || upIsFlat) && (
+                  <G
+                    transform={`translate(${upcomingX - accidentalOffset}, ${upNoteY})`}
+                  >
+                    {upIsSharp ? (
+                      <SharpSymbol color={colors.staffLine} />
+                    ) : (
+                      <FlatSymbol color={colors.staffLine} />
+                    )}
+                  </G>
+                )}
                 <Line
-                  x1={upcomingX - noteRadius - 6}
+                  x1={upcomingX + noteRadius - 1}
                   y1={upNoteY}
-                  x2={upcomingX + noteRadius + 6}
-                  y2={upNoteY}
+                  x2={upcomingX + noteRadius - 1}
+                  y2={upNoteY - lineSpacing * 3}
                   stroke={colors.staffLine}
                   strokeWidth={1.5}
                 />
-              )}
-              {(upIsSharp || upIsFlat) && (
-                <G
-                  transform={`translate(${upcomingX - accidentalOffset}, ${upNoteY})`}
-                >
-                  {upIsSharp ? (
-                    <SharpSymbol color={colors.staffLine} />
-                  ) : (
-                    <FlatSymbol color={colors.staffLine} />
-                  )}
-                </G>
-              )}
-              <Line
-                x1={upcomingX + noteRadius - 1}
-                y1={upNoteY}
-                x2={upcomingX + noteRadius - 1}
-                y2={upNoteY - lineSpacing * 3}
-                stroke={colors.staffLine}
-                strokeWidth={1.5}
-              />
-              <Ellipse
-                cx={upcomingX}
-                cy={upNoteY}
-                rx={noteRadius}
-                ry={noteRadius * 0.75}
-                fill={colors.staffLine}
-                transform={`rotate(-20, ${upcomingX}, ${upNoteY})`}
-              />
-            </G>
-          );
-        })}
+                <Ellipse
+                  cx={upcomingX}
+                  cy={upNoteY}
+                  rx={noteRadius}
+                  ry={noteRadius * 0.75}
+                  fill={colors.staffLine}
+                  transform={`rotate(-20, ${upcomingX}, ${upNoteY})`}
+                />
+              </G>
+            );
+          })}
+        </AnimatedG>
 
         {/* Staff line/space labels (shown when info button is held) */}
         {showLabels &&
@@ -413,5 +506,6 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 12,
     padding: 10,
+    overflow: 'hidden',
   },
 });
