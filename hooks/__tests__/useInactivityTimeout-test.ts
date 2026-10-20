@@ -13,170 +13,170 @@ describe('useInactivityTimeout', () => {
     jest.useRealTimers();
   });
 
-  it('calls onTimeout after the default timeout period', () => {
+  it('calls onTimeout after the default timeout period', async () => {
     const onTimeout = jest.fn();
 
-    renderHook(() => useInactivityTimeout({ onTimeout }));
+    await renderHook(() => useInactivityTimeout({ onTimeout }));
 
     expect(onTimeout).not.toHaveBeenCalled();
 
-    act(() => {
+    await act(() => {
       jest.advanceTimersByTime(DEFAULT_TIMEOUT_MS);
     });
 
     expect(onTimeout).toHaveBeenCalledTimes(1);
   });
 
-  it('calls onTimeout after custom timeout period', () => {
+  it('calls onTimeout after custom timeout period', async () => {
     const onTimeout = jest.fn();
     const customTimeout = 1000;
 
-    renderHook(() =>
+    await renderHook(() =>
       useInactivityTimeout({ onTimeout, timeoutMs: customTimeout }),
     );
 
     expect(onTimeout).not.toHaveBeenCalled();
 
-    act(() => {
+    await act(() => {
       jest.advanceTimersByTime(customTimeout - 1);
     });
 
     expect(onTimeout).not.toHaveBeenCalled();
 
-    act(() => {
+    await act(() => {
       jest.advanceTimersByTime(1);
     });
 
     expect(onTimeout).toHaveBeenCalledTimes(1);
   });
 
-  it('does not call onTimeout when disabled', () => {
+  it('does not call onTimeout when disabled', async () => {
     const onTimeout = jest.fn();
 
-    renderHook(() => useInactivityTimeout({ onTimeout, enabled: false }));
+    await renderHook(() => useInactivityTimeout({ onTimeout, enabled: false }));
 
-    act(() => {
+    await act(() => {
       jest.advanceTimersByTime(DEFAULT_TIMEOUT_MS);
     });
 
     expect(onTimeout).not.toHaveBeenCalled();
   });
 
-  it('resets the timer when resetTimer is called', () => {
+  it('resets the timer when resetTimer is called', async () => {
     const onTimeout = jest.fn();
     const timeoutMs = 1000;
 
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useInactivityTimeout({ onTimeout, timeoutMs }),
     );
 
     // Advance halfway through the timeout
-    act(() => {
+    await act(() => {
       jest.advanceTimersByTime(500);
     });
 
     expect(onTimeout).not.toHaveBeenCalled();
 
     // Reset the timer
-    act(() => {
+    await act(() => {
       result.current.resetTimer();
     });
 
     // Advance another 500ms (would have triggered if not reset)
-    act(() => {
+    await act(() => {
       jest.advanceTimersByTime(500);
     });
 
     expect(onTimeout).not.toHaveBeenCalled();
 
     // Advance the full timeout from reset point
-    act(() => {
+    await act(() => {
       jest.advanceTimersByTime(500);
     });
 
     expect(onTimeout).toHaveBeenCalledTimes(1);
   });
 
-  it('clears the timer when clearTimer is called', () => {
+  it('clears the timer when clearTimer is called', async () => {
     const onTimeout = jest.fn();
     const timeoutMs = 1000;
 
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useInactivityTimeout({ onTimeout, timeoutMs }),
     );
 
     // Clear the timer
-    act(() => {
+    await act(() => {
       result.current.clearTimer();
     });
 
     // Advance past the timeout
-    act(() => {
+    await act(() => {
       jest.advanceTimersByTime(timeoutMs + 1000);
     });
 
     expect(onTimeout).not.toHaveBeenCalled();
   });
 
-  it('cleans up timer on unmount', () => {
+  it('cleans up timer on unmount', async () => {
     const onTimeout = jest.fn();
     const timeoutMs = 1000;
 
-    const { unmount } = renderHook(() =>
+    const { unmount } = await renderHook(() =>
       useInactivityTimeout({ onTimeout, timeoutMs }),
     );
 
-    unmount();
+    await unmount();
 
-    act(() => {
+    await act(() => {
       jest.advanceTimersByTime(timeoutMs);
     });
 
     expect(onTimeout).not.toHaveBeenCalled();
   });
 
-  it('starts timer when enabled changes from false to true', () => {
+  it('starts timer when enabled changes from false to true', async () => {
     const onTimeout = jest.fn();
     const timeoutMs = 1000;
 
-    const { rerender } = renderHook(
+    const { rerender } = await renderHook(
       (props: { enabled: boolean }) =>
         useInactivityTimeout({ onTimeout, timeoutMs, enabled: props.enabled }),
       { initialProps: { enabled: false } },
     );
 
-    act(() => {
+    await act(() => {
       jest.advanceTimersByTime(timeoutMs);
     });
 
     expect(onTimeout).not.toHaveBeenCalled();
 
-    rerender({ enabled: true });
+    await rerender({ enabled: true });
 
-    act(() => {
+    await act(() => {
       jest.advanceTimersByTime(timeoutMs);
     });
 
     expect(onTimeout).toHaveBeenCalledTimes(1);
   });
 
-  it('clears timer when enabled changes from true to false', () => {
+  it('clears timer when enabled changes from true to false', async () => {
     const onTimeout = jest.fn();
     const timeoutMs = 1000;
 
-    const { rerender } = renderHook(
+    const { rerender } = await renderHook(
       (props: { enabled: boolean }) =>
         useInactivityTimeout({ onTimeout, timeoutMs, enabled: props.enabled }),
       { initialProps: { enabled: true } },
     );
 
-    act(() => {
+    await act(() => {
       jest.advanceTimersByTime(500);
     });
 
-    rerender({ enabled: false });
+    await rerender({ enabled: false });
 
-    act(() => {
+    await act(() => {
       jest.advanceTimersByTime(1000);
     });
 

@@ -20,7 +20,7 @@ describe('useProgress', () => {
 
   describe('initial state', () => {
     it('has empty scores after loading', async () => {
-      const { result } = renderHook(() => useProgress());
+      const { result } = await renderHook(() => useProgress());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
@@ -45,7 +45,7 @@ describe('useProgress', () => {
 
       mockAsyncStorage.getItem.mockResolvedValue(JSON.stringify(storedScores));
 
-      const { result } = renderHook(() => useProgress());
+      const { result } = await renderHook(() => useProgress());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
@@ -60,7 +60,7 @@ describe('useProgress', () => {
 
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
-      const { result } = renderHook(() => useProgress());
+      const { result } = await renderHook(() => useProgress());
 
       // Flush promises to let the rejected promise settle
       await act(async () => {
@@ -78,7 +78,7 @@ describe('useProgress', () => {
 
   describe('addScore', () => {
     it('adds a new score with id and timestamp', async () => {
-      const { result } = renderHook(() => useProgress());
+      const { result } = await renderHook(() => useProgress());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
@@ -117,7 +117,7 @@ describe('useProgress', () => {
         JSON.stringify(existingScores),
       );
 
-      const { result } = renderHook(() => useProgress());
+      const { result } = await renderHook(() => useProgress());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
@@ -138,7 +138,7 @@ describe('useProgress', () => {
     });
 
     it('saves scores to AsyncStorage', async () => {
-      const { result } = renderHook(() => useProgress());
+      const { result } = await renderHook(() => useProgress());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
@@ -177,7 +177,7 @@ describe('useProgress', () => {
         JSON.stringify(existingScores),
       );
 
-      const { result } = renderHook(() => useProgress());
+      const { result } = await renderHook(() => useProgress());
 
       await waitFor(() => {
         expect(result.current.scores).toHaveLength(1);
@@ -191,7 +191,7 @@ describe('useProgress', () => {
     });
 
     it('removes data from AsyncStorage', async () => {
-      const { result } = renderHook(() => useProgress());
+      const { result } = await renderHook(() => useProgress());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
@@ -209,7 +209,7 @@ describe('useProgress', () => {
 
   describe('getStats', () => {
     it('returns zeros when no scores', async () => {
-      const { result } = renderHook(() => useProgress());
+      const { result } = await renderHook(() => useProgress());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
@@ -257,7 +257,7 @@ describe('useProgress', () => {
 
       mockAsyncStorage.getItem.mockResolvedValue(JSON.stringify(storedScores));
 
-      const { result } = renderHook(() => useProgress());
+      const { result } = await renderHook(() => useProgress());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
@@ -298,7 +298,7 @@ describe('useProgress', () => {
 
       mockAsyncStorage.getItem.mockResolvedValue(JSON.stringify(storedScores));
 
-      const { result } = renderHook(() => useProgress());
+      const { result } = await renderHook(() => useProgress());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
@@ -339,7 +339,7 @@ describe('useProgress', () => {
 
       mockAsyncStorage.getItem.mockResolvedValue(JSON.stringify(storedScores));
 
-      const { result } = renderHook(() => useProgress());
+      const { result } = await renderHook(() => useProgress());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
@@ -372,7 +372,7 @@ describe('useProgress', () => {
 
       mockAsyncStorage.getItem.mockResolvedValue(JSON.stringify(storedScores));
 
-      const { result } = renderHook(() => useProgress());
+      const { result } = await renderHook(() => useProgress());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
@@ -386,7 +386,7 @@ describe('useProgress', () => {
 
   describe('getStatsByDifficultyLevel', () => {
     it('returns zeros for all levels when no scores', async () => {
-      const { result } = renderHook(() => useProgress());
+      const { result } = await renderHook(() => useProgress());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
@@ -430,7 +430,7 @@ describe('useProgress', () => {
 
       mockAsyncStorage.getItem.mockResolvedValue(JSON.stringify(storedScores));
 
-      const { result } = renderHook(() => useProgress());
+      const { result } = await renderHook(() => useProgress());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
@@ -481,7 +481,7 @@ describe('useProgress', () => {
 
       mockAsyncStorage.getItem.mockResolvedValue(JSON.stringify(storedScores));
 
-      const { result } = renderHook(() => useProgress());
+      const { result } = await renderHook(() => useProgress());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);

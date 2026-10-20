@@ -18,7 +18,7 @@ describe('useGameSettings', () => {
 
   describe('initial state', () => {
     it('has default settings after loading', async () => {
-      const { result } = renderHook(() => useGameSettings());
+      const { result } = await renderHook(() => useGameSettings());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
@@ -38,7 +38,7 @@ describe('useGameSettings', () => {
     });
 
     it('has default difficulty level and note count after loading', async () => {
-      const { result } = renderHook(() => useGameSettings());
+      const { result } = await renderHook(() => useGameSettings());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
@@ -63,7 +63,7 @@ describe('useGameSettings', () => {
         return Promise.resolve(null);
       });
 
-      const { result } = renderHook(() => useGameSettings());
+      const { result } = await renderHook(() => useGameSettings());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
@@ -86,7 +86,7 @@ describe('useGameSettings', () => {
         return Promise.resolve(null);
       });
 
-      const { result } = renderHook(() => useGameSettings());
+      const { result } = await renderHook(() => useGameSettings());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
@@ -101,7 +101,7 @@ describe('useGameSettings', () => {
 
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
-      const { result } = renderHook(() => useGameSettings());
+      const { result } = await renderHook(() => useGameSettings());
 
       // Flush promises to let the rejected promise settle
       await act(async () => {
@@ -129,7 +129,7 @@ describe('useGameSettings', () => {
         return Promise.resolve(null);
       });
 
-      const { result } = renderHook(() => useGameSettings());
+      const { result } = await renderHook(() => useGameSettings());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
@@ -145,7 +145,7 @@ describe('useGameSettings', () => {
 
   describe('updateSettings', () => {
     it('updates settings state', async () => {
-      const { result } = renderHook(() => useGameSettings());
+      const { result } = await renderHook(() => useGameSettings());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
@@ -159,7 +159,7 @@ describe('useGameSettings', () => {
     });
 
     it('saves settings to AsyncStorage', async () => {
-      const { result } = renderHook(() => useGameSettings());
+      const { result } = await renderHook(() => useGameSettings());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
@@ -181,7 +181,7 @@ describe('useGameSettings', () => {
     });
 
     it('can update multiple settings at once', async () => {
-      const { result } = renderHook(() => useGameSettings());
+      const { result } = await renderHook(() => useGameSettings());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
@@ -203,7 +203,7 @@ describe('useGameSettings', () => {
 
   describe('saveLastDifficultyLevel', () => {
     it('updates difficulty level state', async () => {
-      const { result } = renderHook(() => useGameSettings());
+      const { result } = await renderHook(() => useGameSettings());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
@@ -217,7 +217,7 @@ describe('useGameSettings', () => {
     });
 
     it('saves difficulty level to AsyncStorage', async () => {
-      const { result } = renderHook(() => useGameSettings());
+      const { result } = await renderHook(() => useGameSettings());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
@@ -236,7 +236,7 @@ describe('useGameSettings', () => {
 
   describe('saveLastNoteCount', () => {
     it('updates note count state', async () => {
-      const { result } = renderHook(() => useGameSettings());
+      const { result } = await renderHook(() => useGameSettings());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
@@ -250,7 +250,7 @@ describe('useGameSettings', () => {
     });
 
     it('saves note count to AsyncStorage', async () => {
-      const { result } = renderHook(() => useGameSettings());
+      const { result } = await renderHook(() => useGameSettings());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);

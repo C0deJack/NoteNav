@@ -50,7 +50,7 @@ describe('usePianoAudio', () => {
 
   describe('initialization', () => {
     it('starts with loaded as false then becomes true', async () => {
-      const { result } = renderHook(() => usePianoAudio());
+      const { result } = await renderHook(() => usePianoAudio());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
@@ -58,7 +58,7 @@ describe('usePianoAudio', () => {
     });
 
     it('creates audio players for all notes', async () => {
-      renderHook(() => usePianoAudio());
+      await renderHook(() => usePianoAudio());
 
       await waitFor(() => {
         // 12 notes + 6 second octave notes + 1 error sound = multiple calls
@@ -67,7 +67,7 @@ describe('usePianoAudio', () => {
     });
 
     it('sets audio mode with default playSoundInSilentMode', async () => {
-      renderHook(() => usePianoAudio());
+      await renderHook(() => usePianoAudio());
 
       await waitFor(() => {
         expect(mockSetAudioModeAsync).toHaveBeenCalledWith({
@@ -77,7 +77,7 @@ describe('usePianoAudio', () => {
     });
 
     it('sets audio mode with custom playSoundInSilentMode', async () => {
-      renderHook(() => usePianoAudio({ playSoundInSilentMode: false }));
+      await renderHook(() => usePianoAudio({ playSoundInSilentMode: false }));
 
       await waitFor(() => {
         expect(mockSetAudioModeAsync).toHaveBeenCalledWith({
@@ -89,7 +89,7 @@ describe('usePianoAudio', () => {
 
   describe('playNote', () => {
     it('plays the note when loaded', async () => {
-      const { result } = renderHook(() => usePianoAudio());
+      const { result } = await renderHook(() => usePianoAudio());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
@@ -112,7 +112,7 @@ describe('usePianoAudio', () => {
         volume: 1.0,
       }));
 
-      const { result } = renderHook(() => usePianoAudio());
+      const { result } = await renderHook(() => usePianoAudio());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
@@ -135,7 +135,7 @@ describe('usePianoAudio', () => {
 
   describe('playError', () => {
     it('plays the error sound when loaded', async () => {
-      const { result } = renderHook(() => usePianoAudio());
+      const { result } = await renderHook(() => usePianoAudio());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
@@ -152,13 +152,13 @@ describe('usePianoAudio', () => {
 
   describe('cleanup', () => {
     it('removes all players on unmount', async () => {
-      const { result, unmount } = renderHook(() => usePianoAudio());
+      const { result, unmount } = await renderHook(() => usePianoAudio());
 
       await waitFor(() => {
         expect(result.current.loaded).toBe(true);
       });
 
-      unmount();
+      await unmount();
 
       expect(mockRemove).toHaveBeenCalled();
     });
@@ -166,7 +166,7 @@ describe('usePianoAudio', () => {
 
   describe('playSoundInSilentMode changes', () => {
     it('updates audio mode when playSoundInSilentMode changes', async () => {
-      const { rerender } = renderHook(
+      const { rerender } = await renderHook(
         (props: { playSoundInSilentMode: boolean }) =>
           usePianoAudio({ playSoundInSilentMode: props.playSoundInSilentMode }),
         { initialProps: { playSoundInSilentMode: true } },
@@ -178,7 +178,7 @@ describe('usePianoAudio', () => {
         });
       });
 
-      rerender({ playSoundInSilentMode: false });
+      await rerender({ playSoundInSilentMode: false });
 
       await waitFor(() => {
         expect(mockSetAudioModeAsync).toHaveBeenCalledWith({
