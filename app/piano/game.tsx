@@ -267,7 +267,8 @@ export default function PianoGameScreen() {
           keyFeedback={keyFeedback}
           showWhiteKeyLabels={settings.showWhiteKeyLabels}
           showBlackKeyLabels={settings.showBlackKeyLabels}
-          showSecondOctave={
+          clef={clef}
+          extended={
             settings.showSecondOctave &&
             (difficultyLevel === 'medium' || difficultyLevel === 'expert')
           }

@@ -1,12 +1,7 @@
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { KEYBOARD_CONFIG } from '@/constants/KeyboardConfig';
-import {
-  BLACK_KEYS,
-  BLACK_KEYS_OCTAVE2,
-  WHITE_KEYS,
-  WHITE_KEYS_OCTAVE2,
-} from '@/constants/PianoConfig';
-import type { KeyFeedback, NoteName } from '@/types/piano';
+import { getKeyboardKeys } from '@/constants/PianoConfig';
+import type { Clef, KeyFeedback, NoteName } from '@/types/piano';
 import { PianoKey } from './PianoKey';
 
 interface PianoKeyboardProps {
@@ -14,43 +9,35 @@ interface PianoKeyboardProps {
   keyFeedback: Record<NoteName, KeyFeedback>;
   showWhiteKeyLabels?: boolean;
   showBlackKeyLabels?: boolean;
-  showSecondOctave?: boolean;
+  clef?: Clef;
+  /** Show the extra keys for Medium/Expert games */
+  extended?: boolean;
 }
-
-// Black keys positioned relative to white keys (offset from left edge)
-const BLACK_KEY_OFFSETS: Partial<Record<NoteName, number>> = {
-  'C#4': 0,
-  'D#4': 1,
-  'F#4': 3,
-  'G#4': 4,
-  'A#4': 5,
-  // Second octave offsets (relative to start of second octave)
-  'C#5': 0,
-  'D#5': 1,
-};
 
 export function PianoKeyboard({
   onKeyPress,
   keyFeedback,
   showWhiteKeyLabels = false,
   showBlackKeyLabels = false,
-  showSecondOctave = false,
+  clef = 'treble',
+  extended = false,
 }: PianoKeyboardProps) {
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
 
+  const keys = getKeyboardKeys(clef, extended);
+  const whiteKeys = keys.filter((k) => !k.includes('#'));
+  const blackKeys = keys.filter((k) => k.includes('#'));
+
   // Calculate key dimensions based on number of white keys
-  const totalWhiteKeys = showSecondOctave
-    ? WHITE_KEYS.length + WHITE_KEYS_OCTAVE2.length
-    : WHITE_KEYS.length;
-  const maxKeyboardWidth = showSecondOctave
+  const maxKeyboardWidth = extended
     ? KEYBOARD_CONFIG.maxWidthWithSecondOctave
     : KEYBOARD_CONFIG.maxWidthSingleOctave;
   const keyboardWidth = Math.min(
     width - KEYBOARD_CONFIG.horizontalPadding,
     maxKeyboardWidth,
   );
-  const whiteKeyWidth = keyboardWidth / totalWhiteKeys;
+  const whiteKeyWidth = keyboardWidth / whiteKeys.length;
   const blackKeyWidth = whiteKeyWidth * KEYBOARD_CONFIG.blackKeyWidthRatio;
   const maxKeyboardHeight = isLandscape
     ? KEYBOARD_CONFIG.maxHeightLandscape
@@ -59,9 +46,6 @@ export function PianoKeyboard({
     keyboardWidth * KEYBOARD_CONFIG.heightToWidthRatio,
     maxKeyboardHeight,
   );
-
-  // Offset for second octave black keys (after 7 white keys of first octave)
-  const octave2Offset = WHITE_KEYS.length;
 
   return (
     <View
@@ -72,7 +56,7 @@ export function PianoKeyboard({
     >
       {/* White keys */}
       <View style={styles.whiteKeysContainer}>
-        {WHITE_KEYS.map((note) => (
+        {whiteKeys.map((note) => (
           <PianoKey
             key={note}
             note={note}
@@ -82,23 +66,14 @@ export function PianoKeyboard({
             showLabel={showWhiteKeyLabels}
           />
         ))}
-        {showSecondOctave &&
-          WHITE_KEYS_OCTAVE2.map((note) => (
-            <PianoKey
-              key={note}
-              note={note}
-              isBlack={false}
-              onPress={onKeyPress}
-              feedback={keyFeedback[note]}
-              showLabel={showWhiteKeyLabels}
-            />
-          ))}
       </View>
 
-      {/* Black keys overlay - first octave */}
+      {/* Black keys overlay */}
       <View style={styles.blackKeysContainer} pointerEvents="box-none">
-        {BLACK_KEYS.map((note) => {
-          const offset = BLACK_KEY_OFFSETS[note] ?? 0;
+        {blackKeys.map((note) => {
+          // Each black key sits on the boundary after the white key below it
+          // (C#4 follows C4), so its offset is that white key's index
+          const offset = whiteKeys.indexOf(note.replace('#', '') as NoteName);
           const leftPosition = (offset + 1) * whiteKeyWidth - blackKeyWidth / 2;
 
           return (
@@ -123,37 +98,6 @@ export function PianoKeyboard({
             </View>
           );
         })}
-
-        {/* Black keys - second octave */}
-        {showSecondOctave &&
-          BLACK_KEYS_OCTAVE2.map((note) => {
-            const offset = BLACK_KEY_OFFSETS[note] ?? 0;
-            const leftPosition =
-              (octave2Offset + offset + 1) * whiteKeyWidth - blackKeyWidth / 2;
-
-            return (
-              <View
-                key={note}
-                style={[
-                  styles.blackKeyWrapper,
-                  {
-                    left: leftPosition,
-                    width: blackKeyWidth,
-                    height:
-                      keyboardHeight * KEYBOARD_CONFIG.blackKeyHeightRatio,
-                  },
-                ]}
-              >
-                <PianoKey
-                  note={note}
-                  isBlack={true}
-                  onPress={onKeyPress}
-                  feedback={keyFeedback[note]}
-                  showLabel={showBlackKeyLabels}
-                />
-              </View>
-            );
-          })}
       </View>
     </View>
   );

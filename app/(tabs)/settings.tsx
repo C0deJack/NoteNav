@@ -145,8 +145,8 @@ export default function Settings() {
             onToggle={() => updateSettings({ showTimer: !settings.showTimer })}
           />
           <SettingToggle
-            label="Second Octave Keyboard"
-            description="Show additional keys for notes above middle B"
+            label="Extended Keyboard"
+            description="Show extra keys for Medium/Expert games (above B4 in treble, below C3 in bass)"
             value={settings.showSecondOctave}
             onToggle={() =>
               updateSettings({ showSecondOctave: !settings.showSecondOctave })

@@ -56,21 +56,6 @@ export const SHARP_DISPLAY_NAMES: Partial<
   'A#': ['A#', `B${FLAT_SYMBOL}`],
 };
 
-export const WHITE_KEYS: NoteName[] = [
-  'C4',
-  'D4',
-  'E4',
-  'F4',
-  'G4',
-  'A4',
-  'B4',
-];
-export const BLACK_KEYS: NoteName[] = ['C#4', 'D#4', 'F#4', 'G#4', 'A#4'];
-
-// Second octave keys (up to F5 on treble clef)
-export const WHITE_KEYS_OCTAVE2: NoteName[] = ['C5', 'D5', 'E5', 'F5'];
-export const BLACK_KEYS_OCTAVE2: NoteName[] = ['C#5', 'D#5'];
-
 /** All notes between two notes, inclusive */
 function noteRange(from: NoteName, to: NoteName): NoteName[] {
   return ALL_NOTES.slice(ALL_NOTES.indexOf(from), ALL_NOTES.indexOf(to) + 1);
@@ -78,6 +63,24 @@ function noteRange(from: NoteName, to: NoteName): NoteName[] {
 
 const naturalsOnly = (notes: NoteName[]) =>
   notes.filter((n) => !n.includes('#'));
+
+/**
+ * Keys shown on the keyboard, left to right.
+ * Treble: C4 to B4, extended up to F5.
+ * Bass: C3 to C4 (middle C and below), extended down to G2.
+ */
+const KEYBOARD_RANGES: Record<
+  Clef,
+  { normal: [NoteName, NoteName]; extended: [NoteName, NoteName] }
+> = {
+  treble: { normal: ['C4', 'B4'], extended: ['C4', 'F5'] },
+  bass: { normal: ['C3', 'C4'], extended: ['G2', 'C4'] },
+};
+
+export function getKeyboardKeys(clef: Clef, extended: boolean): NoteName[] {
+  const range = KEYBOARD_RANGES[clef];
+  return noteRange(...(extended ? range.extended : range.normal));
+}
 
 /**
  * Note pools for each clef and difficulty level.

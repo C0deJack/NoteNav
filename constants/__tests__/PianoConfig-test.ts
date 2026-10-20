@@ -1,5 +1,5 @@
 import { ALL_NOTES } from '@/types/piano';
-import { DIFFICULTY_NOTE_POOLS, NOTES } from '../PianoConfig';
+import { DIFFICULTY_NOTE_POOLS, getKeyboardKeys, NOTES } from '../PianoConfig';
 
 const index = (note: (typeof ALL_NOTES)[number]) => ALL_NOTES.indexOf(note);
 
@@ -60,6 +60,49 @@ describe('NOTES', () => {
     for (const note of ALL_NOTES) {
       expect(NOTES[note].soundFile).toMatch(/\.wav$/);
       expect(NOTES[note].isBlack).toBe(note.includes('#'));
+    }
+  });
+});
+
+describe('getKeyboardKeys', () => {
+  const whites = (keys: string[]) => keys.filter((k) => !k.includes('#'));
+
+  it('shows C4 to B4 for treble', () => {
+    const keys = getKeyboardKeys('treble', false);
+    expect(keys[0]).toBe('C4');
+    expect(keys.at(-1)).toBe('B4');
+    expect(whites(keys)).toHaveLength(7);
+  });
+
+  it('extends treble up to F5', () => {
+    const keys = getKeyboardKeys('treble', true);
+    expect(keys[0]).toBe('C4');
+    expect(keys.at(-1)).toBe('F5');
+    expect(whites(keys)).toHaveLength(11);
+  });
+
+  it('shows middle C and below for bass', () => {
+    const keys = getKeyboardKeys('bass', false);
+    expect(keys[0]).toBe('C3');
+    expect(keys.at(-1)).toBe('C4');
+    expect(whites(keys)).toHaveLength(8);
+  });
+
+  it('extends bass down to G2', () => {
+    const keys = getKeyboardKeys('bass', true);
+    expect(keys[0]).toBe('G2');
+    expect(keys.at(-1)).toBe('C4');
+    expect(whites(keys)).toHaveLength(11);
+  });
+
+  it('includes a key for every note in each pool', () => {
+    for (const clef of ['treble', 'bass'] as const) {
+      const keys = getKeyboardKeys(clef, true);
+      for (const pool of Object.values(DIFFICULTY_NOTE_POOLS[clef])) {
+        for (const note of pool) {
+          expect(keys).toContain(note);
+        }
+      }
     }
   });
 });

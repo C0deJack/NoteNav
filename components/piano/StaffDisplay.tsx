@@ -277,7 +277,7 @@ export const StaffDisplay = memo(function StaffDisplay({
             <TrebleClef color={colors.staffLine} />
           </G>
         ) : (
-          <G transform={`translate(${leftPadding - 4}, ${positionToY(2)})`}>
+          <G transform={`translate(${leftPadding - 8}, ${positionToY(2)})`}>
             <BassClef color={colors.staffLine} />
           </G>
         )}
@@ -421,8 +421,9 @@ function StaffNote({
 
 /** F clef, drawn with its origin on the F3 line */
 function BassClef({ color }: { color: string }) {
+  // Narrowed horizontally so the current note's accidental clears the dots
   return (
-    <G>
+    <G transform="scale(0.85, 1)">
       <Path
         d="M 2 -4 C 4 -20 18 -26 30 -23 C 46 -19 52 -2 44 16 C 36 34 18 48 -2 58 L -3 55 C 14 45 28 30 33 14 C 39 -4 34 -18 22 -18 C 14 -18 10 -13 10 -8 Z"
         fill={color}
