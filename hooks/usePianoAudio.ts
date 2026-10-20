@@ -49,7 +49,13 @@ export function usePianoAudio({
     for (const [noteName, noteData] of Object.entries(NOTES)) {
       const source = SOUND_FILES[noteData.soundFile];
       if (source) {
-        playersRef.current[noteName] = createAudioPlayer(source);
+        const player = createAudioPlayer(source);
+        if (noteData.playbackRate !== 1) {
+          // Let the pitch drop with the speed so the sample sounds lower
+          player.shouldCorrectPitch = false;
+          player.setPlaybackRate(noteData.playbackRate);
+        }
+        playersRef.current[noteName] = player;
       }
     }
 

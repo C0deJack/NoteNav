@@ -76,6 +76,8 @@ export interface Note {
   displayName: string; // For sharps: randomly "C#" or "Db"
   isBlack: boolean;
   soundFile: string;
+  /** Speed to play soundFile at; below 1 lowers the pitch */
+  playbackRate: number;
 }
 
 export interface GameState {

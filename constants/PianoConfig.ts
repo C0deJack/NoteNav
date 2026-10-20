@@ -7,7 +7,7 @@ import {
   type NoteName,
   type PitchClass,
 } from '@/types/piano';
-import { getPitchClass } from '@/utils/notes';
+import { getOctave, getPitchClass } from '@/utils/notes';
 
 /** Unicode sharp symbol (♯) */
 export const SHARP_SYMBOL = '\u266F';
@@ -32,8 +32,9 @@ const SOUND_FILES: Record<PitchClass, string> = {
 };
 
 // TODO: Add correct sound files for octave 5 notes (c2.wav, c2s.wav, etc.)
-// Octave 5 currently uses the same sounds as octave 4. Notes below C4 are
-// pitch-shifted by usePianoAudio until they get their own samples.
+// Octave 5 currently uses the same sounds as octave 4.
+// TODO: Replace pitch-shifted bass notes with dedicated samples
+// (g2.wav ... b3.wav) and drop playbackRate.
 export const NOTES = Object.fromEntries(
   ALL_NOTES.map((name) => [
     name,
@@ -41,6 +42,9 @@ export const NOTES = Object.fromEntries(
       name,
       isBlack: name.includes('#'),
       soundFile: SOUND_FILES[getPitchClass(name)],
+      // Octave-4 samples played slower sound lower: 0.5 is one octave down,
+      // 0.25 two. Octave 5 stays at 1 until it has its own samples.
+      playbackRate: Math.min(1, 2 ** (getOctave(name) - 4)),
     },
   ]),
 ) as Record<NoteName, Omit<Note, 'displayName'>>;
