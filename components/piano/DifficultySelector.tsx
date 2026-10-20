@@ -27,7 +27,7 @@ export function DifficultySelector({
   return (
     <View style={styles.wrapper}>
       {/* Clef: Treble or Bass, side by side */}
-      <View style={styles.column}>
+      <View style={styles.section}>
         <ThemedText style={styles.title}>Clef</ThemedText>
         <View style={styles.row}>
           {CLEFS.map(({ value, label }) => (
@@ -131,6 +131,11 @@ export function DifficultySelector({
 const styles = StyleSheet.create({
   wrapper: {
     gap: 20,
+  },
+  // Sized by its content; `column`'s flex: 1 collapses to zero height on
+  // native when stacked vertically
+  section: {
+    gap: 10,
   },
   row: {
     flexDirection: 'row',
