@@ -11,16 +11,16 @@ describe('usePianoGame', () => {
   });
 
   describe('initial state', () => {
-    it('starts with idle status', () => {
-      const { result } = renderHook(() => usePianoGame());
+    it('starts with idle status', async () => {
+      const { result } = await renderHook(() => usePianoGame());
 
       expect(result.current.state.status).toBe('idle');
       expect(result.current.state.notes).toHaveLength(0);
       expect(result.current.state.currentNoteIndex).toBe(0);
     });
 
-    it('has default difficulty level and note count', () => {
-      const { result } = renderHook(() => usePianoGame());
+    it('has default difficulty level and note count', async () => {
+      const { result } = await renderHook(() => usePianoGame());
 
       expect(result.current.state.difficultyLevel).toBe('easy');
       expect(result.current.state.noteCount).toBe(10);
@@ -28,20 +28,20 @@ describe('usePianoGame', () => {
   });
 
   describe('startGame', () => {
-    it('changes status to playing', () => {
-      const { result } = renderHook(() => usePianoGame());
+    it('changes status to playing', async () => {
+      const { result } = await renderHook(() => usePianoGame());
 
-      act(() => {
+      await act(() => {
         result.current.startGame('easy', 10);
       });
 
       expect(result.current.state.status).toBe('playing');
     });
 
-    it('generates notes based on note count', () => {
-      const { result } = renderHook(() => usePianoGame());
+    it('generates notes based on note count', async () => {
+      const { result } = await renderHook(() => usePianoGame());
 
-      act(() => {
+      await act(() => {
         result.current.startGame('easy', 3);
       });
 
@@ -49,30 +49,30 @@ describe('usePianoGame', () => {
       expect(result.current.state.noteCount).toBe(3);
     });
 
-    it('sets difficulty level', () => {
-      const { result } = renderHook(() => usePianoGame());
+    it('sets difficulty level', async () => {
+      const { result } = await renderHook(() => usePianoGame());
 
-      act(() => {
+      await act(() => {
         result.current.startGame('hard', 10);
       });
 
       expect(result.current.state.difficultyLevel).toBe('hard');
     });
 
-    it('sets start time', () => {
-      const { result } = renderHook(() => usePianoGame());
+    it('sets start time', async () => {
+      const { result } = await renderHook(() => usePianoGame());
 
-      act(() => {
+      await act(() => {
         result.current.startGame('easy', 10);
       });
 
       expect(result.current.state.startTime).not.toBeNull();
     });
 
-    it('resets counters', () => {
-      const { result } = renderHook(() => usePianoGame());
+    it('resets counters', async () => {
+      const { result } = await renderHook(() => usePianoGame());
 
-      act(() => {
+      await act(() => {
         result.current.startGame('easy', 10);
       });
 
@@ -83,10 +83,10 @@ describe('usePianoGame', () => {
   });
 
   describe('handleKeyPress', () => {
-    it('returns true for correct note', () => {
-      const { result } = renderHook(() => usePianoGame());
+    it('returns true for correct note', async () => {
+      const { result } = await renderHook(() => usePianoGame());
 
-      act(() => {
+      await act(() => {
         result.current.startGame('easy', 3);
       });
 
@@ -94,17 +94,17 @@ describe('usePianoGame', () => {
       const baseNote = NOTE_TO_BASE[currentNote];
       let isCorrect: boolean;
 
-      act(() => {
+      await act(() => {
         isCorrect = result.current.handleKeyPress(baseNote);
       });
 
       expect(isCorrect!).toBe(true);
     });
 
-    it('returns false for incorrect note', () => {
-      const { result } = renderHook(() => usePianoGame());
+    it('returns false for incorrect note', async () => {
+      const { result } = await renderHook(() => usePianoGame());
 
-      act(() => {
+      await act(() => {
         result.current.startGame('easy', 3);
       });
 
@@ -114,24 +114,24 @@ describe('usePianoGame', () => {
       const wrongNote = baseNote === 'C' ? 'D' : 'C';
       let isCorrect: boolean;
 
-      act(() => {
+      await act(() => {
         isCorrect = result.current.handleKeyPress(wrongNote);
       });
 
       expect(isCorrect!).toBe(false);
     });
 
-    it('advances to next note on correct press', () => {
-      const { result } = renderHook(() => usePianoGame());
+    it('advances to next note on correct press', async () => {
+      const { result } = await renderHook(() => usePianoGame());
 
-      act(() => {
+      await act(() => {
         result.current.startGame('easy', 3);
       });
 
       const currentNote = result.current.state.notes[0].name;
       const baseNote = NOTE_TO_BASE[currentNote];
 
-      act(() => {
+      await act(() => {
         result.current.handleKeyPress(baseNote);
       });
 
@@ -139,10 +139,10 @@ describe('usePianoGame', () => {
       expect(result.current.state.correctCount).toBe(1);
     });
 
-    it('increments incorrect count on wrong press', () => {
-      const { result } = renderHook(() => usePianoGame());
+    it('increments incorrect count on wrong press', async () => {
+      const { result } = await renderHook(() => usePianoGame());
 
-      act(() => {
+      await act(() => {
         result.current.startGame('easy', 3);
       });
 
@@ -150,7 +150,7 @@ describe('usePianoGame', () => {
       const baseNote = NOTE_TO_BASE[currentNote];
       const wrongNote = baseNote === 'C' ? 'D' : 'C';
 
-      act(() => {
+      await act(() => {
         result.current.handleKeyPress(wrongNote);
       });
 
@@ -158,10 +158,10 @@ describe('usePianoGame', () => {
       expect(result.current.state.incorrectCount).toBe(1);
     });
 
-    it('finishes game when all notes completed', () => {
-      const { result } = renderHook(() => usePianoGame());
+    it('finishes game when all notes completed', async () => {
+      const { result } = await renderHook(() => usePianoGame());
 
-      act(() => {
+      await act(() => {
         result.current.startGame('easy', 3);
       });
 
@@ -170,7 +170,7 @@ describe('usePianoGame', () => {
         const currentNote = result.current.state.notes[i].name;
         const baseNote = NOTE_TO_BASE[currentNote];
 
-        act(() => {
+        await act(() => {
           result.current.handleKeyPress(baseNote);
         });
       }
@@ -178,50 +178,50 @@ describe('usePianoGame', () => {
       expect(result.current.state.status).toBe('finished');
     });
 
-    it('does not respond when game is not playing', () => {
-      const { result } = renderHook(() => usePianoGame());
+    it('does not respond when game is not playing', async () => {
+      const { result } = await renderHook(() => usePianoGame());
 
       let isCorrect: boolean;
 
-      act(() => {
+      await act(() => {
         isCorrect = result.current.handleKeyPress('C');
       });
 
       expect(isCorrect!).toBe(false);
     });
 
-    it('sets key feedback on press', () => {
-      const { result } = renderHook(() => usePianoGame());
+    it('sets key feedback on press', async () => {
+      const { result } = await renderHook(() => usePianoGame());
 
-      act(() => {
+      await act(() => {
         result.current.startGame('easy', 3);
       });
 
       const currentNote = result.current.state.notes[0].name;
       const baseNote = NOTE_TO_BASE[currentNote];
 
-      act(() => {
+      await act(() => {
         result.current.handleKeyPress(baseNote);
       });
 
       expect(result.current.keyFeedback[baseNote]).toBe('correct');
     });
 
-    it('clears key feedback after timeout', () => {
-      const { result } = renderHook(() => usePianoGame());
+    it('clears key feedback after timeout', async () => {
+      const { result } = await renderHook(() => usePianoGame());
 
-      act(() => {
+      await act(() => {
         result.current.startGame('easy', 3);
       });
 
       const currentNote = result.current.state.notes[0].name;
       const baseNote = NOTE_TO_BASE[currentNote];
 
-      act(() => {
+      await act(() => {
         result.current.handleKeyPress(baseNote);
       });
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(300);
       });
 
@@ -230,24 +230,24 @@ describe('usePianoGame', () => {
   });
 
   describe('pauseGame', () => {
-    it('changes status to paused', () => {
-      const { result } = renderHook(() => usePianoGame());
+    it('changes status to paused', async () => {
+      const { result } = await renderHook(() => usePianoGame());
 
-      act(() => {
+      await act(() => {
         result.current.startGame('easy', 10);
       });
 
-      act(() => {
+      await act(() => {
         result.current.pauseGame();
       });
 
       expect(result.current.state.status).toBe('paused');
     });
 
-    it('does nothing when not playing', () => {
-      const { result } = renderHook(() => usePianoGame());
+    it('does nothing when not playing', async () => {
+      const { result } = await renderHook(() => usePianoGame());
 
-      act(() => {
+      await act(() => {
         result.current.pauseGame();
       });
 
@@ -256,32 +256,32 @@ describe('usePianoGame', () => {
   });
 
   describe('resumeGame', () => {
-    it('changes status back to playing', () => {
-      const { result } = renderHook(() => usePianoGame());
+    it('changes status back to playing', async () => {
+      const { result } = await renderHook(() => usePianoGame());
 
-      act(() => {
+      await act(() => {
         result.current.startGame('easy', 10);
       });
 
-      act(() => {
+      await act(() => {
         result.current.pauseGame();
       });
 
-      act(() => {
+      await act(() => {
         result.current.resumeGame();
       });
 
       expect(result.current.state.status).toBe('playing');
     });
 
-    it('does nothing when not paused', () => {
-      const { result } = renderHook(() => usePianoGame());
+    it('does nothing when not paused', async () => {
+      const { result } = await renderHook(() => usePianoGame());
 
-      act(() => {
+      await act(() => {
         result.current.startGame('easy', 10);
       });
 
-      act(() => {
+      await act(() => {
         result.current.resumeGame();
       });
 
@@ -290,14 +290,14 @@ describe('usePianoGame', () => {
   });
 
   describe('resetGame', () => {
-    it('resets to initial state', () => {
-      const { result } = renderHook(() => usePianoGame());
+    it('resets to initial state', async () => {
+      const { result } = await renderHook(() => usePianoGame());
 
-      act(() => {
+      await act(() => {
         result.current.startGame('hard', 25);
       });
 
-      act(() => {
+      await act(() => {
         result.current.resetGame();
       });
 
@@ -308,10 +308,10 @@ describe('usePianoGame', () => {
   });
 
   describe('accuracy calculation', () => {
-    it('calculates accuracy correctly on game finish', () => {
-      const { result } = renderHook(() => usePianoGame());
+    it('calculates accuracy correctly on game finish', async () => {
+      const { result } = await renderHook(() => usePianoGame());
 
-      act(() => {
+      await act(() => {
         result.current.startGame('easy', 3);
       });
 
@@ -319,7 +319,7 @@ describe('usePianoGame', () => {
       const firstNote = result.current.state.notes[0].name;
       const wrongNote = NOTE_TO_BASE[firstNote] === 'C' ? 'D' : 'C';
 
-      act(() => {
+      await act(() => {
         result.current.handleKeyPress(wrongNote);
       });
 
@@ -328,7 +328,7 @@ describe('usePianoGame', () => {
         const currentNote = result.current.state.notes[i].name;
         const baseNote = NOTE_TO_BASE[currentNote];
 
-        act(() => {
+        await act(() => {
           result.current.handleKeyPress(baseNote);
         });
       }

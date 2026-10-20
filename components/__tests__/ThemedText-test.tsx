@@ -4,7 +4,7 @@ import { ThemeProvider } from '@/contexts/ThemeContext';
 import { ThemedText } from '../ThemedText';
 
 it('renders correctly', async () => {
-  render(
+  await render(
     <ThemeProvider>
       <ThemedText>Test text</ThemedText>
     </ThemeProvider>,
