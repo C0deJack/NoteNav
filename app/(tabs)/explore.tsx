@@ -10,18 +10,20 @@ import {
 import { LineChart } from 'react-native-chart-kit';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { SegmentedControl } from '@/components/settings/SegmentedControl';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { DIFFICULTY_LEVELS } from '@/constants/PianoConfig';
-import { useProgress } from '@/hooks/useProgress';
+import { getScoreClef, useProgress } from '@/hooks/useProgress';
 import { useTheme } from '@/hooks/useTheme';
 import type {
+  Clef,
   DifficultyLevel,
   DifficultyStats,
   GameScore,
 } from '@/types/piano';
 import { formatTime } from '@/utils/formatting';
-import { getDifficultyLabel } from '@/utils/game';
+import { getClefLabel, getDifficultyLabel } from '@/utils/game';
 import {
   calculateNotesPerMinute,
   calculateScoreFromGame,
@@ -259,6 +261,11 @@ function ProgressLineChart({
   );
 }
 
+const clefOptions: { value: Clef; label: string }[] = [
+  { value: 'treble', label: getClefLabel('treble') },
+  { value: 'bass', label: getClefLabel('bass') },
+];
+
 export default function ProgressScreen() {
   const { colors, isDark } = useTheme();
   const { scores, loaded, resetProgress, getStatsByDifficultyLevel } =
@@ -266,11 +273,13 @@ export default function ProgressScreen() {
   const insets = useSafeAreaInsets();
   const [showResetModal, setShowResetModal] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState<DifficultyLevel>('easy');
+  const [selectedClef, setSelectedClef] = useState<Clef>('treble');
 
-  const statsByLevel = getStatsByDifficultyLevel();
+  const statsByLevel = getStatsByDifficultyLevel(selectedClef);
   const currentStats = statsByLevel[selectedLevel];
   const filteredScores = scores.filter(
-    (s) => s.difficultyLevel === selectedLevel,
+    (s) =>
+      getScoreClef(s) === selectedClef && s.difficultyLevel === selectedLevel,
   );
 
   const handleResetConfirm = () => {
@@ -303,6 +312,14 @@ export default function ProgressScreen() {
         </View>
       ) : (
         <>
+          <View style={styles.clefTabs}>
+            <SegmentedControl
+              options={clefOptions}
+              selectedValue={selectedClef}
+              onValueChange={setSelectedClef}
+            />
+          </View>
+
           <DifficultyTabs
             selectedLevel={selectedLevel}
             onSelectLevel={setSelectedLevel}
@@ -409,6 +426,9 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     textAlign: 'center',
+  },
+  clefTabs: {
+    marginBottom: 8,
   },
   tabsContainer: {
     flexDirection: 'row',
