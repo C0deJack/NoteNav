@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useState } from 'react';
 import {
+  DEFAULT_CLEF,
   DEFAULT_DIFFICULTY_LEVEL,
   DEFAULT_NOTE_COUNT,
 } from '@/constants/PianoConfig';
@@ -11,6 +12,7 @@ const DIFFICULTY_LEVEL_KEY = '@piano_game_difficulty_level';
 const NOTE_COUNT_KEY = '@piano_game_note_count';
 
 const defaultSettings: GameSettings = {
+  clef: DEFAULT_CLEF,
   showWhiteKeyLabels: false,
   showBlackKeyLabels: false,
   noteDisplayMode: 'staff',
@@ -31,34 +33,34 @@ export function useGameSettings() {
     useState<NoteCount>(DEFAULT_NOTE_COUNT);
   const [loaded, setLoaded] = useState(false);
 
+  const loadSettings = useCallback(async () => {
+    try {
+      const [storedSettings, storedLevel, storedCount] = await Promise.all([
+        AsyncStorage.getItem(SETTINGS_KEY),
+        AsyncStorage.getItem(DIFFICULTY_LEVEL_KEY),
+        AsyncStorage.getItem(NOTE_COUNT_KEY),
+      ]);
+
+      if (storedSettings) {
+        setSettings({ ...defaultSettings, ...JSON.parse(storedSettings) });
+      }
+      if (storedLevel) {
+        setLastDifficultyLevel(JSON.parse(storedLevel));
+      }
+      if (storedCount) {
+        setLastNoteCount(JSON.parse(storedCount));
+      }
+    } catch (error) {
+      console.error('Error loading settings:', error);
+    } finally {
+      setLoaded(true);
+    }
+  }, []);
+
   // Load settings on mount
   useEffect(() => {
-    async function loadSettings() {
-      try {
-        const [storedSettings, storedLevel, storedCount] = await Promise.all([
-          AsyncStorage.getItem(SETTINGS_KEY),
-          AsyncStorage.getItem(DIFFICULTY_LEVEL_KEY),
-          AsyncStorage.getItem(NOTE_COUNT_KEY),
-        ]);
-
-        if (storedSettings) {
-          setSettings({ ...defaultSettings, ...JSON.parse(storedSettings) });
-        }
-        if (storedLevel) {
-          setLastDifficultyLevel(JSON.parse(storedLevel));
-        }
-        if (storedCount) {
-          setLastNoteCount(JSON.parse(storedCount));
-        }
-      } catch (error) {
-        console.error('Error loading settings:', error);
-      } finally {
-        setLoaded(true);
-      }
-    }
-
     loadSettings();
-  }, []);
+  }, [loadSettings]);
 
   const updateSettings = useCallback(
     async (newSettings: Partial<GameSettings>) => {
@@ -99,6 +101,8 @@ export function useGameSettings() {
 
   return {
     settings,
+    /** Re-read settings saved by another screen's copy of this hook */
+    reloadSettings: loadSettings,
     lastDifficultyLevel,
     lastNoteCount,
     loaded,

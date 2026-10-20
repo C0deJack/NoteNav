@@ -3,13 +3,20 @@ import {
   FLAT_SYMBOL,
   SHARP_SYMBOL,
 } from '@/constants/PianoConfig';
-import type { DifficultyLevel } from '@/types/piano';
+import type { Clef, DifficultyLevel } from '@/types/piano';
 
 /**
  * Gets the human-readable label for a difficulty level
  */
 export function getDifficultyLabel(level: DifficultyLevel): string {
   return DIFFICULTY_LEVELS.find((d) => d.value === level)?.label ?? 'Unknown';
+}
+
+/**
+ * Gets the human-readable label for a clef
+ */
+export function getClefLabel(clef: Clef): string {
+  return clef === 'bass' ? 'Bass' : 'Treble';
 }
 
 // Re-export symbols for convenience

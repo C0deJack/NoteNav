@@ -17,6 +17,7 @@ import {
 } from '@/contexts/ThemeContext';
 import { useGameSettings } from '@/hooks/useGameSettings';
 import { useTheme } from '@/hooks/useTheme';
+import type { Clef } from '@/types/piano';
 
 const colorSchemeOptions: {
   value: ColorSchemePreference;
@@ -26,6 +27,11 @@ const colorSchemeOptions: {
   { value: 'dark', label: 'Dark' },
   { value: 'auto', label: 'Auto' },
   { value: 'custom', label: 'Custom' },
+];
+
+const clefOptions: { value: Clef; label: string }[] = [
+  { value: 'treble', label: 'Treble' },
+  { value: 'bass', label: 'Bass' },
 ];
 
 const customColorOptions: {
@@ -107,9 +113,18 @@ export default function Settings() {
           expanded={displayExpanded}
           onToggle={() => setDisplayExpanded(!displayExpanded)}
         >
+          <SettingRow
+            label="Clef"
+            description="Play with treble clef notes, or bass clef notes from middle C down"
+          />
+          <SegmentedControl
+            options={clefOptions}
+            selectedValue={settings.clef}
+            onValueChange={(clef) => updateSettings({ clef })}
+          />
           <SettingToggle
             label="Show as Sheet Music"
-            description="Display notes on a treble clef staff instead of text"
+            description="Display notes on a music staff instead of text"
             value={settings.noteDisplayMode === 'staff'}
             onToggle={() =>
               updateSettings({

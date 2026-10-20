@@ -122,6 +122,7 @@ export default function PianoGameScreen() {
       router.replace({
         pathname: '/piano/results' as const,
         params: {
+          clef: state.clef,
           difficultyLevel: state.difficultyLevel,
           noteCount: state.noteCount,
           elapsedMs: state.elapsedMs,
@@ -131,6 +132,7 @@ export default function PianoGameScreen() {
     }
   }, [
     state.status,
+    state.clef,
     state.difficultyLevel,
     state.noteCount,
     state.elapsedMs,

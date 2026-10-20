@@ -1,6 +1,7 @@
 import {
   FLAT_SYMBOL,
   formatNoteAccidentals,
+  getClefLabel,
   getDifficultyLabel,
   SHARP_SYMBOL,
 } from '../game';
@@ -80,5 +81,12 @@ describe('formatNoteAccidentals', () => {
     // Edge case: multiple # or b characters
     expect(formatNoteAccidentals('##')).toBe('♯#');
     expect(formatNoteAccidentals('bb')).toBe('♭b');
+  });
+});
+
+describe('getClefLabel', () => {
+  it('returns labels for each clef', () => {
+    expect(getClefLabel('treble')).toBe('Treble');
+    expect(getClefLabel('bass')).toBe('Bass');
   });
 });

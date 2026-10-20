@@ -25,10 +25,12 @@ describe('useGameSettings', () => {
       });
 
       expect(result.current.settings).toEqual({
+        clef: 'treble',
         showWhiteKeyLabels: false,
         showBlackKeyLabels: false,
         noteDisplayMode: 'staff',
         showIncorrectFeedback: true,
+        playIncorrectSound: true,
         enableHapticFeedback: true,
         playSoundInSilentMode: true,
         showTimer: true,

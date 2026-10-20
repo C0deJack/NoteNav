@@ -97,6 +97,7 @@ export interface GameState {
 export type NoteDisplayMode = 'text' | 'staff';
 
 export interface GameSettings {
+  clef: Clef;
   showWhiteKeyLabels: boolean;
   showBlackKeyLabels: boolean;
   noteDisplayMode: NoteDisplayMode;
@@ -113,6 +114,8 @@ export type KeyFeedback = 'none' | 'correct' | 'incorrect';
 
 export interface GameScore {
   id: string;
+  /** Missing on scores saved before bass clef was added; treat as treble */
+  clef?: Clef;
   difficultyLevel: DifficultyLevel;
   noteCount: NoteCount;
   accuracy: number;
@@ -132,11 +135,13 @@ export interface DifficultyStats {
 
 // Route param types for type-safe navigation
 export interface GameRouteParams {
+  clef: Clef;
   difficultyLevel: DifficultyLevel;
   noteCount: NoteCount;
 }
 
 export interface ResultsRouteParams {
+  clef: string;
   difficultyLevel: string;
   noteCount: string;
   elapsedMs: string;
