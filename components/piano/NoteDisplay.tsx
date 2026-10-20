@@ -8,7 +8,7 @@ import { StaffDisplay } from './StaffDisplay';
 
 interface NoteDisplayProps {
   note: string;
-  noteName?: NoteName; // Internal note name with octave (e.g., 'C2')
+  noteName: NoteName; // Internal note name with octave (e.g., 'C5')
   displayMode?: NoteDisplayMode;
   feedback?: KeyFeedback;
   incorrectNote?: NoteName | null;

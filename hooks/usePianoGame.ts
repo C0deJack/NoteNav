@@ -3,42 +3,19 @@ import {
   DEFAULT_DIFFICULTY_LEVEL,
   DEFAULT_NOTE_COUNT,
   DIFFICULTY_NOTE_POOLS,
-  KEY_ORDER,
   NOTES,
   SHARP_DISPLAY_NAMES,
 } from '@/constants/PianoConfig';
-import type {
-  DifficultyLevel,
-  GameState,
-  KeyFeedback,
-  Note,
-  NoteCount,
-  NoteName,
+import {
+  ALL_NOTES,
+  type DifficultyLevel,
+  type GameState,
+  type KeyFeedback,
+  type Note,
+  type NoteCount,
+  type NoteName,
 } from '@/types/piano';
-import { getBaseNoteName } from '@/utils/game';
-
-// Map second octave notes to their base notes (for keyboard input validation)
-export const NOTE_TO_BASE: Record<NoteName, NoteName> = {
-  C: 'C',
-  'C#': 'C#',
-  D: 'D',
-  'D#': 'D#',
-  E: 'E',
-  F: 'F',
-  'F#': 'F#',
-  G: 'G',
-  'G#': 'G#',
-  A: 'A',
-  'A#': 'A#',
-  B: 'B',
-  // Second octave maps to base notes
-  C2: 'C',
-  'C#2': 'C#',
-  D2: 'D',
-  'D#2': 'D#',
-  E2: 'E',
-  F2: 'F',
-};
+import { getPitchClass } from '@/utils/notes';
 
 function generateRandomNotes(
   count: NoteCount,
@@ -58,12 +35,13 @@ function generateRandomNotes(
     previousNote = note;
 
     const noteData = NOTES[note];
-    // For display, use the base note name (strip octave suffix)
-    let displayName: string = getBaseNoteName(note);
+    // For display, use the pitch class (strip octave)
+    const pitchClass = getPitchClass(note);
+    let displayName: string = pitchClass;
 
     // For sharps, randomly pick sharp or flat notation
-    if (SHARP_DISPLAY_NAMES[note]) {
-      const variants = SHARP_DISPLAY_NAMES[note];
+    const variants = SHARP_DISPLAY_NAMES[pitchClass];
+    if (variants) {
       displayName = variants[Math.floor(Math.random() * 2)];
     }
 
@@ -94,7 +72,7 @@ const initialState: GameState = {
 export function usePianoGame() {
   const [state, setState] = useState<GameState>(initialState);
   const [keyFeedback, setKeyFeedback] = useState<Record<NoteName, KeyFeedback>>(
-    Object.fromEntries(KEY_ORDER.map((k) => [k, 'none'])) as Record<
+    Object.fromEntries(ALL_NOTES.map((k) => [k, 'none'])) as Record<
       NoteName,
       KeyFeedback
     >,
@@ -157,10 +135,9 @@ export function usePianoGame() {
       // --- 1. Validate the pressed note against the expected note ---
       const currentNote = state.notes[state.currentNoteIndex];
       // Check if pressed note matches, accounting for octave equivalents
-      // (e.g., pressing 'C' or 'C2' is correct for 'C2', and vice versa)
-      const pressedBaseNote = NOTE_TO_BASE[pressedNote];
-      const expectedBaseNote = NOTE_TO_BASE[currentNote.name];
-      const isCorrect = pressedBaseNote === expectedBaseNote;
+      // (e.g., pressing 'C4' or 'C5' is correct for 'C5', and vice versa)
+      const isCorrect =
+        getPitchClass(pressedNote) === getPitchClass(currentNote.name);
 
       // --- 2. Update visual feedback on the pressed key ---
       setKeyFeedback((prev) => ({
@@ -266,7 +243,7 @@ export function usePianoGame() {
     feedbackTimeoutsRef.current.clear();
     setState(initialState);
     setKeyFeedback(
-      Object.fromEntries(KEY_ORDER.map((k) => [k, 'none'])) as Record<
+      Object.fromEntries(ALL_NOTES.map((k) => [k, 'none'])) as Record<
         NoteName,
         KeyFeedback
       >,

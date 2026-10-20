@@ -12,28 +12,27 @@ export const STAFF_CONFIG = {
 } as const;
 
 // Note positions on the treble clef staff
-// Position 0 = middle line (B), negative = below, positive = above
+// Position 0 = middle line (B4), negative = below, positive = above
 // Each step is one staff position (line or space)
 export const NOTE_STAFF_POSITIONS: Record<NoteName, number> = {
-  C: -6, // Middle C - ledger line below treble staff
-  'C#': -6,
-  D: -5,
-  'D#': -5,
-  E: -4, // Bottom line of treble staff
-  F: -3,
-  'F#': -3,
-  G: -2,
-  'G#': -2,
-  A: -1,
-  'A#': -1,
-  B: 0, // Middle line of treble staff
-  // Second octave
-  C2: 1, // Space above middle line
-  'C#2': 1,
-  D2: 2, // Fourth line from bottom
-  'D#2': 2,
-  E2: 3, // Space below top line
-  F2: 4, // Top line of treble staff
+  C4: -6, // Middle C - ledger line below treble staff
+  'C#4': -6,
+  D4: -5,
+  'D#4': -5,
+  E4: -4, // Bottom line of treble staff
+  F4: -3,
+  'F#4': -3,
+  G4: -2,
+  'G#4': -2,
+  A4: -1,
+  'A#4': -1,
+  B4: 0, // Middle line of treble staff
+  C5: 1, // Space above middle line
+  'C#5': 1,
+  D5: 2, // Fourth line from bottom
+  'D#5': 2,
+  E5: 3, // Space below top line
+  F5: 4, // Top line of treble staff
 };
 
 // Treble clef SVG path (simplified)

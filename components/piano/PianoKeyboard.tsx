@@ -19,14 +19,14 @@ interface PianoKeyboardProps {
 
 // Black keys positioned relative to white keys (offset from left edge)
 const BLACK_KEY_OFFSETS: Partial<Record<NoteName, number>> = {
-  'C#': 0,
-  'D#': 1,
-  'F#': 3,
-  'G#': 4,
-  'A#': 5,
+  'C#4': 0,
+  'D#4': 1,
+  'F#4': 3,
+  'G#4': 4,
+  'A#4': 5,
   // Second octave offsets (relative to start of second octave)
-  'C#2': 0,
-  'D#2': 1,
+  'C#5': 0,
+  'D#5': 1,
 };
 
 export function PianoKeyboard({

@@ -1,4 +1,12 @@
-import type { DifficultyLevel, Note, NoteCount, NoteName } from '@/types/piano';
+import {
+  ALL_NOTES,
+  type DifficultyLevel,
+  type Note,
+  type NoteCount,
+  type NoteName,
+  type PitchClass,
+} from '@/types/piano';
+import { getPitchClass } from '@/utils/notes';
 
 /** Unicode sharp symbol (♯) */
 export const SHARP_SYMBOL = '\u266F';
@@ -6,126 +14,73 @@ export const SHARP_SYMBOL = '\u266F';
 /** Unicode flat symbol (♭) */
 export const FLAT_SYMBOL = '\u266D';
 
-export const NOTES: Record<NoteName, Omit<Note, 'displayName'>> = {
-  C: { name: 'C', isBlack: false, soundFile: 'c1.wav' },
-  'C#': { name: 'C#', isBlack: true, soundFile: 'c1s.wav' },
-  D: { name: 'D', isBlack: false, soundFile: 'd1.wav' },
-  'D#': { name: 'D#', isBlack: true, soundFile: 'd1s.wav' },
-  E: { name: 'E', isBlack: false, soundFile: 'e1.wav' },
-  F: { name: 'F', isBlack: false, soundFile: 'f1.wav' },
-  'F#': { name: 'F#', isBlack: true, soundFile: 'f1s.wav' },
-  G: { name: 'G', isBlack: false, soundFile: 'g1.wav' },
-  'G#': { name: 'G#', isBlack: true, soundFile: 'g1s.wav' },
-  A: { name: 'A', isBlack: false, soundFile: 'a1.wav' },
-  'A#': { name: 'A#', isBlack: true, soundFile: 'a1s.wav' },
-  B: { name: 'B', isBlack: false, soundFile: 'b1.wav' },
-  // TODO: Add correct sound files for second octave notes (c2.wav, c2s.wav, etc.)
-  // Second octave (currently uses same sounds as first octave)
-  C2: { name: 'C2', isBlack: false, soundFile: 'c1.wav' },
-  'C#2': { name: 'C#2', isBlack: true, soundFile: 'c1s.wav' },
-  D2: { name: 'D2', isBlack: false, soundFile: 'd1.wav' },
-  'D#2': { name: 'D#2', isBlack: true, soundFile: 'd1s.wav' },
-  E2: { name: 'E2', isBlack: false, soundFile: 'e1.wav' },
-  F2: { name: 'F2', isBlack: false, soundFile: 'f1.wav' },
+/** Sample file for each pitch class */
+const SOUND_FILES: Record<PitchClass, string> = {
+  C: 'c1.wav',
+  'C#': 'c1s.wav',
+  D: 'd1.wav',
+  'D#': 'd1s.wav',
+  E: 'e1.wav',
+  F: 'f1.wav',
+  'F#': 'f1s.wav',
+  G: 'g1.wav',
+  'G#': 'g1s.wav',
+  A: 'a1.wav',
+  'A#': 'a1s.wav',
+  B: 'b1.wav',
 };
 
+// TODO: Add correct sound files for octave 5 notes (c2.wav, c2s.wav, etc.)
+// Octave 5 currently uses the same sounds as octave 4
+export const NOTES = Object.fromEntries(
+  ALL_NOTES.map((name) => [
+    name,
+    {
+      name,
+      isBlack: name.includes('#'),
+      soundFile: SOUND_FILES[getPitchClass(name)],
+    },
+  ]),
+) as Record<NoteName, Omit<Note, 'displayName'>>;
+
 // Display names for sharps (randomly pick sharp or flat notation)
-export const SHARP_DISPLAY_NAMES: Record<string, [string, string]> = {
+export const SHARP_DISPLAY_NAMES: Partial<
+  Record<PitchClass, [string, string]>
+> = {
   'C#': ['C#', `D${FLAT_SYMBOL}`],
   'D#': ['D#', `E${FLAT_SYMBOL}`],
   'F#': ['F#', `G${FLAT_SYMBOL}`],
   'G#': ['G#', `A${FLAT_SYMBOL}`],
   'A#': ['A#', `B${FLAT_SYMBOL}`],
-  // Second octave
-  'C#2': ['C#', `D${FLAT_SYMBOL}`],
-  'D#2': ['D#', `E${FLAT_SYMBOL}`],
 };
 
-// Order of keys on keyboard (left to right)
-export const KEY_ORDER: NoteName[] = [
-  'C',
-  'C#',
-  'D',
-  'D#',
-  'E',
-  'F',
-  'F#',
-  'G',
-  'G#',
-  'A',
-  'A#',
-  'B',
-  // Second octave (for staff display, maps to same keyboard keys)
-  'C2',
-  'C#2',
-  'D2',
-  'D#2',
-  'E2',
-  'F2',
+export const WHITE_KEYS: NoteName[] = [
+  'C4',
+  'D4',
+  'E4',
+  'F4',
+  'G4',
+  'A4',
+  'B4',
 ];
+export const BLACK_KEYS: NoteName[] = ['C#4', 'D#4', 'F#4', 'G#4', 'A#4'];
 
-export const WHITE_KEYS: NoteName[] = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
-export const BLACK_KEYS: NoteName[] = ['C#', 'D#', 'F#', 'G#', 'A#'];
-
-// Second octave keys (up to F2 on treble clef)
-export const WHITE_KEYS_OCTAVE2: NoteName[] = ['C2', 'D2', 'E2', 'F2'];
-export const BLACK_KEYS_OCTAVE2: NoteName[] = ['C#2', 'D#2'];
-
-// Black key positions relative to white keys (as percentage offset from left edge of preceding white key)
-export const BLACK_KEY_POSITIONS: Record<NoteName, number> = {
-  'C#': 0, // After C
-  'D#': 1, // After D
-  'F#': 3, // After F
-  'G#': 4, // After G
-  'A#': 5, // After A
-  // These aren't black keys but TypeScript needs them
-  C: -1,
-  D: -1,
-  E: -1,
-  F: -1,
-  G: -1,
-  A: -1,
-  B: -1,
-  // Second octave (not rendered on keyboard, but needed for type safety)
-  C2: -1,
-  'C#2': -1,
-  D2: -1,
-  'D#2': -1,
-  E2: -1,
-  F2: -1,
-};
+// Second octave keys (up to F5 on treble clef)
+export const WHITE_KEYS_OCTAVE2: NoteName[] = ['C5', 'D5', 'E5', 'F5'];
+export const BLACK_KEYS_OCTAVE2: NoteName[] = ['C#5', 'D#5'];
 
 /**
  * Note pools for each difficulty level.
- * Easy: C1 to G1, no sharps/flats
- * Medium: C1 to F2, no sharps/flats
- * Hard: C1 to G1, with sharps/flats
- * Expert: C1 to F2, with sharps/flats
+ * Easy: C4 to G4, no sharps/flats
+ * Medium: C4 to F5, no sharps/flats
+ * Hard: C4 to G4, with sharps/flats
+ * Expert: C4 to F5, with sharps/flats
  */
 export const DIFFICULTY_NOTE_POOLS: Record<DifficultyLevel, NoteName[]> = {
-  easy: ['C', 'D', 'E', 'F', 'G'],
-  medium: ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C2', 'D2', 'E2', 'F2'],
-  hard: ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G'],
-  expert: [
-    'C',
-    'C#',
-    'D',
-    'D#',
-    'E',
-    'F',
-    'F#',
-    'G',
-    'G#',
-    'A',
-    'A#',
-    'B',
-    'C2',
-    'C#2',
-    'D2',
-    'D#2',
-    'E2',
-    'F2',
-  ],
+  easy: ['C4', 'D4', 'E4', 'F4', 'G4'],
+  medium: ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5', 'D5', 'E5', 'F5'],
+  hard: ['C4', 'C#4', 'D4', 'D#4', 'E4', 'F4', 'F#4', 'G4'],
+  expert: [...ALL_NOTES],
 };
 
 /** Difficulty level options */

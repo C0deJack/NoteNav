@@ -61,7 +61,7 @@ describe('usePianoAudio', () => {
       await renderHook(() => usePianoAudio());
 
       await waitFor(() => {
-        // 12 notes + 6 second octave notes + 1 error sound = multiple calls
+        // One player per note + 1 error sound
         expect(mockCreateAudioPlayer).toHaveBeenCalled();
       });
     });
@@ -96,7 +96,7 @@ describe('usePianoAudio', () => {
       });
 
       await act(async () => {
-        await result.current.playNote('C');
+        await result.current.playNote('C4');
       });
 
       expect(mockSeekTo).toHaveBeenCalledWith(0);
@@ -125,7 +125,7 @@ describe('usePianoAudio', () => {
       // playNote should handle gracefully if player doesn't exist
       // (In practice all players exist, but this tests the guard clause)
       await act(async () => {
-        await result.current.playNote('C');
+        await result.current.playNote('C4');
       });
 
       // Should have attempted to play

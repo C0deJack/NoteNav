@@ -3,21 +3,13 @@ import {
   FLAT_SYMBOL,
   SHARP_SYMBOL,
 } from '@/constants/PianoConfig';
-import type { DifficultyLevel, NoteName } from '@/types/piano';
+import type { DifficultyLevel } from '@/types/piano';
 
 /**
  * Gets the human-readable label for a difficulty level
  */
 export function getDifficultyLabel(level: DifficultyLevel): string {
   return DIFFICULTY_LEVELS.find((d) => d.value === level)?.label ?? 'Unknown';
-}
-
-/**
- * Strips the octave suffix from a note name to get the base note.
- * e.g., 'C2' -> 'C', 'C#2' -> 'C#', 'D' -> 'D'
- */
-export function getBaseNoteName(note: NoteName | string): string {
-  return note.replace('2', '');
 }
 
 // Re-export symbols for convenience

@@ -1,5 +1,11 @@
 import { act, renderHook } from '@testing-library/react-native';
-import { NOTE_TO_BASE, usePianoGame } from '../usePianoGame';
+import type { NoteName } from '@/types/piano';
+import { getPitchClass } from '@/utils/notes';
+import { usePianoGame } from '../usePianoGame';
+
+/** A note with a different pitch class from the one given */
+const wrongNoteFor = (note: NoteName): NoteName =>
+  getPitchClass(note) === 'C' ? 'D4' : 'C4';
 
 describe('usePianoGame', () => {
   beforeEach(() => {
@@ -91,7 +97,7 @@ describe('usePianoGame', () => {
       });
 
       const currentNote = result.current.state.notes[0].name;
-      const baseNote = NOTE_TO_BASE[currentNote];
+      const baseNote = currentNote;
       let isCorrect: boolean;
 
       await act(() => {
@@ -109,9 +115,7 @@ describe('usePianoGame', () => {
       });
 
       const currentNote = result.current.state.notes[0].name;
-      const baseNote = NOTE_TO_BASE[currentNote];
-      // Pick a different note
-      const wrongNote = baseNote === 'C' ? 'D' : 'C';
+      const wrongNote = wrongNoteFor(currentNote);
       let isCorrect: boolean;
 
       await act(() => {
@@ -129,7 +133,7 @@ describe('usePianoGame', () => {
       });
 
       const currentNote = result.current.state.notes[0].name;
-      const baseNote = NOTE_TO_BASE[currentNote];
+      const baseNote = currentNote;
 
       await act(() => {
         result.current.handleKeyPress(baseNote);
@@ -147,8 +151,7 @@ describe('usePianoGame', () => {
       });
 
       const currentNote = result.current.state.notes[0].name;
-      const baseNote = NOTE_TO_BASE[currentNote];
-      const wrongNote = baseNote === 'C' ? 'D' : 'C';
+      const wrongNote = wrongNoteFor(currentNote);
 
       await act(() => {
         result.current.handleKeyPress(wrongNote);
@@ -168,7 +171,7 @@ describe('usePianoGame', () => {
       // Complete all 3 notes
       for (let i = 0; i < 3; i++) {
         const currentNote = result.current.state.notes[i].name;
-        const baseNote = NOTE_TO_BASE[currentNote];
+        const baseNote = currentNote;
 
         await act(() => {
           result.current.handleKeyPress(baseNote);
@@ -184,7 +187,7 @@ describe('usePianoGame', () => {
       let isCorrect: boolean;
 
       await act(() => {
-        isCorrect = result.current.handleKeyPress('C');
+        isCorrect = result.current.handleKeyPress('C4');
       });
 
       expect(isCorrect!).toBe(false);
@@ -198,7 +201,7 @@ describe('usePianoGame', () => {
       });
 
       const currentNote = result.current.state.notes[0].name;
-      const baseNote = NOTE_TO_BASE[currentNote];
+      const baseNote = currentNote;
 
       await act(() => {
         result.current.handleKeyPress(baseNote);
@@ -215,7 +218,7 @@ describe('usePianoGame', () => {
       });
 
       const currentNote = result.current.state.notes[0].name;
-      const baseNote = NOTE_TO_BASE[currentNote];
+      const baseNote = currentNote;
 
       await act(() => {
         result.current.handleKeyPress(baseNote);
@@ -317,7 +320,7 @@ describe('usePianoGame', () => {
 
       // Get first note wrong once
       const firstNote = result.current.state.notes[0].name;
-      const wrongNote = NOTE_TO_BASE[firstNote] === 'C' ? 'D' : 'C';
+      const wrongNote = wrongNoteFor(firstNote);
 
       await act(() => {
         result.current.handleKeyPress(wrongNote);
@@ -326,7 +329,7 @@ describe('usePianoGame', () => {
       // Now complete all 3 notes
       for (let i = 0; i < 3; i++) {
         const currentNote = result.current.state.notes[i].name;
-        const baseNote = NOTE_TO_BASE[currentNote];
+        const baseNote = currentNote;
 
         await act(() => {
           result.current.handleKeyPress(baseNote);
@@ -340,18 +343,35 @@ describe('usePianoGame', () => {
   });
 });
 
-describe('NOTE_TO_BASE', () => {
-  it('maps first octave notes to themselves', () => {
-    expect(NOTE_TO_BASE.C).toBe('C');
-    expect(NOTE_TO_BASE['C#']).toBe('C#');
-    expect(NOTE_TO_BASE.D).toBe('D');
-    expect(NOTE_TO_BASE.B).toBe('B');
-  });
+describe('octave equivalence', () => {
+  it('accepts the same note in another octave', async () => {
+    const { result } = await renderHook(() => usePianoGame());
 
-  it('maps second octave notes to first octave', () => {
-    expect(NOTE_TO_BASE.C2).toBe('C');
-    expect(NOTE_TO_BASE['C#2']).toBe('C#');
-    expect(NOTE_TO_BASE.D2).toBe('D');
-    expect(NOTE_TO_BASE.F2).toBe('F');
+    await act(() => {
+      result.current.startGame('medium', 100);
+    });
+
+    // Find a note that exists in both octaves on the keyboard (C to F)
+    const index = result.current.state.notes.findIndex((n) =>
+      ['C', 'D', 'E', 'F'].includes(getPitchClass(n.name)),
+    );
+    for (let i = 0; i < index; i++) {
+      const name = result.current.state.notes[i].name;
+      await act(() => {
+        result.current.handleKeyPress(name);
+      });
+    }
+
+    const target = result.current.state.notes[index].name;
+    const otherOctave = (
+      target.endsWith('4') ? target.replace('4', '5') : target.replace('5', '4')
+    ) as NoteName;
+    let isCorrect: boolean;
+
+    await act(() => {
+      isCorrect = result.current.handleKeyPress(otherOctave);
+    });
+
+    expect(isCorrect!).toBe(true);
   });
 });

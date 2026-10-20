@@ -1,4 +1,32 @@
-export type NoteName =
+/**
+ * Every note the app can show or play, lowest to highest, in scientific pitch
+ * notation (middle C = C4). Sharps only; flats are a display concern.
+ */
+export const ALL_NOTES = [
+  'C4',
+  'C#4',
+  'D4',
+  'D#4',
+  'E4',
+  'F4',
+  'F#4',
+  'G4',
+  'G#4',
+  'A4',
+  'A#4',
+  'B4',
+  'C5',
+  'C#5',
+  'D5',
+  'D#5',
+  'E5',
+  'F5', // Top line of treble staff
+] as const;
+
+export type NoteName = (typeof ALL_NOTES)[number];
+
+/** A note without its octave, e.g. 'C#' */
+export type PitchClass =
   | 'C'
   | 'C#'
   | 'D'
@@ -10,14 +38,7 @@ export type NoteName =
   | 'G#'
   | 'A'
   | 'A#'
-  | 'B'
-  // Second octave (up to F on top line of treble clef)
-  | 'C2'
-  | 'C#2'
-  | 'D2'
-  | 'D#2'
-  | 'E2'
-  | 'F2';
+  | 'B';
 
 /** Number of notes per game */
 export type NoteCount = 3 | 10 | 25 | 100;

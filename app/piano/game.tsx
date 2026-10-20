@@ -15,9 +15,31 @@ import { ThemedView } from '@/components/ThemedView';
 import { useGameSettings } from '@/hooks/useGameSettings';
 import { useInactivityTimeout } from '@/hooks/useInactivityTimeout';
 import { usePianoAudio } from '@/hooks/usePianoAudio';
-import { NOTE_TO_BASE, usePianoGame } from '@/hooks/usePianoGame';
+import { usePianoGame } from '@/hooks/usePianoGame';
 import { useTheme } from '@/hooks/useTheme';
-import type { DifficultyLevel, NoteCount, NoteName } from '@/types/piano';
+import {
+  ALL_NOTES,
+  type DifficultyLevel,
+  type KeyFeedback,
+  type NoteCount,
+  type NoteName,
+} from '@/types/piano';
+import { getPitchClass } from '@/utils/notes';
+
+/**
+ * Feedback for a note from any key with the same pitch class, since pressing
+ * the same note in another octave counts as correct.
+ */
+function getPitchClassFeedback(
+  keyFeedback: Record<NoteName, KeyFeedback>,
+  note: NoteName,
+): KeyFeedback {
+  const pitchClass = getPitchClass(note);
+  const key = ALL_NOTES.find(
+    (n) => getPitchClass(n) === pitchClass && keyFeedback[n] !== 'none',
+  );
+  return key ? keyFeedback[key] : 'none';
+}
 
 export default function PianoGameScreen() {
   const params = useLocalSearchParams<{
@@ -158,13 +180,12 @@ export default function PianoGameScreen() {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
       }
     } else if (soundEnabled && settings.playIncorrectSound) {
-        await playError();
-      }
-      // TODO - Testing - Increased haptic feedback for correct notes
-      // if (settings.enableHapticFeedback) {
-      //   Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      // }
-    
+      await playError();
+    }
+    // TODO - Testing - Increased haptic feedback for correct notes
+    // if (settings.enableHapticFeedback) {
+    //   Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    // }
   };
 
   if (state.status === 'idle' || state.notes.length === 0) {
@@ -219,7 +240,7 @@ export default function PianoGameScreen() {
             note={currentNote.displayName}
             noteName={currentNote.name}
             displayMode={settings.noteDisplayMode}
-            feedback={keyFeedback[NOTE_TO_BASE[currentNote.name]]}
+            feedback={getPitchClassFeedback(keyFeedback, currentNote.name)}
             incorrectNote={incorrectNote}
             showIncorrectFeedback={settings.showIncorrectFeedback}
             showStaffLabels={showStaffLabels}

@@ -15,6 +15,7 @@ import { FLAT_SYMBOL } from '@/constants/PianoConfig';
 import { NOTE_STAFF_POSITIONS, STAFF_CONFIG } from '@/constants/StaffConfig';
 import { useTheme } from '@/hooks/useTheme';
 import type { KeyFeedback, NoteName } from '@/types/piano';
+import { getPitchClass, getStaffNoteName } from '@/utils/notes';
 import { CorrectNoteAnimation } from './CorrectNoteAnimation';
 
 // Position to note letter mapping (covers staff lines and spaces)
@@ -34,12 +35,12 @@ const POSITION_TO_LETTER: Record<number, string> = {
 
 interface DisplayedNote {
   note: string;
-  noteName: NoteName | undefined;
+  noteName: NoteName;
 }
 
 interface StaffDisplayProps {
   note: string; // Display name like "C#" or "Db"
-  noteName?: NoteName; // Internal note name with octave (e.g., 'C2')
+  noteName: NoteName; // Internal note name with octave (e.g., 'C5')
   feedback?: KeyFeedback;
   incorrectNote?: NoteName | null;
   showLabels?: boolean;
@@ -111,7 +112,9 @@ export const StaffDisplay = memo(function StaffDisplay({
   // Check if user pressed the natural note when they should have pressed the sharp/flat
   // e.g., target is C# but user pressed C, or target is Db but user pressed D
   const pressedNaturalInsteadOfAccidental =
-    (isSharp || isFlat) && incorrectNote === baseLetter;
+    (isSharp || isFlat) &&
+    incorrectNote !== null &&
+    getPitchClass(incorrectNote) === baseLetter;
 
   // Use staff line color normally, green when correct
   const noteColor =
@@ -131,22 +134,7 @@ export const StaffDisplay = memo(function StaffDisplay({
 
   // Determine the position on the staff
   // Flats must use their letter position (e.g., A♭ at A's position, not G#'s position)
-  let positionNoteName: NoteName;
-  if (isFlat) {
-    // For flats, use the base letter position
-    // Preserve octave suffix if noteName has one (e.g., C#2 displayed as D♭ → D2)
-    const hasOctave2 = noteName?.includes('2');
-    positionNoteName = (hasOctave2 ? `${baseLetter}2` : baseLetter) as NoteName;
-  } else if (noteName) {
-    // Use the provided note name (handles second octave notes like 'C2')
-    positionNoteName = noteName;
-  } else if (isSharp) {
-    positionNoteName = note as NoteName;
-  } else {
-    positionNoteName = baseLetter as NoteName;
-  }
-
-  const position = NOTE_STAFF_POSITIONS[positionNoteName] ?? 0;
+  const position = NOTE_STAFF_POSITIONS[getStaffNoteName(note, noteName)] ?? 0;
   const {
     width,
     height,
@@ -159,7 +147,7 @@ export const StaffDisplay = memo(function StaffDisplay({
   // Calculate animation position when a correct note is triggered
   useEffect(() => {
     if (correctAnimationCounter > 0 && lastCorrectNote) {
-      // Use the full note name (including octave like 'C2') for position lookup
+      // Use the full note name (including octave like 'C5') for position lookup
       const lastPosition = NOTE_STAFF_POSITIONS[lastCorrectNote] ?? 0;
       const centerY = height / 2;
       const lastNoteY = centerY - lastPosition * (lineSpacing / 2);
@@ -292,24 +280,10 @@ export const StaffDisplay = memo(function StaffDisplay({
               const dep = departingNote;
               const depIsSharp = dep.note.includes('#');
               const depIsFlat = dep.note.includes(FLAT_SYMBOL);
-              const depBaseLetter = dep.note.charAt(0).toUpperCase();
-
-              let depPositionNoteName: NoteName;
-              if (depIsFlat) {
-                const hasOctave2 = dep.noteName?.includes('2');
-                depPositionNoteName = (
-                  hasOctave2 ? `${depBaseLetter}2` : depBaseLetter
-                ) as NoteName;
-              } else if (dep.noteName) {
-                depPositionNoteName = dep.noteName;
-              } else if (depIsSharp) {
-                depPositionNoteName = dep.note as NoteName;
-              } else {
-                depPositionNoteName = depBaseLetter as NoteName;
-              }
-
               const depPosition =
-                NOTE_STAFF_POSITIONS[depPositionNoteName] ?? 0;
+                NOTE_STAFF_POSITIONS[
+                  getStaffNoteName(dep.note, dep.noteName)
+                ] ?? 0;
               const depX = noteX - STAFF_ANIMATION_CONFIG.NOTE_SPACING;
               const depY = centerY - depPosition * (lineSpacing / 2);
               const depNeedsLedgerLine = depPosition <= -6;
@@ -406,23 +380,10 @@ export const StaffDisplay = memo(function StaffDisplay({
               noteX + (i + 1) * STAFF_ANIMATION_CONFIG.NOTE_SPACING;
             const upIsSharp = upcoming.displayName.includes('#');
             const upIsFlat = upcoming.displayName.includes(FLAT_SYMBOL);
-            const upBaseLetter = upcoming.displayName.charAt(0).toUpperCase();
-
-            let upPositionNoteName: NoteName;
-            if (upIsFlat) {
-              const hasOctave2 = upcoming.name?.includes('2');
-              upPositionNoteName = (
-                hasOctave2 ? `${upBaseLetter}2` : upBaseLetter
-              ) as NoteName;
-            } else if (upcoming.name) {
-              upPositionNoteName = upcoming.name;
-            } else if (upIsSharp) {
-              upPositionNoteName = upcoming.displayName as NoteName;
-            } else {
-              upPositionNoteName = upBaseLetter as NoteName;
-            }
-
-            const upPosition = NOTE_STAFF_POSITIONS[upPositionNoteName] ?? 0;
+            const upPosition =
+              NOTE_STAFF_POSITIONS[
+                getStaffNoteName(upcoming.displayName, upcoming.name)
+              ] ?? 0;
             const upNoteY = centerY - upPosition * (lineSpacing / 2);
             const upNeedsLedgerLine = upPosition <= -6;
 
