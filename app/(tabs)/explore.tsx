@@ -13,7 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SegmentedControl } from '@/components/settings/SegmentedControl';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { DIFFICULTY_LEVELS } from '@/constants/PianoConfig';
+import { CLEFS, DIFFICULTY_LEVELS } from '@/constants/PianoConfig';
 import { getScoreClef, useProgress } from '@/hooks/useProgress';
 import { useTheme } from '@/hooks/useTheme';
 import type {
@@ -23,7 +23,7 @@ import type {
   GameScore,
 } from '@/types/piano';
 import { formatTime } from '@/utils/formatting';
-import { getClefLabel, getDifficultyLabel } from '@/utils/game';
+import { getDifficultyLabel } from '@/utils/game';
 import {
   calculateNotesPerMinute,
   calculateScoreFromGame,
@@ -261,11 +261,6 @@ function ProgressLineChart({
   );
 }
 
-const clefOptions: { value: Clef; label: string }[] = [
-  { value: 'treble', label: getClefLabel('treble') },
-  { value: 'bass', label: getClefLabel('bass') },
-];
-
 export default function ProgressScreen() {
   const { colors, isDark } = useTheme();
   const { scores, loaded, resetProgress, getStatsByDifficultyLevel } =
@@ -314,7 +309,7 @@ export default function ProgressScreen() {
         <>
           <View style={styles.clefTabs}>
             <SegmentedControl
-              options={clefOptions}
+              options={CLEFS}
               selectedValue={selectedClef}
               onValueChange={setSelectedClef}
             />

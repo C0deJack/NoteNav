@@ -110,6 +110,12 @@ export const DIFFICULTY_NOTE_POOLS: Record<
   },
 };
 
+/** Clef options */
+export const CLEFS: { value: Clef; label: string }[] = [
+  { value: 'treble', label: 'Treble' },
+  { value: 'bass', label: 'Bass' },
+];
+
 /** Difficulty level options */
 export const DIFFICULTY_LEVELS: { value: DifficultyLevel; label: string }[] = [
   { value: 'easy', label: 'Easy' },

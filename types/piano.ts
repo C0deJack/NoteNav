@@ -97,7 +97,6 @@ export interface GameState {
 export type NoteDisplayMode = 'text' | 'staff';
 
 export interface GameSettings {
-  clef: Clef;
   showWhiteKeyLabels: boolean;
   showBlackKeyLabels: boolean;
   noteDisplayMode: NoteDisplayMode;

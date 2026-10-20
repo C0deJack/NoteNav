@@ -1,33 +1,28 @@
-import { router, useFocusEffect } from 'expo-router';
+import { router } from 'expo-router';
 import * as ScreenOrientation from 'expo-screen-orientation';
-import { useCallback } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { DifficultySelector } from '@/components/piano/DifficultySelector';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useGameSettings } from '@/hooks/useGameSettings';
 import { useTheme } from '@/hooks/useTheme';
-import type { DifficultyLevel, NoteCount } from '@/types/piano';
-import { getClefLabel } from '@/utils/game';
+import type { Clef, DifficultyLevel, NoteCount } from '@/types/piano';
 
 export default function PianoMenuScreen() {
   const {
-    settings,
-    reloadSettings,
+    lastClef,
     lastDifficultyLevel,
     lastNoteCount,
+    saveLastClef,
     saveLastDifficultyLevel,
     saveLastNoteCount,
     loaded,
   } = useGameSettings();
   const { colors } = useTheme();
 
-  // Pick up the clef chosen on the Settings tab, which keeps its own copy
-  useFocusEffect(
-    useCallback(() => {
-      reloadSettings();
-    }, [reloadSettings]),
-  );
+  const handleClefSelect = (clef: Clef) => {
+    saveLastClef(clef);
+  };
 
   const handleLevelSelect = (level: DifficultyLevel) => {
     saveLastDifficultyLevel(level);
@@ -44,7 +39,7 @@ export default function PianoMenuScreen() {
     router.push({
       pathname: '/piano/game',
       params: {
-        clef: settings.clef,
+        clef: lastClef,
         difficultyLevel: lastDifficultyLevel,
         noteCount: String(lastNoteCount),
       },
@@ -66,14 +61,13 @@ export default function PianoMenuScreen() {
         <ThemedText style={styles.subtitle}>
           Identify the notes as fast as you can
         </ThemedText>
-        <ThemedText style={[styles.clef, { color: colors.primary }]}>
-          {getClefLabel(settings.clef)} Clef
-        </ThemedText>
 
         <View style={styles.selectorContainer}>
           <DifficultySelector
+            selectedClef={lastClef}
             selectedLevel={lastDifficultyLevel}
             selectedNoteCount={lastNoteCount}
+            onSelectClef={handleClefSelect}
             onSelectLevel={handleLevelSelect}
             onSelectNoteCount={handleNoteCountSelect}
           />
@@ -113,11 +107,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
     opacity: 0.7,
-  },
-  clef: {
-    fontSize: 16,
-    fontWeight: '600',
-    textAlign: 'center',
   },
   selectorContainer: {
     marginVertical: 8,

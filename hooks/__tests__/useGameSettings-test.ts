@@ -25,7 +25,6 @@ describe('useGameSettings', () => {
       });
 
       expect(result.current.settings).toEqual({
-        clef: 'treble',
         showWhiteKeyLabels: false,
         showBlackKeyLabels: false,
         noteDisplayMode: 'staff',
@@ -266,6 +265,50 @@ describe('useGameSettings', () => {
         '@piano_game_note_count',
         '100',
       );
+    });
+  });
+
+  describe('saveLastClef', () => {
+    it('defaults to treble', async () => {
+      const { result } = await renderHook(() => useGameSettings());
+
+      await waitFor(() => {
+        expect(result.current.loaded).toBe(true);
+      });
+
+      expect(result.current.lastClef).toBe('treble');
+    });
+
+    it('updates clef state and saves it to AsyncStorage', async () => {
+      const { result } = await renderHook(() => useGameSettings());
+
+      await waitFor(() => {
+        expect(result.current.loaded).toBe(true);
+      });
+
+      await act(async () => {
+        await result.current.saveLastClef('bass');
+      });
+
+      expect(result.current.lastClef).toBe('bass');
+      expect(mockAsyncStorage.setItem).toHaveBeenCalledWith(
+        '@piano_game_clef',
+        '"bass"',
+      );
+    });
+
+    it('loads the saved clef on mount', async () => {
+      mockAsyncStorage.getItem.mockImplementation((key) =>
+        Promise.resolve(key === '@piano_game_clef' ? '"bass"' : null),
+      );
+
+      const { result } = await renderHook(() => useGameSettings());
+
+      await waitFor(() => {
+        expect(result.current.loaded).toBe(true);
+      });
+
+      expect(result.current.lastClef).toBe('bass');
     });
   });
 });
