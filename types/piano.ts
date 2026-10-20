@@ -3,7 +3,24 @@
  * notation (middle C = C4). Sharps only; flats are a display concern.
  */
 export const ALL_NOTES = [
-  'C4',
+  'G2', // Bottom line of bass staff
+  'G#2',
+  'A2',
+  'A#2',
+  'B2',
+  'C3',
+  'C#3',
+  'D3',
+  'D#3',
+  'E3',
+  'F3',
+  'F#3',
+  'G3',
+  'G#3',
+  'A3',
+  'A#3',
+  'B3',
+  'C4', // Middle C
   'C#4',
   'D4',
   'D#4',
@@ -40,6 +57,9 @@ export type PitchClass =
   | 'A#'
   | 'B';
 
+/** Which staff the game is played on */
+export type Clef = 'treble' | 'bass';
+
 /** Number of notes per game */
 export type NoteCount = 3 | 10 | 25 | 100;
 
@@ -60,6 +80,7 @@ export interface Note {
 
 export interface GameState {
   status: 'idle' | 'playing' | 'paused' | 'finished';
+  clef: Clef;
   difficultyLevel: DifficultyLevel;
   noteCount: NoteCount;
   currentNoteIndex: number;

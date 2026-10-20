@@ -1,4 +1,5 @@
 import { act, renderHook } from '@testing-library/react-native';
+import { DIFFICULTY_NOTE_POOLS } from '@/constants/PianoConfig';
 import type { NoteName } from '@/types/piano';
 import { getPitchClass } from '@/utils/notes';
 import { usePianoGame } from '../usePianoGame';
@@ -370,6 +371,51 @@ describe('octave equivalence', () => {
 
     await act(() => {
       isCorrect = result.current.handleKeyPress(otherOctave);
+    });
+
+    expect(isCorrect!).toBe(true);
+  });
+});
+
+describe('clef', () => {
+  it('defaults to treble', async () => {
+    const { result } = await renderHook(() => usePianoGame());
+
+    await act(() => {
+      result.current.startGame('expert', 100);
+    });
+
+    expect(result.current.state.clef).toBe('treble');
+  });
+
+  it('only generates bass notes in a bass game', async () => {
+    const { result } = await renderHook(() => usePianoGame());
+
+    await act(() => {
+      result.current.startGame('expert', 100, 'bass');
+    });
+
+    expect(result.current.state.clef).toBe('bass');
+    for (const note of result.current.state.notes) {
+      expect(DIFFICULTY_NOTE_POOLS.bass.expert).toContain(note.name);
+    }
+  });
+
+  it('accepts a key an octave below the bass note shown', async () => {
+    const { result } = await renderHook(() => usePianoGame());
+
+    await act(() => {
+      result.current.startGame('easy', 3, 'bass');
+    });
+
+    const target = result.current.state.notes[0].name;
+    const octaveBelow = target.replace(/\d$/, (o) =>
+      String(Number(o) - 1),
+    ) as NoteName;
+    let isCorrect: boolean;
+
+    await act(() => {
+      isCorrect = result.current.handleKeyPress(octaveBelow);
     });
 
     expect(isCorrect!).toBe(true);

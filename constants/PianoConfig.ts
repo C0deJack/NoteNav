@@ -1,5 +1,6 @@
 import {
   ALL_NOTES,
+  type Clef,
   type DifficultyLevel,
   type Note,
   type NoteCount,
@@ -31,7 +32,8 @@ const SOUND_FILES: Record<PitchClass, string> = {
 };
 
 // TODO: Add correct sound files for octave 5 notes (c2.wav, c2s.wav, etc.)
-// Octave 5 currently uses the same sounds as octave 4
+// Octave 5 currently uses the same sounds as octave 4. Notes below C4 are
+// pitch-shifted by usePianoAudio until they get their own samples.
 export const NOTES = Object.fromEntries(
   ALL_NOTES.map((name) => [
     name,
@@ -69,18 +71,36 @@ export const BLACK_KEYS: NoteName[] = ['C#4', 'D#4', 'F#4', 'G#4', 'A#4'];
 export const WHITE_KEYS_OCTAVE2: NoteName[] = ['C5', 'D5', 'E5', 'F5'];
 export const BLACK_KEYS_OCTAVE2: NoteName[] = ['C#5', 'D#5'];
 
+/** All notes between two notes, inclusive */
+function noteRange(from: NoteName, to: NoteName): NoteName[] {
+  return ALL_NOTES.slice(ALL_NOTES.indexOf(from), ALL_NOTES.indexOf(to) + 1);
+}
+
+const naturalsOnly = (notes: NoteName[]) =>
+  notes.filter((n) => !n.includes('#'));
+
 /**
- * Note pools for each difficulty level.
- * Easy: C4 to G4, no sharps/flats
- * Medium: C4 to F5, no sharps/flats
- * Hard: C4 to G4, with sharps/flats
- * Expert: C4 to F5, with sharps/flats
+ * Note pools for each clef and difficulty level.
+ * Treble - Easy: C4 to G4, Medium: C4 to F5 (top line)
+ * Bass - Easy: F3 to C4, Medium: G2 (bottom line) to C4
+ * Hard and Expert use the Easy and Medium ranges with sharps/flats added.
  */
-export const DIFFICULTY_NOTE_POOLS: Record<DifficultyLevel, NoteName[]> = {
-  easy: ['C4', 'D4', 'E4', 'F4', 'G4'],
-  medium: ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5', 'D5', 'E5', 'F5'],
-  hard: ['C4', 'C#4', 'D4', 'D#4', 'E4', 'F4', 'F#4', 'G4'],
-  expert: [...ALL_NOTES],
+export const DIFFICULTY_NOTE_POOLS: Record<
+  Clef,
+  Record<DifficultyLevel, NoteName[]>
+> = {
+  treble: {
+    easy: naturalsOnly(noteRange('C4', 'G4')),
+    medium: naturalsOnly(noteRange('C4', 'F5')),
+    hard: noteRange('C4', 'G4'),
+    expert: noteRange('C4', 'F5'),
+  },
+  bass: {
+    easy: naturalsOnly(noteRange('F3', 'C4')),
+    medium: naturalsOnly(noteRange('G2', 'C4')),
+    hard: noteRange('F3', 'C4'),
+    expert: noteRange('G2', 'C4'),
+  },
 };
 
 /** Difficulty level options */
@@ -101,5 +121,6 @@ export const NOTE_COUNTS: { value: NoteCount; label: string }[] = [
 
 export const ERROR_SOUND_FILE = 'kick.wav';
 
+export const DEFAULT_CLEF: Clef = 'treble';
 export const DEFAULT_DIFFICULTY_LEVEL: DifficultyLevel = 'easy';
 export const DEFAULT_NOTE_COUNT: NoteCount = 10;

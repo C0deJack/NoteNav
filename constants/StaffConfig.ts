@@ -1,4 +1,5 @@
-import type { NoteName } from '@/types/piano';
+import type { Clef, NoteName } from '@/types/piano';
+import { getOctave } from '@/utils/notes';
 
 // Staff dimensions
 export const STAFF_CONFIG = {
@@ -11,28 +12,71 @@ export const STAFF_CONFIG = {
   accidentalOffset: 38,
 } as const;
 
-// Note positions on the treble clef staff
-// Position 0 = middle line (B4), negative = below, positive = above
-// Each step is one staff position (line or space)
-export const NOTE_STAFF_POSITIONS: Record<NoteName, number> = {
-  C4: -6, // Middle C - ledger line below treble staff
-  'C#4': -6,
-  D4: -5,
-  'D#4': -5,
-  E4: -4, // Bottom line of treble staff
-  F4: -3,
-  'F#4': -3,
-  G4: -2,
-  'G#4': -2,
-  A4: -1,
-  'A#4': -1,
-  B4: 0, // Middle line of treble staff
-  C5: 1, // Space above middle line
-  'C#5': 1,
-  D5: 2, // Fourth line from bottom
-  'D#5': 2,
-  E5: 3, // Space below top line
-  F5: 4, // Top line of treble staff
+const LETTER_STEPS: Record<string, number> = {
+  C: 0,
+  D: 1,
+  E: 2,
+  F: 3,
+  G: 4,
+  A: 5,
+  B: 6,
+};
+
+/** Diatonic steps above C0, so each line or space is one step */
+function diatonicStep(note: NoteName): number {
+  return getOctave(note) * 7 + LETTER_STEPS[note.charAt(0)];
+}
+
+/** The note on the middle line of each staff */
+const MIDDLE_LINE_NOTE: Record<Clef, NoteName> = {
+  treble: 'B4',
+  bass: 'D3',
+};
+
+/**
+ * Position of a note on the staff.
+ * Position 0 = middle line, negative = below, positive = above.
+ * Each step is one staff position (line or space), so lines are even.
+ * Sharps share their natural's position (C#4 sits on C4).
+ * e.g. treble: C4 = -6 (ledger below), F5 = 4 (top line)
+ *      bass:   G2 = -4 (bottom line), C4 = 6 (ledger above)
+ */
+export function getStaffPosition(note: NoteName, clef: Clef): number {
+  return diatonicStep(note) - diatonicStep(MIDDLE_LINE_NOTE[clef]);
+}
+
+/**
+ * Letter labels for each staff position, shown when the info button is held.
+ * Covers the five lines, the spaces between, one space above and below, and
+ * middle C's ledger line.
+ */
+export const STAFF_LABELS: Record<Clef, Record<number, string>> = {
+  treble: {
+    '-6': 'C',
+    '-5': 'D',
+    '-4': 'E',
+    '-3': 'F',
+    '-2': 'G',
+    '-1': 'A',
+    '0': 'B',
+    '1': 'C',
+    '2': 'D',
+    '3': 'E',
+    '4': 'F',
+  },
+  bass: {
+    '-4': 'G',
+    '-3': 'A',
+    '-2': 'B',
+    '-1': 'C',
+    '0': 'D',
+    '1': 'E',
+    '2': 'F',
+    '3': 'G',
+    '4': 'A',
+    '5': 'B',
+    '6': 'C',
+  },
 };
 
 // Treble clef SVG path (simplified)

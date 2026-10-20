@@ -19,6 +19,7 @@ import { usePianoGame } from '@/hooks/usePianoGame';
 import { useTheme } from '@/hooks/useTheme';
 import {
   ALL_NOTES,
+  type Clef,
   type DifficultyLevel,
   type KeyFeedback,
   type NoteCount,
@@ -43,9 +44,11 @@ function getPitchClassFeedback(
 
 export default function PianoGameScreen() {
   const params = useLocalSearchParams<{
+    clef: string;
     difficultyLevel: string;
     noteCount: string;
   }>();
+  const clef: Clef = params.clef === 'bass' ? 'bass' : 'treble';
   const difficultyLevel = (params.difficultyLevel || 'easy') as DifficultyLevel;
   const noteCount = (parseInt(params.noteCount || '10', 10) || 10) as NoteCount;
   const insets = useSafeAreaInsets();
@@ -110,8 +113,8 @@ export default function PianoGameScreen() {
   // Start game when params change (including initial mount).
   // biome-ignore lint/correctness/useExhaustiveDependencies: startGame is intentionally excluded - it depends on internal state which would cause unwanted re-runs. We only want to restart when the URL params change.
   useEffect(() => {
-    startGame(difficultyLevel, noteCount);
-  }, [difficultyLevel, noteCount]);
+    startGame(difficultyLevel, noteCount, clef);
+  }, [difficultyLevel, noteCount, clef]);
 
   // Navigate to results when finished
   useEffect(() => {
@@ -239,6 +242,7 @@ export default function PianoGameScreen() {
           <NoteDisplay
             note={currentNote.displayName}
             noteName={currentNote.name}
+            clef={clef}
             displayMode={settings.noteDisplayMode}
             feedback={getPitchClassFeedback(keyFeedback, currentNote.name)}
             incorrectNote={incorrectNote}

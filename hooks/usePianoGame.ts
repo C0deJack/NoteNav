@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  DEFAULT_CLEF,
   DEFAULT_DIFFICULTY_LEVEL,
   DEFAULT_NOTE_COUNT,
   DIFFICULTY_NOTE_POOLS,
@@ -8,6 +9,7 @@ import {
 } from '@/constants/PianoConfig';
 import {
   ALL_NOTES,
+  type Clef,
   type DifficultyLevel,
   type GameState,
   type KeyFeedback,
@@ -20,8 +22,9 @@ import { getPitchClass } from '@/utils/notes';
 function generateRandomNotes(
   count: NoteCount,
   difficultyLevel: DifficultyLevel,
+  clef: Clef,
 ): Note[] {
-  const notePool = DIFFICULTY_NOTE_POOLS[difficultyLevel];
+  const notePool = DIFFICULTY_NOTE_POOLS[clef][difficultyLevel];
   const notes: Note[] = [];
   let previousNote: NoteName | null = null;
 
@@ -58,6 +61,7 @@ function generateRandomNotes(
 
 const initialState: GameState = {
   status: 'idle',
+  clef: DEFAULT_CLEF,
   difficultyLevel: DEFAULT_DIFFICULTY_LEVEL,
   noteCount: DEFAULT_NOTE_COUNT,
   currentNoteIndex: 0,
@@ -103,13 +107,15 @@ export function usePianoGame() {
   }, [state.status, state.startTime]);
 
   const startGame = useCallback(
-    (difficultyLevel?: DifficultyLevel, noteCount?: NoteCount) => {
+    (difficultyLevel?: DifficultyLevel, noteCount?: NoteCount, clef?: Clef) => {
       const level = difficultyLevel ?? state.difficultyLevel;
       const count = noteCount ?? state.noteCount;
-      const notes = generateRandomNotes(count, level);
+      const gameClef = clef ?? state.clef;
+      const notes = generateRandomNotes(count, level, gameClef);
 
       setState({
         status: 'playing',
+        clef: gameClef,
         difficultyLevel: level,
         noteCount: count,
         currentNoteIndex: 0,
@@ -121,7 +127,7 @@ export function usePianoGame() {
         incorrectCount: 0,
       });
     },
-    [state.difficultyLevel, state.noteCount],
+    [state.difficultyLevel, state.noteCount, state.clef],
   );
 
   /**
