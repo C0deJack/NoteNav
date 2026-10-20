@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
   Easing,
@@ -9,6 +9,7 @@ import Animated, {
 import Svg, { Ellipse, G, Line, Path, Text as SvgText } from 'react-native-svg';
 
 const AnimatedG = Animated.createAnimatedComponent(G);
+
 import { STAFF_ANIMATION_CONFIG } from '@/constants/KeyboardConfig';
 import { FLAT_SYMBOL } from '@/constants/PianoConfig';
 import { NOTE_STAFF_POSITIONS, STAFF_CONFIG } from '@/constants/StaffConfig';
@@ -31,6 +32,10 @@ const POSITION_TO_LETTER: Record<number, string> = {
   '4': 'F',
 };
 
+interface DisplayedNote {
+  note: string;
+  noteName: NoteName | undefined;
+}
 
 interface StaffDisplayProps {
   note: string; // Display name like "C#" or "Db"
@@ -60,16 +65,42 @@ export const StaffDisplay = memo(function StaffDisplay({
   const { colors } = useTheme();
   const [animationPosition, setAnimationPosition] = useState({ x: 0, y: 0 });
 
-  const departingNoteRef = useRef<{ note: string; noteName: NoteName | undefined } | null>(null);
-
-  useEffect(() => {
-    departingNoteRef.current = { note, noteName };
-  }, [note, noteName]);
+  // Track the note that was just answered correctly so it can slide out.
+  // Only updated when correctAnimationCounter changes, so unrelated re-renders
+  // don't turn the current note into the departing one.
+  const [noteHistory, setNoteHistory] = useState<{
+    counter: number;
+    current: DisplayedNote;
+    departing: DisplayedNote | null;
+  }>({
+    counter: correctAnimationCounter,
+    current: { note, noteName },
+    departing: null,
+  });
+  if (noteHistory.counter !== correctAnimationCounter) {
+    setNoteHistory({
+      counter: correctAnimationCounter,
+      current: { note, noteName },
+      departing: noteHistory.current,
+    });
+  } else if (
+    noteHistory.current.note !== note ||
+    noteHistory.current.noteName !== noteName
+  ) {
+    setNoteHistory({ ...noteHistory, current: { note, noteName } });
+  }
+  const departingNote = noteHistory.departing;
 
   const scrollOffset = useSharedValue(0);
 
   const animatedGroupProps = useAnimatedProps(() => ({
     transform: [{ translateX: scrollOffset.value }],
+  }));
+
+  // Departing note fades out as it slides left, so it's hidden at rest
+  // instead of sitting over the treble clef
+  const departingNoteProps = useAnimatedProps(() => ({
+    opacity: scrollOffset.value / STAFF_ANIMATION_CONFIG.NOTE_SPACING,
   }));
 
   // Parse the note to get base note and accidental
@@ -256,68 +287,75 @@ export const StaffDisplay = memo(function StaffDisplay({
         {/* Note group — translates together on each correct press */}
         <AnimatedG animatedProps={animatedGroupProps}>
           {/* Departing note — slides out left during animation */}
-          {departingNoteRef.current && (() => {
-            const dep = departingNoteRef.current!;
-            const depIsSharp = dep.note.includes('#');
-            const depIsFlat = dep.note.includes(FLAT_SYMBOL);
-            const depBaseLetter = dep.note.charAt(0).toUpperCase();
+          {departingNote &&
+            (() => {
+              const dep = departingNote;
+              const depIsSharp = dep.note.includes('#');
+              const depIsFlat = dep.note.includes(FLAT_SYMBOL);
+              const depBaseLetter = dep.note.charAt(0).toUpperCase();
 
-            let depPositionNoteName: NoteName;
-            if (depIsFlat) {
-              const hasOctave2 = dep.noteName?.includes('2');
-              depPositionNoteName = (hasOctave2 ? `${depBaseLetter}2` : depBaseLetter) as NoteName;
-            } else if (dep.noteName) {
-              depPositionNoteName = dep.noteName;
-            } else if (depIsSharp) {
-              depPositionNoteName = dep.note as NoteName;
-            } else {
-              depPositionNoteName = depBaseLetter as NoteName;
-            }
+              let depPositionNoteName: NoteName;
+              if (depIsFlat) {
+                const hasOctave2 = dep.noteName?.includes('2');
+                depPositionNoteName = (
+                  hasOctave2 ? `${depBaseLetter}2` : depBaseLetter
+                ) as NoteName;
+              } else if (dep.noteName) {
+                depPositionNoteName = dep.noteName;
+              } else if (depIsSharp) {
+                depPositionNoteName = dep.note as NoteName;
+              } else {
+                depPositionNoteName = depBaseLetter as NoteName;
+              }
 
-            const depPosition = NOTE_STAFF_POSITIONS[depPositionNoteName] ?? 0;
-            const depX = noteX - STAFF_ANIMATION_CONFIG.NOTE_SPACING;
-            const depY = centerY - depPosition * (lineSpacing / 2);
-            const depNeedsLedgerLine = depPosition <= -6;
+              const depPosition =
+                NOTE_STAFF_POSITIONS[depPositionNoteName] ?? 0;
+              const depX = noteX - STAFF_ANIMATION_CONFIG.NOTE_SPACING;
+              const depY = centerY - depPosition * (lineSpacing / 2);
+              const depNeedsLedgerLine = depPosition <= -6;
 
-            return (
-              <G key="departing">
-                {depNeedsLedgerLine && (
+              return (
+                <AnimatedG key="departing" animatedProps={departingNoteProps}>
+                  {depNeedsLedgerLine && (
+                    <Line
+                      x1={depX - noteRadius - 6}
+                      y1={depY}
+                      x2={depX + noteRadius + 6}
+                      y2={depY}
+                      stroke={colors.correctFeedback}
+                      strokeWidth={1.5}
+                    />
+                  )}
+                  {(depIsSharp || depIsFlat) && (
+                    <G
+                      transform={`translate(${depX - accidentalOffset}, ${depY})`}
+                    >
+                      {depIsSharp ? (
+                        <SharpSymbol color={colors.correctFeedback} />
+                      ) : (
+                        <FlatSymbol color={colors.correctFeedback} />
+                      )}
+                    </G>
+                  )}
                   <Line
-                    x1={depX - noteRadius - 6}
+                    x1={depX + noteRadius - 1}
                     y1={depY}
-                    x2={depX + noteRadius + 6}
-                    y2={depY}
+                    x2={depX + noteRadius - 1}
+                    y2={depY - lineSpacing * 3}
                     stroke={colors.correctFeedback}
                     strokeWidth={1.5}
                   />
-                )}
-                {(depIsSharp || depIsFlat) && (
-                  <G transform={`translate(${depX - accidentalOffset}, ${depY})`}>
-                    {depIsSharp
-                      ? <SharpSymbol color={colors.correctFeedback} />
-                      : <FlatSymbol color={colors.correctFeedback} />
-                    }
-                  </G>
-                )}
-                <Line
-                  x1={depX + noteRadius - 1}
-                  y1={depY}
-                  x2={depX + noteRadius - 1}
-                  y2={depY - lineSpacing * 3}
-                  stroke={colors.correctFeedback}
-                  strokeWidth={1.5}
-                />
-                <Ellipse
-                  cx={depX}
-                  cy={depY}
-                  rx={noteRadius}
-                  ry={noteRadius * 0.75}
-                  fill={colors.correctFeedback}
-                  transform={`rotate(-20, ${depX}, ${depY})`}
-                />
-              </G>
-            );
-          })()}
+                  <Ellipse
+                    cx={depX}
+                    cy={depY}
+                    rx={noteRadius}
+                    ry={noteRadius * 0.75}
+                    fill={colors.correctFeedback}
+                    transform={`rotate(-20, ${depX}, ${depY})`}
+                  />
+                </AnimatedG>
+              );
+            })()}
 
           {/* Current note ledger line */}
           {needsLedgerLine && (
@@ -364,7 +402,8 @@ export const StaffDisplay = memo(function StaffDisplay({
 
           {/* Upcoming notes (next 4, faded) */}
           {upcomingNotes?.map((upcoming, i) => {
-            const upcomingX = noteX + (i + 1) * STAFF_ANIMATION_CONFIG.NOTE_SPACING;
+            const upcomingX =
+              noteX + (i + 1) * STAFF_ANIMATION_CONFIG.NOTE_SPACING;
             const upIsSharp = upcoming.displayName.includes('#');
             const upIsFlat = upcoming.displayName.includes(FLAT_SYMBOL);
             const upBaseLetter = upcoming.displayName.charAt(0).toUpperCase();
