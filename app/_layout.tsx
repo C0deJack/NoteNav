@@ -1,6 +1,6 @@
-import { ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
+import { ThemeProvider as NavigationThemeProvider } from 'expo-router/react-navigation';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';

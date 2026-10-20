@@ -2,7 +2,7 @@
  * React Navigation themes that use the app's color palette.
  * This ensures navigation elements (headers, tab bars, etc.) match the app's design.
  */
-import type { Theme as NavigationTheme } from '@react-navigation/native';
+import type { Theme as NavigationTheme } from 'expo-router/react-navigation';
 
 import { Colors } from './Colors';
 
