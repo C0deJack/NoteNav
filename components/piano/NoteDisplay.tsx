@@ -2,13 +2,19 @@ import { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { useTheme } from '@/hooks/useTheme';
-import type { KeyFeedback, NoteDisplayMode, NoteName } from '@/types/piano';
+import type {
+  Clef,
+  KeyFeedback,
+  NoteDisplayMode,
+  NoteName,
+} from '@/types/piano';
 import { formatNoteAccidentals } from '@/utils/game';
 import { StaffDisplay } from './StaffDisplay';
 
 interface NoteDisplayProps {
   note: string;
-  noteName?: NoteName; // Internal note name with octave (e.g., 'C2')
+  noteName: NoteName; // Internal note name with octave (e.g., 'C5')
+  clef?: Clef;
   displayMode?: NoteDisplayMode;
   feedback?: KeyFeedback;
   incorrectNote?: NoteName | null;
@@ -26,6 +32,7 @@ interface NoteDisplayProps {
 export const NoteDisplay = memo(function NoteDisplay({
   note,
   noteName,
+  clef = 'treble',
   displayMode = 'text',
   feedback = 'none',
   incorrectNote = null,
@@ -42,6 +49,7 @@ export const NoteDisplay = memo(function NoteDisplay({
       <StaffDisplay
         note={note}
         noteName={noteName}
+        clef={clef}
         feedback={feedback}
         incorrectNote={showIncorrectFeedback ? incorrectNote : null}
         showLabels={showStaffLabels}

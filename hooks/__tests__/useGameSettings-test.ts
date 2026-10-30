@@ -29,7 +29,9 @@ describe('useGameSettings', () => {
         showBlackKeyLabels: false,
         noteDisplayMode: 'staff',
         showIncorrectFeedback: true,
-        enableHapticFeedback: true,
+        playIncorrectSound: true,
+        hapticOnCorrect: true,
+        hapticOnIncorrect: true,
         playSoundInSilentMode: true,
         showTimer: true,
         showCorrectAnimation: true,
@@ -140,6 +142,63 @@ describe('useGameSettings', () => {
       // Default values for new settings
       expect(result.current.settings.showSecondOctave).toBe(false);
       expect(result.current.settings.showCorrectAnimation).toBe(true);
+    });
+  });
+
+  describe('haptic settings migration', () => {
+    function storeSettings(settings: Record<string, unknown>) {
+      mockAsyncStorage.getItem.mockImplementation((key) => {
+        if (key === '@piano_game_settings') {
+          return Promise.resolve(JSON.stringify(settings));
+        }
+        return Promise.resolve(null);
+      });
+    }
+
+    async function renderLoaded() {
+      const { result } = await renderHook(() => useGameSettings());
+      await waitFor(() => {
+        expect(result.current.loaded).toBe(true);
+      });
+      return result;
+    }
+
+    it('turns both haptic settings off when the old setting was off', async () => {
+      storeSettings({ enableHapticFeedback: false });
+      const result = await renderLoaded();
+
+      expect(result.current.settings.hapticOnCorrect).toBe(false);
+      expect(result.current.settings.hapticOnIncorrect).toBe(false);
+    });
+
+    it('turns both haptic settings on when the old setting was on', async () => {
+      storeSettings({ enableHapticFeedback: true });
+      const result = await renderLoaded();
+
+      expect(result.current.settings.hapticOnCorrect).toBe(true);
+      expect(result.current.settings.hapticOnIncorrect).toBe(true);
+    });
+
+    it('keeps settings saved in the new format', async () => {
+      storeSettings({ hapticOnCorrect: true, hapticOnIncorrect: false });
+      const result = await renderLoaded();
+
+      expect(result.current.settings.hapticOnCorrect).toBe(true);
+      expect(result.current.settings.hapticOnIncorrect).toBe(false);
+    });
+
+    it('does not save the old setting again', async () => {
+      storeSettings({ enableHapticFeedback: false });
+      const result = await renderLoaded();
+
+      await act(async () => {
+        await result.current.updateSettings({ showTimer: false });
+      });
+
+      const saved = JSON.parse(mockAsyncStorage.setItem.mock.calls[0][1]);
+      expect(saved).not.toHaveProperty('enableHapticFeedback');
+      expect(saved.hapticOnCorrect).toBe(false);
+      expect(saved.hapticOnIncorrect).toBe(false);
     });
   });
 
@@ -264,6 +323,50 @@ describe('useGameSettings', () => {
         '@piano_game_note_count',
         '100',
       );
+    });
+  });
+
+  describe('saveLastClef', () => {
+    it('defaults to treble', async () => {
+      const { result } = await renderHook(() => useGameSettings());
+
+      await waitFor(() => {
+        expect(result.current.loaded).toBe(true);
+      });
+
+      expect(result.current.lastClef).toBe('treble');
+    });
+
+    it('updates clef state and saves it to AsyncStorage', async () => {
+      const { result } = await renderHook(() => useGameSettings());
+
+      await waitFor(() => {
+        expect(result.current.loaded).toBe(true);
+      });
+
+      await act(async () => {
+        await result.current.saveLastClef('bass');
+      });
+
+      expect(result.current.lastClef).toBe('bass');
+      expect(mockAsyncStorage.setItem).toHaveBeenCalledWith(
+        '@piano_game_clef',
+        '"bass"',
+      );
+    });
+
+    it('loads the saved clef on mount', async () => {
+      mockAsyncStorage.getItem.mockImplementation((key) =>
+        Promise.resolve(key === '@piano_game_clef' ? '"bass"' : null),
+      );
+
+      const { result } = await renderHook(() => useGameSettings());
+
+      await waitFor(() => {
+        expect(result.current.loaded).toBe(true);
+      });
+
+      expect(result.current.lastClef).toBe('bass');
     });
   });
 });

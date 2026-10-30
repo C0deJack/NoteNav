@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
-import { useProgress } from '../useProgress';
+import { getScoreClef, useProgress } from '../useProgress';
 
 jest.mock('@react-native-async-storage/async-storage', () => ({
   getItem: jest.fn(),
@@ -492,5 +492,57 @@ describe('useProgress', () => {
       expect(statsByLevel.easy.bestSpeed).toBe(30);
       expect(statsByLevel.hard.bestSpeed).toBe(40);
     });
+  });
+});
+
+describe('useProgress clef stats', () => {
+  const baseScore = {
+    noteCount: 10 as const,
+    accuracy: 80,
+    elapsedMs: 30000,
+    timestamp: Date.now(),
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('counts scores without a clef as treble', async () => {
+    mockAsyncStorage.getItem.mockResolvedValue(
+      JSON.stringify([
+        { ...baseScore, id: '1', difficultyLevel: 'easy' },
+        { ...baseScore, id: '2', difficultyLevel: 'easy', clef: 'treble' },
+        { ...baseScore, id: '3', difficultyLevel: 'easy', clef: 'bass' },
+      ]),
+    );
+
+    const { result } = await renderHook(() => useProgress());
+
+    await waitFor(() => {
+      expect(result.current.loaded).toBe(true);
+    });
+
+    expect(
+      result.current.getStatsByDifficultyLevel('treble').easy.totalGames,
+    ).toBe(2);
+    expect(
+      result.current.getStatsByDifficultyLevel('bass').easy.totalGames,
+    ).toBe(1);
+    // Without a clef, all games count
+    expect(result.current.getStatsByDifficultyLevel().easy.totalGames).toBe(3);
+  });
+
+  it('getScoreClef defaults to treble', () => {
+    expect(
+      getScoreClef({ ...baseScore, id: '1', difficultyLevel: 'easy' }),
+    ).toBe('treble');
+    expect(
+      getScoreClef({
+        ...baseScore,
+        id: '1',
+        difficultyLevel: 'easy',
+        clef: 'bass',
+      }),
+    ).toBe('bass');
   });
 });

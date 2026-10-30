@@ -1,14 +1,21 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useState } from 'react';
 import {
+  DEFAULT_CLEF,
   DEFAULT_DIFFICULTY_LEVEL,
   DEFAULT_NOTE_COUNT,
 } from '@/constants/PianoConfig';
-import type { DifficultyLevel, GameSettings, NoteCount } from '@/types/piano';
+import type {
+  Clef,
+  DifficultyLevel,
+  GameSettings,
+  NoteCount,
+} from '@/types/piano';
 
 const SETTINGS_KEY = '@piano_game_settings';
 const DIFFICULTY_LEVEL_KEY = '@piano_game_difficulty_level';
 const NOTE_COUNT_KEY = '@piano_game_note_count';
+const CLEF_KEY = '@piano_game_clef';
 
 const defaultSettings: GameSettings = {
   showWhiteKeyLabels: false,
@@ -16,12 +23,31 @@ const defaultSettings: GameSettings = {
   noteDisplayMode: 'staff',
   showIncorrectFeedback: true,
   playIncorrectSound: true,
-  enableHapticFeedback: true,
+  hapticOnCorrect: true,
+  hapticOnIncorrect: true,
   playSoundInSilentMode: true,
   showTimer: true,
   showCorrectAnimation: true,
   showSecondOctave: false,
 };
+
+/**
+ * Settings saved before haptics were split into correct/incorrect had a
+ * single enableHapticFeedback; carry that choice over to both.
+ */
+function migrateSettings(
+  stored: Record<string, unknown>,
+): Partial<GameSettings> {
+  const { enableHapticFeedback, ...rest } = stored;
+  if (typeof enableHapticFeedback === 'boolean') {
+    return {
+      hapticOnCorrect: enableHapticFeedback,
+      hapticOnIncorrect: enableHapticFeedback,
+      ...rest,
+    };
+  }
+  return rest;
+}
 
 export function useGameSettings() {
   const [settings, setSettings] = useState<GameSettings>(defaultSettings);
@@ -29,26 +55,35 @@ export function useGameSettings() {
     useState<DifficultyLevel>(DEFAULT_DIFFICULTY_LEVEL);
   const [lastNoteCount, setLastNoteCount] =
     useState<NoteCount>(DEFAULT_NOTE_COUNT);
+  const [lastClef, setLastClef] = useState<Clef>(DEFAULT_CLEF);
   const [loaded, setLoaded] = useState(false);
 
   // Load settings on mount
   useEffect(() => {
     async function loadSettings() {
       try {
-        const [storedSettings, storedLevel, storedCount] = await Promise.all([
-          AsyncStorage.getItem(SETTINGS_KEY),
-          AsyncStorage.getItem(DIFFICULTY_LEVEL_KEY),
-          AsyncStorage.getItem(NOTE_COUNT_KEY),
-        ]);
+        const [storedSettings, storedLevel, storedCount, storedClef] =
+          await Promise.all([
+            AsyncStorage.getItem(SETTINGS_KEY),
+            AsyncStorage.getItem(DIFFICULTY_LEVEL_KEY),
+            AsyncStorage.getItem(NOTE_COUNT_KEY),
+            AsyncStorage.getItem(CLEF_KEY),
+          ]);
 
         if (storedSettings) {
-          setSettings({ ...defaultSettings, ...JSON.parse(storedSettings) });
+          setSettings({
+            ...defaultSettings,
+            ...migrateSettings(JSON.parse(storedSettings)),
+          });
         }
         if (storedLevel) {
           setLastDifficultyLevel(JSON.parse(storedLevel));
         }
         if (storedCount) {
           setLastNoteCount(JSON.parse(storedCount));
+        }
+        if (storedClef) {
+          setLastClef(JSON.parse(storedClef));
         }
       } catch (error) {
         console.error('Error loading settings:', error);
@@ -97,13 +132,25 @@ export function useGameSettings() {
     }
   }, []);
 
+  const saveLastClef = useCallback(async (clef: Clef) => {
+    setLastClef(clef);
+
+    try {
+      await AsyncStorage.setItem(CLEF_KEY, JSON.stringify(clef));
+    } catch (error) {
+      console.error('Error saving clef:', error);
+    }
+  }, []);
+
   return {
     settings,
+    lastClef,
     lastDifficultyLevel,
     lastNoteCount,
     loaded,
     updateSettings,
     saveLastDifficultyLevel,
     saveLastNoteCount,
+    saveLastClef,
   };
 }

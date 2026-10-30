@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useState } from 'react';
 import { DIFFICULTY_LEVELS } from '@/constants/PianoConfig';
 import type {
+  Clef,
   DifficultyLevel,
   DifficultyStats,
   GameScore,
@@ -12,6 +13,11 @@ import {
 } from '@/utils/scoring';
 
 const PROGRESS_KEY = '@game_progress';
+
+/** Scores saved before bass clef was added have no clef and were treble */
+export function getScoreClef(score: GameScore): Clef {
+  return score.clef ?? 'treble';
+}
 
 export function useProgress() {
   const [scores, setScores] = useState<GameScore[]>([]);
@@ -115,16 +121,25 @@ export function useProgress() {
     return calculateStatsForScores(scores);
   }, [scores, calculateStatsForScores]);
 
-  const getStatsByDifficultyLevel = useCallback(() => {
-    const statsByLevel = {} as Record<DifficultyLevel, DifficultyStats>;
+  /** Stats per difficulty level; pass a clef to only count that clef's games */
+  const getStatsByDifficultyLevel = useCallback(
+    (clef?: Clef) => {
+      const statsByLevel = {} as Record<DifficultyLevel, DifficultyStats>;
+      const clefScores = clef
+        ? scores.filter((s) => getScoreClef(s) === clef)
+        : scores;
 
-    for (const { value: level } of DIFFICULTY_LEVELS) {
-      const levelScores = scores.filter((s) => s.difficultyLevel === level);
-      statsByLevel[level] = calculateStatsForScores(levelScores);
-    }
+      for (const { value: level } of DIFFICULTY_LEVELS) {
+        const levelScores = clefScores.filter(
+          (s) => s.difficultyLevel === level,
+        );
+        statsByLevel[level] = calculateStatsForScores(levelScores);
+      }
 
-    return statsByLevel;
-  }, [scores, calculateStatsForScores]);
+      return statsByLevel;
+    },
+    [scores, calculateStatsForScores],
+  );
 
   return {
     scores,

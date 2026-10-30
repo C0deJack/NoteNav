@@ -4,11 +4,15 @@ import { usePianoAudio } from '../usePianoAudio';
 const mockPlay = jest.fn();
 const mockSeekTo = jest.fn().mockResolvedValue(undefined);
 const mockRemove = jest.fn();
+const mockPause = jest.fn();
+
+const mockSetPlaybackRate = jest.fn();
 
 const mockPlayer = {
   play: mockPlay,
   seekTo: mockSeekTo,
   remove: mockRemove,
+  setPlaybackRate: mockSetPlaybackRate,
   volume: 1.0,
 };
 
@@ -44,7 +48,10 @@ describe('usePianoAudio', () => {
       play: mockPlay,
       seekTo: mockSeekTo,
       remove: mockRemove,
+      pause: mockPause,
+      setPlaybackRate: mockSetPlaybackRate,
       volume: 1.0,
+      duration: 0.5,
     }));
   });
 
@@ -61,7 +68,7 @@ describe('usePianoAudio', () => {
       await renderHook(() => usePianoAudio());
 
       await waitFor(() => {
-        // 12 notes + 6 second octave notes + 1 error sound = multiple calls
+        // One player per note + 1 error sound
         expect(mockCreateAudioPlayer).toHaveBeenCalled();
       });
     });
@@ -96,7 +103,7 @@ describe('usePianoAudio', () => {
       });
 
       await act(async () => {
-        await result.current.playNote('C');
+        await result.current.playNote('C4');
       });
 
       expect(mockSeekTo).toHaveBeenCalledWith(0);
@@ -109,6 +116,7 @@ describe('usePianoAudio', () => {
         play: mockPlay,
         seekTo: mockSeekTo,
         remove: mockRemove,
+        setPlaybackRate: mockSetPlaybackRate,
         volume: 1.0,
       }));
 
@@ -125,7 +133,7 @@ describe('usePianoAudio', () => {
       // playNote should handle gracefully if player doesn't exist
       // (In practice all players exist, but this tests the guard clause)
       await act(async () => {
-        await result.current.playNote('C');
+        await result.current.playNote('C4');
       });
 
       // Should have attempted to play

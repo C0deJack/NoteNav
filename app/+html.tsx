@@ -1,4 +1,7 @@
-import { ScrollViewStyleReset } from 'expo-router/html';
+import {
+  ScrollViewStyleReset,
+  useServerDocumentContext,
+} from 'expo-router/html';
 import type { PropsWithChildren } from 'react';
 
 /**
@@ -6,8 +9,13 @@ import type { PropsWithChildren } from 'react';
  * The contents of this function only run in Node.js environments and do not have access to the DOM or browser APIs.
  */
 export default function Root({ children }: PropsWithChildren) {
+  // Since SDK 58, the JS bundle and generated head tags come from this context
+  // and must be rendered here, otherwise pages load without any scripts.
+  const { htmlAttributes, bodyAttributes, headNodes, bodyNodes } =
+    useServerDocumentContext();
+
   return (
-    <html lang="en">
+    <html lang="en" {...htmlAttributes}>
       <head>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
@@ -26,8 +34,12 @@ export default function Root({ children }: PropsWithChildren) {
         {/* biome-ignore lint/security/noDangerouslySetInnerHtml: Static CSS injection, not user input */}
         <style dangerouslySetInnerHTML={{ __html: responsiveBackground }} />
         {/* Add any additional <head> elements that you want globally available on web... */}
+        {headNodes}
       </head>
-      <body>{children}</body>
+      <body {...bodyAttributes}>
+        {children}
+        {bodyNodes}
+      </body>
     </html>
   );
 }

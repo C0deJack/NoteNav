@@ -2,7 +2,7 @@
  * Piano keyboard layout configuration
  */
 export const KEYBOARD_CONFIG = {
-  /** Maximum keyboard width with second octave enabled */
+  /** Maximum keyboard width with extended keys enabled */
   maxWidthWithSecondOctave: 800,
   /** Maximum keyboard width without second octave */
   maxWidthSingleOctave: 600,

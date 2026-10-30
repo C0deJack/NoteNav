@@ -8,17 +8,19 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useProgress } from '@/hooks/useProgress';
 import { useTheme } from '@/hooks/useTheme';
-import type { DifficultyLevel, NoteCount } from '@/types/piano';
+import type { Clef, DifficultyLevel, NoteCount } from '@/types/piano';
 import { formatTime } from '@/utils/formatting';
-import { getDifficultyLabel } from '@/utils/game';
+import { getClefLabel, getDifficultyLabel } from '@/utils/game';
 
 export default function PianoResultsScreen() {
   const params = useLocalSearchParams<{
+    clef: string;
     difficultyLevel: string;
     noteCount: string;
     elapsedMs: string;
     accuracy: string;
   }>();
+  const clef: Clef = params.clef === 'bass' ? 'bass' : 'treble';
   const difficultyLevel = (params.difficultyLevel || 'easy') as DifficultyLevel;
   const noteCount = parseInt(params.noteCount || '10', 10) as NoteCount;
   const elapsedMs = parseInt(params.elapsedMs || '0', 10);
@@ -31,9 +33,9 @@ export default function PianoResultsScreen() {
   useEffect(() => {
     if (!scoreSaved.current) {
       scoreSaved.current = true;
-      addScore({ difficultyLevel, noteCount, elapsedMs, accuracy });
+      addScore({ clef, difficultyLevel, noteCount, elapsedMs, accuracy });
     }
-  }, [addScore, difficultyLevel, noteCount, elapsedMs, accuracy]);
+  }, [addScore, clef, difficultyLevel, noteCount, elapsedMs, accuracy]);
 
   const formattedTime = formatTime(elapsedMs);
   const difficultyLabel = getDifficultyLabel(difficultyLevel);
@@ -42,6 +44,7 @@ export default function PianoResultsScreen() {
     router.replace({
       pathname: '/piano/game',
       params: {
+        clef,
         difficultyLevel,
         noteCount: String(noteCount),
       },
@@ -80,7 +83,7 @@ export default function PianoResultsScreen() {
             <ThemedText style={styles.statLabel}>Difficulty</ThemedText>
             <ThemedText
               style={[styles.statValue, styles.difficulty]}
-            >{`${difficultyLabel} (${noteCount} notes)`}</ThemedText>
+            >{`${getClefLabel(clef)} · ${difficultyLabel} (${noteCount} notes)`}</ThemedText>
           </View>
         </View>
 

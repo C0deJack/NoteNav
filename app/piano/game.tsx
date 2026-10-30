@@ -1,5 +1,4 @@
 import { Ionicons } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -13,17 +12,43 @@ import { QuitGameModal } from '@/components/piano/QuitGameModal';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useGameSettings } from '@/hooks/useGameSettings';
+import { useHaptics } from '@/hooks/useHaptics';
 import { useInactivityTimeout } from '@/hooks/useInactivityTimeout';
 import { usePianoAudio } from '@/hooks/usePianoAudio';
-import { NOTE_TO_BASE, usePianoGame } from '@/hooks/usePianoGame';
+import { usePianoGame } from '@/hooks/usePianoGame';
 import { useTheme } from '@/hooks/useTheme';
-import type { DifficultyLevel, NoteCount, NoteName } from '@/types/piano';
+import {
+  ALL_NOTES,
+  type Clef,
+  type DifficultyLevel,
+  type KeyFeedback,
+  type NoteCount,
+  type NoteName,
+} from '@/types/piano';
+import { getPitchClass } from '@/utils/notes';
+
+/**
+ * Feedback for a note from any key with the same pitch class, since pressing
+ * the same note in another octave counts as correct.
+ */
+function getPitchClassFeedback(
+  keyFeedback: Record<NoteName, KeyFeedback>,
+  note: NoteName,
+): KeyFeedback {
+  const pitchClass = getPitchClass(note);
+  const key = ALL_NOTES.find(
+    (n) => getPitchClass(n) === pitchClass && keyFeedback[n] !== 'none',
+  );
+  return key ? keyFeedback[key] : 'none';
+}
 
 export default function PianoGameScreen() {
   const params = useLocalSearchParams<{
+    clef: string;
     difficultyLevel: string;
     noteCount: string;
   }>();
+  const clef: Clef = params.clef === 'bass' ? 'bass' : 'treble';
   const difficultyLevel = (params.difficultyLevel || 'easy') as DifficultyLevel;
   const noteCount = (parseInt(params.noteCount || '10', 10) || 10) as NoteCount;
   const insets = useSafeAreaInsets();
@@ -43,6 +68,10 @@ export default function PianoGameScreen() {
   );
   const { playNote, playError } = usePianoAudio({
     playSoundInSilentMode: soundEnabled,
+  });
+  const haptics = useHaptics({
+    onCorrect: settings.hapticOnCorrect,
+    onIncorrect: settings.hapticOnIncorrect,
   });
   const { colors } = useTheme();
   const [showQuitModal, setShowQuitModal] = useState(false);
@@ -88,8 +117,8 @@ export default function PianoGameScreen() {
   // Start game when params change (including initial mount).
   // biome-ignore lint/correctness/useExhaustiveDependencies: startGame is intentionally excluded - it depends on internal state which would cause unwanted re-runs. We only want to restart when the URL params change.
   useEffect(() => {
-    startGame(difficultyLevel, noteCount);
-  }, [difficultyLevel, noteCount]);
+    startGame(difficultyLevel, noteCount, clef);
+  }, [difficultyLevel, noteCount, clef]);
 
   // Navigate to results when finished
   useEffect(() => {
@@ -97,6 +126,7 @@ export default function PianoGameScreen() {
       router.replace({
         pathname: '/piano/results' as const,
         params: {
+          clef: state.clef,
           difficultyLevel: state.difficultyLevel,
           noteCount: state.noteCount,
           elapsedMs: state.elapsedMs,
@@ -106,6 +136,7 @@ export default function PianoGameScreen() {
     }
   }, [
     state.status,
+    state.clef,
     state.difficultyLevel,
     state.noteCount,
     state.elapsedMs,
@@ -144,7 +175,10 @@ export default function PianoGameScreen() {
 
     const isCorrect = handleKeyPress(note);
 
+    // Haptics go before audio so the buzz isn't delayed by the sound loading
     if (isCorrect) {
+      haptics.correct();
+
       // Trigger the correct animation with the note that was just played
       setLastCorrectNote(currentNoteName);
       setCorrectAnimationCounter((prev) => prev + 1);
@@ -152,19 +186,13 @@ export default function PianoGameScreen() {
       if (soundEnabled) {
         await playNote(note);
       }
-      if (settings.enableHapticFeedback) {
-        // TODO - Testing - Increased haptic feedback for correct notes
-        // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-      }
-    } else if (soundEnabled && settings.playIncorrectSound) {
+    } else {
+      haptics.incorrect();
+
+      if (soundEnabled && settings.playIncorrectSound) {
         await playError();
       }
-      // TODO - Testing - Increased haptic feedback for correct notes
-      // if (settings.enableHapticFeedback) {
-      //   Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      // }
-    
+    }
   };
 
   if (state.status === 'idle' || state.notes.length === 0) {
@@ -218,8 +246,9 @@ export default function PianoGameScreen() {
           <NoteDisplay
             note={currentNote.displayName}
             noteName={currentNote.name}
+            clef={clef}
             displayMode={settings.noteDisplayMode}
-            feedback={keyFeedback[NOTE_TO_BASE[currentNote.name]]}
+            feedback={getPitchClassFeedback(keyFeedback, currentNote.name)}
             incorrectNote={incorrectNote}
             showIncorrectFeedback={settings.showIncorrectFeedback}
             showStaffLabels={showStaffLabels}
@@ -242,7 +271,8 @@ export default function PianoGameScreen() {
           keyFeedback={keyFeedback}
           showWhiteKeyLabels={settings.showWhiteKeyLabels}
           showBlackKeyLabels={settings.showBlackKeyLabels}
-          showSecondOctave={
+          clef={clef}
+          extended={
             settings.showSecondOctave &&
             (difficultyLevel === 'medium' || difficultyLevel === 'expert')
           }

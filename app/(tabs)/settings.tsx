@@ -109,7 +109,7 @@ export default function Settings() {
         >
           <SettingToggle
             label="Show as Sheet Music"
-            description="Display notes on a treble clef staff instead of text"
+            description="Display notes on a music staff instead of text"
             value={settings.noteDisplayMode === 'staff'}
             onToggle={() =>
               updateSettings({
@@ -145,8 +145,8 @@ export default function Settings() {
             onToggle={() => updateSettings({ showTimer: !settings.showTimer })}
           />
           <SettingToggle
-            label="Second Octave Keyboard"
-            description="Show additional keys for notes above middle B"
+            label="Extended Keyboard"
+            description="Show extra keys for Medium/Expert games (above B4 in treble, below C3 in bass)"
             value={settings.showSecondOctave}
             onToggle={() =>
               updateSettings({ showSecondOctave: !settings.showSecondOctave })
@@ -191,12 +191,22 @@ export default function Settings() {
             }
           />
           <SettingToggle
-            label="Haptic Feedback"
-            description="Vibrate on correct and incorrect key presses"
-            value={settings.enableHapticFeedback}
+            label="Correct Note Haptics"
+            description="Vibrate when the correct key is pressed"
+            value={settings.hapticOnCorrect}
             onToggle={() =>
               updateSettings({
-                enableHapticFeedback: !settings.enableHapticFeedback,
+                hapticOnCorrect: !settings.hapticOnCorrect,
+              })
+            }
+          />
+          <SettingToggle
+            label="Incorrect Note Haptics"
+            description="Vibrate when an incorrect key is pressed"
+            value={settings.hapticOnIncorrect}
+            onToggle={() =>
+              updateSettings({
+                hapticOnIncorrect: !settings.hapticOnIncorrect,
               })
             }
           />

@@ -6,27 +6,13 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { SHARP_DISPLAY_NAMES } from '@/constants/PianoConfig';
 import { useTheme } from '@/hooks/useTheme';
 import type { KeyFeedback, NoteName } from '@/types/piano';
-import {
-  FLAT_SYMBOL,
-  formatNoteAccidentals,
-  getBaseNoteName,
-} from '@/utils/game';
+import { formatNoteAccidentals } from '@/utils/game';
+import { getPitchClass } from '@/utils/notes';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-
-// Mapping from sharp notes to their flat equivalents
-const SHARP_TO_FLAT: Record<string, string> = {
-  'C#': `D${FLAT_SYMBOL}`,
-  'D#': `E${FLAT_SYMBOL}`,
-  'F#': `G${FLAT_SYMBOL}`,
-  'G#': `A${FLAT_SYMBOL}`,
-  'A#': `B${FLAT_SYMBOL}`,
-  // Second octave
-  'C#2': `D${FLAT_SYMBOL}`,
-  'D#2': `E${FLAT_SYMBOL}`,
-};
 
 interface PianoKeyProps {
   note: NoteName;
@@ -71,9 +57,10 @@ export const PianoKey = memo(function PianoKey({
     };
   });
 
-  // Strip octave suffix and format accidentals for display
-  const displayNote = formatNoteAccidentals(getBaseNoteName(note));
-  const flatNote = SHARP_TO_FLAT[note]; // Get flat equivalent for black keys
+  // Strip octave and format accidentals for display
+  const pitchClass = getPitchClass(note);
+  const displayNote = formatNoteAccidentals(pitchClass);
+  const flatNote = SHARP_DISPLAY_NAMES[pitchClass]?.[1]; // Flat equivalent for black keys
 
   return (
     <View style={isBlack ? styles.blackKey : styles.whiteKey}>

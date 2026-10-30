@@ -1,7 +1,7 @@
 import {
   FLAT_SYMBOL,
   formatNoteAccidentals,
-  getBaseNoteName,
+  getClefLabel,
   getDifficultyLabel,
   SHARP_SYMBOL,
 } from '../game';
@@ -26,42 +26,6 @@ describe('getDifficultyLabel', () => {
   it('returns "Unknown" for invalid difficulty values', () => {
     expect(getDifficultyLabel('invalid' as any)).toBe('Unknown');
     expect(getDifficultyLabel('' as any)).toBe('Unknown');
-  });
-});
-
-describe('getBaseNoteName', () => {
-  it('returns natural notes unchanged', () => {
-    expect(getBaseNoteName('C')).toBe('C');
-    expect(getBaseNoteName('D')).toBe('D');
-    expect(getBaseNoteName('E')).toBe('E');
-    expect(getBaseNoteName('F')).toBe('F');
-    expect(getBaseNoteName('G')).toBe('G');
-    expect(getBaseNoteName('A')).toBe('A');
-    expect(getBaseNoteName('B')).toBe('B');
-  });
-
-  it('returns sharp notes unchanged', () => {
-    expect(getBaseNoteName('C#')).toBe('C#');
-    expect(getBaseNoteName('D#')).toBe('D#');
-    expect(getBaseNoteName('F#')).toBe('F#');
-    expect(getBaseNoteName('G#')).toBe('G#');
-    expect(getBaseNoteName('A#')).toBe('A#');
-  });
-
-  it('strips octave suffix from second octave natural notes', () => {
-    expect(getBaseNoteName('C2')).toBe('C');
-    expect(getBaseNoteName('D2')).toBe('D');
-    expect(getBaseNoteName('E2')).toBe('E');
-    expect(getBaseNoteName('F2')).toBe('F');
-  });
-
-  it('strips octave suffix from second octave sharp notes', () => {
-    expect(getBaseNoteName('C#2')).toBe('C#');
-    expect(getBaseNoteName('D#2')).toBe('D#');
-  });
-
-  it('handles empty string', () => {
-    expect(getBaseNoteName('')).toBe('');
   });
 });
 
@@ -117,5 +81,12 @@ describe('formatNoteAccidentals', () => {
     // Edge case: multiple # or b characters
     expect(formatNoteAccidentals('##')).toBe('♯#');
     expect(formatNoteAccidentals('bb')).toBe('♭b');
+  });
+});
+
+describe('getClefLabel', () => {
+  it('returns labels for each clef', () => {
+    expect(getClefLabel('treble')).toBe('Treble');
+    expect(getClefLabel('bass')).toBe('Bass');
   });
 });
