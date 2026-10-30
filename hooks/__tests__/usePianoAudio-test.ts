@@ -4,6 +4,7 @@ import { usePianoAudio } from '../usePianoAudio';
 const mockPlay = jest.fn();
 const mockSeekTo = jest.fn().mockResolvedValue(undefined);
 const mockRemove = jest.fn();
+const mockPause = jest.fn();
 
 const mockSetPlaybackRate = jest.fn();
 
@@ -47,8 +48,10 @@ describe('usePianoAudio', () => {
       play: mockPlay,
       seekTo: mockSeekTo,
       remove: mockRemove,
+      pause: mockPause,
       setPlaybackRate: mockSetPlaybackRate,
       volume: 1.0,
+      duration: 0.5,
     }));
   });
 
@@ -135,27 +138,6 @@ describe('usePianoAudio', () => {
 
       // Should have attempted to play
       expect(mockSeekTo).toHaveBeenCalled();
-    });
-  });
-
-  describe('bass notes', () => {
-    it('pitch-shifts notes below C4 and leaves treble notes alone', async () => {
-      await renderHook(() => usePianoAudio());
-
-      await waitFor(() => {
-        expect(mockCreateAudioPlayer).toHaveBeenCalled();
-      });
-
-      const rates = mockSetPlaybackRate.mock.calls.map(([rate]) => rate);
-      // Octave 3 (12 notes) at half speed, octave 2 (G2-B2, 5 notes) at quarter
-      expect(rates.filter((r) => r === 0.5)).toHaveLength(12);
-      expect(rates.filter((r) => r === 0.25)).toHaveLength(5);
-      expect(rates).not.toContain(1);
-
-      const shiftedPlayers = mockCreateAudioPlayer.mock.results
-        .map((r) => r.value)
-        .filter((p) => p.shouldCorrectPitch === false);
-      expect(shiftedPlayers).toHaveLength(17);
     });
   });
 

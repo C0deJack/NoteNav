@@ -53,7 +53,6 @@ function generateRandomNotes(
       displayName,
       isBlack: noteData.isBlack,
       soundFile: noteData.soundFile,
-      playbackRate: noteData.playbackRate,
     });
   }
 

@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { ERROR_SOUND_FILE, NOTES } from '@/constants/PianoConfig';
 import type { NoteName } from '@/types/piano';
+import { createBassNotePlayback } from '@/utils/bassNotes';
 
 type PlayerMap = Record<string, AudioPlayer>;
 
@@ -35,6 +36,7 @@ export function usePianoAudio({
   playSoundInSilentMode = true,
 }: UsePianoAudioOptions = {}) {
   const playersRef = useRef<PlayerMap>({});
+  const bassRef = useRef(createBassNotePlayback());
   const [loaded, setLoaded] = useState(false);
 
   // Update audio mode when setting changes
@@ -50,11 +52,7 @@ export function usePianoAudio({
       const source = SOUND_FILES[noteData.soundFile];
       if (source) {
         const player = createAudioPlayer(source);
-        if (noteData.playbackRate !== 1) {
-          // Let the pitch drop with the speed so the sample sounds lower
-          player.shouldCorrectPitch = false;
-          player.setPlaybackRate(noteData.playbackRate);
-        }
+        bassRef.current.setUp(player, noteName as NoteName);
         playersRef.current[noteName] = player;
       }
     }
@@ -69,6 +67,7 @@ export function usePianoAudio({
 
     // Cleanup on unmount
     return () => {
+      bassRef.current.dispose();
       for (const player of Object.values(playersRef.current)) {
         player.remove();
       }
@@ -81,9 +80,11 @@ export function usePianoAudio({
       if (!loaded) return;
       const player = playersRef.current[note];
       if (player) {
+        bassRef.current.cancelStop(note);
         player.volume = 1.0;
         await player.seekTo(0);
         player.play();
+        bassRef.current.scheduleStop(player, note);
       }
     },
     [loaded],
