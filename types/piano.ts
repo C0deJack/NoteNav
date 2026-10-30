@@ -100,7 +100,8 @@ export interface GameSettings {
   noteDisplayMode: NoteDisplayMode;
   showIncorrectFeedback: boolean;
   playIncorrectSound: boolean;
-  enableHapticFeedback: boolean;
+  hapticOnCorrect: boolean;
+  hapticOnIncorrect: boolean;
   playSoundInSilentMode: boolean;
   showTimer: boolean;
   showCorrectAnimation: boolean;

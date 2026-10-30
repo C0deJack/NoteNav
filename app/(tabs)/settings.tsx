@@ -191,12 +191,22 @@ export default function Settings() {
             }
           />
           <SettingToggle
-            label="Haptic Feedback"
-            description="Vibrate on correct and incorrect key presses"
-            value={settings.enableHapticFeedback}
+            label="Correct Note Haptics"
+            description="Vibrate when the correct key is pressed"
+            value={settings.hapticOnCorrect}
             onToggle={() =>
               updateSettings({
-                enableHapticFeedback: !settings.enableHapticFeedback,
+                hapticOnCorrect: !settings.hapticOnCorrect,
+              })
+            }
+          />
+          <SettingToggle
+            label="Incorrect Note Haptics"
+            description="Vibrate when an incorrect key is pressed"
+            value={settings.hapticOnIncorrect}
+            onToggle={() =>
+              updateSettings({
+                hapticOnIncorrect: !settings.hapticOnIncorrect,
               })
             }
           />

@@ -1,5 +1,4 @@
 import { Ionicons } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -13,6 +12,7 @@ import { QuitGameModal } from '@/components/piano/QuitGameModal';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useGameSettings } from '@/hooks/useGameSettings';
+import { useHaptics } from '@/hooks/useHaptics';
 import { useInactivityTimeout } from '@/hooks/useInactivityTimeout';
 import { usePianoAudio } from '@/hooks/usePianoAudio';
 import { usePianoGame } from '@/hooks/usePianoGame';
@@ -68,6 +68,10 @@ export default function PianoGameScreen() {
   );
   const { playNote, playError } = usePianoAudio({
     playSoundInSilentMode: soundEnabled,
+  });
+  const haptics = useHaptics({
+    onCorrect: settings.hapticOnCorrect,
+    onIncorrect: settings.hapticOnIncorrect,
   });
   const { colors } = useTheme();
   const [showQuitModal, setShowQuitModal] = useState(false);
@@ -171,7 +175,10 @@ export default function PianoGameScreen() {
 
     const isCorrect = handleKeyPress(note);
 
+    // Haptics go before audio so the buzz isn't delayed by the sound loading
     if (isCorrect) {
+      haptics.correct();
+
       // Trigger the correct animation with the note that was just played
       setLastCorrectNote(currentNoteName);
       setCorrectAnimationCounter((prev) => prev + 1);
@@ -179,18 +186,13 @@ export default function PianoGameScreen() {
       if (soundEnabled) {
         await playNote(note);
       }
-      if (settings.enableHapticFeedback) {
-        // TODO - Testing - Increased haptic feedback for correct notes
-        // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    } else {
+      haptics.incorrect();
+
+      if (soundEnabled && settings.playIncorrectSound) {
+        await playError();
       }
-    } else if (soundEnabled && settings.playIncorrectSound) {
-      await playError();
     }
-    // TODO - Testing - Increased haptic feedback for correct notes
-    // if (settings.enableHapticFeedback) {
-    //   Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-    // }
   };
 
   if (state.status === 'idle' || state.notes.length === 0) {

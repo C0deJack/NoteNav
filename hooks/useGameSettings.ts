@@ -23,12 +23,31 @@ const defaultSettings: GameSettings = {
   noteDisplayMode: 'staff',
   showIncorrectFeedback: true,
   playIncorrectSound: true,
-  enableHapticFeedback: true,
+  hapticOnCorrect: true,
+  hapticOnIncorrect: true,
   playSoundInSilentMode: true,
   showTimer: true,
   showCorrectAnimation: true,
   showSecondOctave: false,
 };
+
+/**
+ * Settings saved before haptics were split into correct/incorrect had a
+ * single enableHapticFeedback; carry that choice over to both.
+ */
+function migrateSettings(
+  stored: Record<string, unknown>,
+): Partial<GameSettings> {
+  const { enableHapticFeedback, ...rest } = stored;
+  if (typeof enableHapticFeedback === 'boolean') {
+    return {
+      hapticOnCorrect: enableHapticFeedback,
+      hapticOnIncorrect: enableHapticFeedback,
+      ...rest,
+    };
+  }
+  return rest;
+}
 
 export function useGameSettings() {
   const [settings, setSettings] = useState<GameSettings>(defaultSettings);
@@ -52,7 +71,10 @@ export function useGameSettings() {
           ]);
 
         if (storedSettings) {
-          setSettings({ ...defaultSettings, ...JSON.parse(storedSettings) });
+          setSettings({
+            ...defaultSettings,
+            ...migrateSettings(JSON.parse(storedSettings)),
+          });
         }
         if (storedLevel) {
           setLastDifficultyLevel(JSON.parse(storedLevel));
